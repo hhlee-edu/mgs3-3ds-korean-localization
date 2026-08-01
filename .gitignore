@@ -1,0 +1,37 @@
+# Original/proprietary game data and locally saved reference scripts
+/partition0/
+/analysis/
+
+# Emulator runtime and user state
+/Citra/
+/plugins/
+/scripting/
+/citra*.exe
+/Qt6*.dll
+/qt.conf
+/license.txt
+
+# Unrelated ROM/patch images
+/*.cia
+/*.3ds
+/*.cci
+/*.cxi
+
+# Generated patches and extracted font previews
+/dist/
+/font_*_manifest.json
+/font_*_sheet*.png
+
+# Python/editor caches
+__pycache__/
+*.py[cod]
+.venv/
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+Thumbs.db
+/mgs3-dialogue-tool/work/
+/mgs3-dialogue-tool/tests/tmp*/
