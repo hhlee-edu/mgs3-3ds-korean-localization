@@ -11,6 +11,7 @@ import itertools
 import json
 import struct
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -41,6 +42,7 @@ class Subtitle:
     raw: bytes
     tail: bytes
     original: bytes
+    entry_type: int = 7
 
 
 @dataclass
@@ -81,7 +83,12 @@ def parse_records(data: bytes) -> tuple[bytes, list[Record], bytes]:
         while entry < relative_text_end:
             header = u32(raw, entry)
             entry_size, entry_type = header & 0xFFFF, header >> 16
-            if entry_type != 7 or entry_size < 8 or entry_size % 4:
+            # Western releases multiplex five languages as types 1..5 with
+            # an empty local-font block (type 1 is English). Japanese/local-
+            # glyph entries use type 7. Their framing, timing tail, and size
+            # rules are the same, so all observed language types can be
+            # parsed and rebuilt losslessly here.
+            if entry_type not in (1, 2, 3, 4, 5, 7) or entry_size < 8 or entry_size % 4:
                 subtitles = []
                 break
             # Ordinary entries include 12 bytes of timing/state data in their
@@ -104,6 +111,7 @@ def parse_records(data: bytes) -> tuple[bytes, list[Record], bytes]:
                     raw=raw[entry + 4 : zero + 1],
                     tail=raw[tail_start:end],
                     original=raw[entry:end],
+                    entry_type=entry_type,
                 )
             )
             entry = end
@@ -264,6 +272,115 @@ def rebuild_record_fixed(record: Record, replacements: dict[int, str], font: Ima
     return bytes(body), {ch: mapping[ch].hex().upper() for ch in needed}
 
 
+def rebuild_record_growing(
+    record: Record,
+    replacements: dict[int, str],
+    font: ImageFont.FreeTypeFont,
+    donor_offsets: set[int] | None = None,
+    target_size: int | None = None,
+) -> tuple[bytes, dict[str, str]]:
+    """Repack a record and append glyphs, for Western records with no font slots."""
+    donor_offsets = donor_offsets or set()
+    if not replacements and not donor_offsets:
+        return record.raw, {}
+    needed = list(dict.fromkeys(
+        character
+        for subtitle in record.subtitles
+        for character in replacements.get(subtitle.offset, "")
+        if 0xAC00 <= ord(character) <= 0xD7A3
+    ))
+    old_count = len(record.font) // 64
+    if old_count + len(needed) > 1020:
+        raise MovieError(
+            f"record {record.index} needs {len(needed)} Hangul glyphs but only "
+            f"{1020 - old_count} page-3 slots remain"
+        )
+    mapping = {character: page3_token(old_count + index)
+               for index, character in enumerate(needed)}
+
+    body = bytearray(record.raw[:0x20])
+    for subtitle in record.subtitles:
+        replacement = replacements.get(subtitle.offset)
+        is_donor = subtitle.offset in donor_offsets
+        if replacement is None and not is_donor:
+            body.extend(subtitle.original)
+            continue
+        encoded = (b"\0" if is_donor
+                   else encode_translation(wrap_like_source(replacement, subtitle.raw), mapping))
+        old_header = u32(subtitle.original, 0)
+        old_declared = old_header & 0xFFFF
+        omitted_tail = old_declared - len(subtitle.original)
+        if omitted_tail not in (0, 12):
+            raise MovieError(
+                f"record {record.index} subtitle at 0x{subtitle.offset:x} "
+                f"has unsupported declared-size delta {omitted_tail}"
+            )
+        actual_size = align(4 + len(encoded) + len(subtitle.tail), 4)
+        padding = actual_size - 4 - len(encoded) - len(subtitle.tail)
+        declared_size = actual_size + omitted_tail
+        if declared_size > 0xFFFF:
+            raise MovieError(f"record {record.index} subtitle exceeds 16-bit size")
+        entry_type = old_header >> 16
+        body.extend(struct.pack("<I", entry_type << 16 | declared_size))
+        body.extend(encoded)
+        body.extend(b"\0" * padding)
+        body.extend(subtitle.tail)
+
+    text_end = len(body)
+    struct.pack_into("<I", body, 0x10, text_end - 0x14)
+    new_font = bytearray(record.font)
+    for character in needed:
+        new_font.extend(render_character(character, font))
+    body.extend(struct.pack("<I", len(new_font)))
+    body.extend(new_font)
+    body.extend(b"\0" * (align(len(body)) - len(body)))
+    if target_size is not None:
+        if len(body) > target_size:
+            raise MovieError(
+                f"record {record.index} size-neutral deficit: need {len(body)}, "
+                f"capacity {target_size}, deficit {len(body) - target_size}"
+            )
+        body.extend(b"\0" * (target_size - len(body)))
+    struct.pack_into("<I", body, 4, len(body))
+    return bytes(body), {character: mapping[character].hex().upper()
+                         for character in needed}
+
+
+def maximal_size_neutral_subset(
+    record: Record,
+    replacements: dict[int, str],
+    donor_offsets: set[int],
+    font: ImageFont.FreeTypeFont,
+) -> dict[int, str]:
+    """Select a deterministic large subset that fits after donor reclamation."""
+    selected = dict(replacements)
+    while True:
+        try:
+            rebuild_record_growing(record, selected, font, donor_offsets, len(record.raw))
+            return selected
+        except MovieError as exc:
+            if "size-neutral deficit" not in str(exc) or not selected:
+                if not selected:
+                    # Donor-only records must still remain structurally valid.
+                    rebuild_record_growing(record, {}, font, donor_offsets, len(record.raw))
+                    return {}
+                raise
+        counts = Counter(character for text in selected.values() for character in set(text)
+                         if 0xAC00 <= ord(character) <= 0xD7A3)
+        choices = []
+        by_offset = {subtitle.offset: subtitle for subtitle in record.subtitles}
+        for offset, text in selected.items():
+            subtitle = by_offset[offset]
+            glyphs = {ch for ch in text if 0xAC00 <= ord(ch) <= 0xD7A3}
+            exclusive = sum(counts[ch] == 1 for ch in glyphs)
+            encoded = encode_translation(wrap_like_source(text, subtitle.raw),
+                                         {ch: b"\x90\x01" for ch in glyphs})
+            saving = max(0, len(subtitle.original) - (4 + len(encoded) + len(subtitle.tail)))
+            improvement = exclusive * 64 - saving
+            choices.append((improvement, len(glyphs), offset))
+        del selected[max(choices)[2]]
+
+
 def fixed_capacity(record: Record, replacements: dict[int, str]) -> dict:
     """Report whether a record can be rebuilt without moving any bytes."""
     needed = list(dict.fromkeys(
@@ -360,6 +477,7 @@ def command_inspect(args: argparse.Namespace) -> None:
                 "index": global_index,
                 "record": record.index,
                 "entry": local_index,
+                "entry_type": subtitle.entry_type,
                 "offset": subtitle.offset,
                 "size": len(subtitle.raw),
                 "preview": decode_mgs_preview(subtitle.raw),
@@ -418,6 +536,8 @@ def command_extract_font(args: argparse.Namespace) -> None:
 
 
 def command_build_korean(args: argparse.Namespace) -> None:
+    if args.grow_records and args.size_neutral_reclaim:
+        raise MovieError("select only one of --grow-records and --size-neutral-reclaim")
     original = args.input.read_bytes()
     prefix, records, suffix = parse_records(original)
     replacements = read_replacements(args.translation_csv)
@@ -430,19 +550,34 @@ def command_build_korean(args: argparse.Namespace) -> None:
 
     allocations: dict[str, dict[str, str]] = {}
     used: set[int] = set()
+    found: set[int] = set()
+    excluded: set[int] = set()
+    source_layout = [(record.offset, len(record.raw)) for record in records]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("wb") as stream:
         stream.write(prefix)
         for record in records:
             stream.write(record.gap_before)
             local = {s.offset: replacements[s.offset] for s in record.subtitles if s.offset in replacements}
-            rebuilt, allocation = rebuild_record_fixed(record, local, font)
+            found.update(local)
+            if args.size_neutral_reclaim and local:
+                donors = {s.offset for s in record.subtitles if s.entry_type in {2, 3, 4, 5}}
+                chosen = maximal_size_neutral_subset(record, local, donors, font)
+                excluded.update(set(local) - set(chosen))
+                rebuilt, allocation = rebuild_record_growing(
+                    record, chosen, font, donors, len(record.raw)
+                )
+                local = chosen
+            elif args.grow_records:
+                rebuilt, allocation = rebuild_record_growing(record, local, font)
+            else:
+                rebuilt, allocation = rebuild_record_fixed(record, local, font)
             stream.write(rebuilt)
             used.update(local)
             if allocation:
                 allocations[str(record.index)] = allocation
         stream.write(suffix)
-    missing = sorted(set(replacements) - used)
+    missing = sorted(set(replacements) - found)
     if missing:
         raise MovieError(f"{len(missing)} accepted offsets do not identify subtitle entries")
     digest = hashlib.sha256()
@@ -452,6 +587,8 @@ def command_build_korean(args: argparse.Namespace) -> None:
     report = {
         "format": "mgs3d-movie-hangul-allocation-v1",
         "accepted_rows": len(replacements),
+        "selected_rows": len(used),
+        "excluded_rows": len(excluded),
         "font": str(args.font),
         "font_size": args.font_size,
         "allocations": allocations,
@@ -469,7 +606,18 @@ def command_build_korean(args: argparse.Namespace) -> None:
     _, verified, _ = parse_records(args.output.read_bytes())
     if len(verified) != expected_records:
         raise MovieError("rebuilt output changed the record count")
-    print(f"rebuilt {args.output}: {len(replacements)} subtitles, {len(verified)} records")
+    if args.size_neutral_reclaim:
+        output_size = args.output.stat().st_size
+        mismatches = [index for index, (expected, actual) in enumerate(
+            zip(source_layout, ((record.offset, len(record.raw)) for record in verified)))
+            if expected != actual]
+        if output_size != args.input.stat().st_size or mismatches:
+            raise MovieError(
+                f"size-neutral verification failed: file {args.input.stat().st_size} -> "
+                f"{output_size}, record mismatches {mismatches[:10]}"
+            )
+    print(f"rebuilt {args.output}: {len(used)}/{len(replacements)} subtitles selected, "
+          f"{len(verified)} records")
 
 
 def command_capacity(args: argparse.Namespace) -> None:
@@ -608,12 +756,20 @@ def build_parser() -> argparse.ArgumentParser:
     font.add_argument("output", type=Path)
     font.add_argument("--columns", type=int, default=16)
     font.set_defaults(function=command_extract_font)
-    korean = sub.add_parser("build-korean", help="apply accepted CSV rows using safe fixed-layout font reuse")
+    korean = sub.add_parser("build-korean", help="apply accepted CSV rows and embed Korean glyphs")
     korean.add_argument("input", type=Path)
     korean.add_argument("translation_csv", type=Path)
     korean.add_argument("font", type=Path)
     korean.add_argument("output", type=Path)
     korean.add_argument("--font-size", type=int, default=15)
+    korean.add_argument(
+        "--grow-records", action="store_true",
+        help="repack records and append glyphs (required by fontless Western records)",
+    )
+    korean.add_argument(
+        "--size-neutral-reclaim", action="store_true",
+        help="clear Western entry types 2-5, select a fitting type-1 subset, and preserve every record size",
+    )
     korean.set_defaults(function=command_build_korean)
     capacity = sub.add_parser("capacity", help="report safe fixed-layout capacity by record")
     capacity.add_argument("input", type=Path)

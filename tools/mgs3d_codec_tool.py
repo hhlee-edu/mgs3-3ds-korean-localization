@@ -231,7 +231,12 @@ class GcxRecord:
         return result
 
     def replace_resources(
-        self, replacements: dict[int, bytes], preserve_layout: bool = False
+        self,
+        replacements: dict[int, bytes],
+        preserve_layout: bool = False,
+        string_region_size: int | None = None,
+        alias_adjacent: bool = False,
+        alias_all: bool = False,
     ) -> bytes:
         if not replacements:
             return self.raw
@@ -244,16 +249,49 @@ class GcxRecord:
         old_font_start = self.block_start + self.font_data_offset
         old_proc_start = self.block_start + self.proc_offset
 
+        final_data = [replacements.get(index, resource.data)
+                      for index, resource in enumerate(resources)]
         plain = bytearray()
         words: list[int] = []
-        for index, resource in enumerate(resources):
+        aliases: dict[tuple[int, bytes], int] = {}
+        index = 0
+        while index < len(resources):
             if len(plain) > 0x00FFFFFF:
                 raise CodecError("GCX resource region exceeds 24-bit offset limit")
-            words.append(resource.flags | len(plain))
-            plain.extend(replacements.get(index, resource.data))
+            resource = resources[index]
+            if alias_all:
+                key = (resource.flags, final_data[index])
+                if key in aliases:
+                    words.append(resource.flags | aliases[key])
+                else:
+                    aliases[key] = len(plain)
+                    words.append(resource.flags | len(plain))
+                    plain.extend(final_data[index])
+                index += 1
+                continue
+            end = index + 1
+            if alias_adjacent and final_data[index] not in (b"", b"\0"):
+                while (end < len(resources)
+                       and resources[end].flags == resource.flags
+                       and final_data[end] == final_data[index]):
+                    end += 1
+            words.extend(resource.flags | len(plain) for _ in range(index, end))
+            plain.extend(final_data[index])
+            index = end
 
         old_plain_size = old_font_start - old_string_start
-        if preserve_layout:
+        if preserve_layout and string_region_size is not None:
+            raise CodecError("select only one string-region layout mode")
+        if string_region_size is not None:
+            if string_region_size < 0:
+                raise CodecError("negative target string-region size")
+            if len(plain) > string_region_size:
+                raise CodecError(
+                    f"replacement strings exceed target region by "
+                    f"{len(plain) - string_region_size} bytes"
+                )
+            plain.extend(b"\0" * (string_region_size - len(plain)))
+        elif preserve_layout:
             if len(plain) > old_plain_size:
                 raise CodecError(
                     f"replacement strings exceed fixed region by "

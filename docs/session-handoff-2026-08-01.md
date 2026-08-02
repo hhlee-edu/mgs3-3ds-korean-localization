@@ -3,6 +3,13 @@
 > For the concise authoritative state and exact continuation order, read
 > `docs/work-resume-2026-08-01.md` first.
 
+> **2026-08-02 priority update:** Pause further translation and semantic
+> mapping. Preserve the working tools and rebuild/runtime results, then decode
+> the D dictionary from the unpacked LA2/data resources and reconstruct the
+> complete Japanese source first. See
+> `docs/japanese-reassembly-plan-2026-08-02.md` for the authoritative next
+> milestone and validation gate.
+
 ## Outcome
 
 The codec dialogue path now renders complete Korean sentences in game without a

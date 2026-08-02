@@ -26,6 +26,8 @@ stable Japanese dialogue when every GCX record keeps its original layout.
 - [Toolkit workflow](MGS3D_KOREAN_TOOLKIT.md)
 - [Latest handoff](docs/session-handoff-2026-08-01.md)
 - [Today's exact resume point](docs/work-resume-2026-08-01.md)
+- [Next milestone: Japanese source reassembly](docs/japanese-reassembly-plan-2026-08-02.md)
+- [Japanese token reconstruction audit](docs/japanese-token-audit.md)
 - [Latest codec checkpoint](docs/codec-checkpoint-2026-08-01.md)
 - [codec.dat and GCX notes](docs/mgs3d-codec-tool.md)
 - [script comparison workflow](docs/mgs3d-script-comparison.md)

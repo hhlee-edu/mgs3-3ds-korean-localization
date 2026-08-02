@@ -193,7 +193,22 @@ The corrected FPS targets are 366/367. The current capacity plan marks 28
 resources total; only 366/367 have verified Korean text. The other 26 plan
 resources require verified mapping/translation before a production build.
 
-## Exact continuation order
+## 2026-08-02 priority override
+
+Further translation and codec conversation mapping are paused. The immediate
+goal is to decode the D dictionary in the unpacked LA2/data resources and
+reassemble the complete Japanese source while preserving resource identities
+and control codes. Keep all existing parsers, fixed-layout builders, capacity
+logic, and runtime evidence. Treat translations inferred from unresolved
+`<G...>` references or broken Japanese previews as drafts requiring later
+revalidation.
+
+The authoritative next-work checklist and completion gate are in
+`docs/japanese-reassembly-plan-2026-08-02.md`. The continuation order below is
+retained as historical context and resumes only after Japanese reconstruction
+passes that gate.
+
+## Previous continuation order (paused)
 
 1. Do not stage the 78-row feasibility DAT. Review its 14 additions first.
 2. Use the new `batch-map-codec` command to map ordered GCX ranges to ordered

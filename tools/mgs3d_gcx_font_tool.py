@@ -490,14 +490,31 @@ def command_build_korean(args: argparse.Namespace) -> None:
     records = parse_codec(original)
     document = json.loads(args.translation.read_text(encoding="utf-8"))
     base_map, validated_units = validate_codec_translation(document)
+    existing_allocations: dict[int, dict[str, bytes]] = {}
+    if args.existing_allocation:
+        allocation_document = json.loads(
+            args.existing_allocation.read_text(encoding="utf-8")
+        )
+        for gcx_text, mapping in allocation_document.get("allocations", {}).items():
+            gcx = int(gcx_text)
+            existing_allocations[gcx] = {
+                str(character): bytes.fromhex(str(token))
+                for character, token in mapping.items()
+            }
     try:
         font = ImageFont.truetype(str(args.font), args.font_size)
     except OSError as exc:
         raise CodecError(f"cannot load TrueType font {args.font}: {exc}") from exc
     if args.reuse_existing_font and args.reuse_freed_font:
         raise CodecError("select only one font reuse mode")
-    if args.reuse_freed_font and not args.preserve_record_layout:
-        raise CodecError("--reuse-freed-font requires --preserve-record-layout")
+    if args.preserve_file_size and args.reuse_existing_font:
+        raise CodecError("--preserve-file-size cannot use diagnostic existing-font reuse")
+    if args.preserve_file_size and args.preserve_total_file_size:
+        raise CodecError("select per-GCX or total-file size preservation, not both")
+    if args.preserve_total_file_size and (args.reuse_existing_font or args.preserve_record_layout):
+        raise CodecError("total-file reflow cannot preserve individual record layout")
+    if args.reuse_freed_font and not (args.preserve_record_layout or args.preserve_file_size):
+        raise CodecError("--reuse-freed-font requires --preserve-record-layout or --preserve-file-size")
     if args.preserve_record_layout and not (
         args.reuse_existing_font or args.reuse_freed_font
     ):
@@ -510,14 +527,14 @@ def command_build_korean(args: argparse.Namespace) -> None:
             raise CodecError(f"GCX index out of range: {gcx}")
         units_by_gcx.setdefault(gcx, []).append(unit)
 
-    output = bytearray()
+    record_outputs: list[bytes] = []
     changed_records = 0
     added_total = 0
     allocation_report: dict[str, dict[str, str]] = {}
     for gcx, record in enumerate(records):
         units = units_by_gcx.get(gcx, [])
         if not units:
-            output.extend(record.raw)
+            record_outputs.append(record.raw)
             continue
         _, old_count = font_region(record)
         resources = record.resources()
@@ -533,33 +550,49 @@ def command_build_korean(args: argparse.Namespace) -> None:
             )
         ]
         if not units:
-            output.extend(record.raw)
+            record_outputs.append(record.raw)
             continue
         replaced_resource_ids = {int(unit["resource"]) for unit in units}
+        existing_map = existing_allocations.get(gcx, {})
         korean: list[str] = []
         seen: set[str] = set()
         for unit in units:
             for character in str(unit["text"]):
-                if 0xAC00 <= ord(character) <= 0xD7A3 and character not in seen:
+                if (0xAC00 <= ord(character) <= 0xD7A3
+                        and character not in base_map
+                        and character not in existing_map
+                        and character not in seen):
                     seen.add(character)
                     korean.append(character)
-        if not (args.reuse_existing_font or args.reuse_freed_font) and old_count + len(korean) > 1020:
+        available_slots = (freed_font_slots(record, replaced_resource_ids)
+                           if args.reuse_freed_font else [])
+        reserved_slots = {
+            index
+            for token in existing_map.values()
+            for index in range(old_count)
+            if custom_token(index) == token
+        }
+        available_slots = [slot for slot in available_slots if slot not in reserved_slots]
+        reused_count = min(len(available_slots), len(korean))
+        appended_count = 0 if args.reuse_existing_font else len(korean) - reused_count
+        if old_count + appended_count > 1020:
             raise CodecError(
-                f"GCX {gcx} needs {len(korean)} Hangul glyphs but only "
+                f"GCX {gcx} needs {appended_count} appended Hangul glyphs but only "
                 f"{1020 - old_count} custom slots remain"
             )
         local_map = dict(base_map)
+        local_map.update(existing_map)
         allocation: dict[str, str] = {}
         glyph_data = bytearray()
         if args.reuse_freed_font:
-            available_slots = freed_font_slots(record, replaced_resource_ids)
-            if len(available_slots) < len(korean):
+            if args.preserve_record_layout and len(available_slots) < len(korean):
                 raise CodecError(
                     f"GCX {gcx} fixed-layout font capacity: needs {len(korean)}, "
                     f"only {len(available_slots)} slots become free; "
                     f"translate more resources in this GCX or reduce unique Hangul"
                 )
-            selected_slots = available_slots[: len(korean)]
+            selected_slots = (available_slots[:reused_count]
+                              + list(range(old_count, old_count + appended_count)))
         elif args.reuse_existing_font:
             if len(korean) > old_count:
                 raise CodecError(
@@ -580,24 +613,75 @@ def command_build_korean(args: argparse.Namespace) -> None:
             replacement = parse_rendered(str(unit["text"]), local_map)
             if replacement != resources[resource].data:
                 replacements[resource] = replacement
-        rebuilt = GcxRecord(
-            record.replace_resources(
-                replacements, preserve_layout=args.preserve_record_layout
-            ),
-            record.source_offset,
-        )
-        if args.reuse_existing_font or args.reuse_freed_font:
-            rebuilt_raw = overwrite_font_slots(rebuilt, selected_slots, bytes(glyph_data))
-        else:
-            rebuilt_raw = append_font(rebuilt, bytes(glyph_data))
-        output.extend(rebuilt_raw)
+        target_string_size = None
+        if args.preserve_file_size:
+            old_string_size = record.font_data_offset - record.string_resources_offset
+            target_string_size = old_string_size - appended_count * GLYPH_SIZE
+        try:
+            replaced_raw = record.replace_resources(
+                replacements,
+                preserve_layout=args.preserve_record_layout,
+                string_region_size=target_string_size,
+                alias_adjacent=args.alias_adjacent_strings,
+                alias_all=args.alias_all_strings,
+            )
+        except CodecError as exc:
+            raise CodecError(f"GCX {gcx}: {exc}") from exc
+        rebuilt = GcxRecord(replaced_raw, record.source_offset)
+        reused_bytes = bytes(glyph_data[:reused_count * GLYPH_SIZE])
+        appended_bytes = bytes(glyph_data[reused_count * GLYPH_SIZE:])
+        rebuilt_raw = replaced_raw
+        if reused_bytes:
+            rebuilt_raw = overwrite_font_slots(GcxRecord(rebuilt_raw, record.source_offset),
+                                               selected_slots[:reused_count], reused_bytes)
+        if appended_bytes:
+            rebuilt_raw = append_font(GcxRecord(rebuilt_raw, record.source_offset), appended_bytes)
+        if args.preserve_file_size and len(rebuilt_raw) != len(record.raw):
+            raise CodecError(
+                f"GCX {gcx} size-neutral rebuild changed size: "
+                f"{len(record.raw)} -> {len(rebuilt_raw)}"
+            )
+        record_outputs.append(rebuilt_raw)
         if replacements or glyph_data:
             changed_records += 1
         added_total += len(korean)
         if allocation:
             allocation_report[str(gcx)] = allocation
 
-    reparsed = parse_codec(bytes(output))
+    natural_size = sum(len(raw) for raw in record_outputs)
+    reflow_padding = 0
+    if args.preserve_total_file_size:
+        if natural_size > len(original):
+            raise CodecError(
+                f"global codec capacity deficit: natural build exceeds source by "
+                f"{natural_size - len(original)} bytes"
+            )
+        remaining_padding = len(original) - natural_size
+        for index, (source, raw) in enumerate(zip(records, record_outputs)):
+            if not remaining_padding:
+                break
+            padding = min(max(0, len(source.raw) - len(raw)), remaining_padding)
+            if not padding:
+                continue
+            built = GcxRecord(raw, source.source_offset)
+            resources = built.resources()
+            if not resources:
+                raise CodecError(f"GCX {index} cannot absorb global reflow padding")
+            old_string_size = built.font_data_offset - built.string_resources_offset
+            padded = built.replace_resources(
+                {0: resources[0].data}, string_region_size=old_string_size + padding)
+            if len(padded) != len(raw) + padding:
+                raise CodecError(f"GCX {index} did not absorb {padding} padding bytes")
+            record_outputs[index] = padded
+            reflow_padding += padding
+            remaining_padding -= padding
+        if remaining_padding or sum(len(raw) for raw in record_outputs) != len(original):
+            raise CodecError(
+                f"global reflow did not converge: remaining={remaining_padding}, "
+                f"size={sum(len(raw) for raw in record_outputs)}/{len(original)}"
+            )
+    output = b"".join(record_outputs)
+    reparsed = parse_codec(output)
     if len(reparsed) != len(records):
         raise CodecError("Korean build failed record-count verification")
     if args.preserve_record_layout:
@@ -617,6 +701,19 @@ def command_build_korean(args: argparse.Namespace) -> None:
                 f"fixed-layout verification failed in {len(mismatches)} GCX records: "
                 f"{mismatches[:10]}"
             )
+    if args.preserve_file_size:
+        mismatches = [
+            index
+            for index, (source, built) in enumerate(zip(records, reparsed))
+            if source.source_offset != built.source_offset or len(source.raw) != len(built.raw)
+        ]
+        if len(output) != len(original) or mismatches:
+            raise CodecError(
+                f"size-neutral verification failed: file {len(original)} -> {len(output)}, "
+                f"record mismatches {mismatches[:10]}"
+            )
+    if args.preserve_total_file_size and len(output) != len(original):
+        raise CodecError(f"total-file size changed: {len(original)} -> {len(output)}")
     args.output.write_bytes(output)
     report_path = args.output.with_suffix(args.output.suffix + ".hangul.json")
     report_path.write_text(
@@ -626,6 +723,9 @@ def command_build_korean(args: argparse.Namespace) -> None:
                 "font": str(args.font),
                 "font_size": args.font_size,
                 "added_glyphs": added_total,
+                "natural_file_size": natural_size,
+                "final_file_size": len(output),
+                "reflow_padding": reflow_padding,
                 "allocations": allocation_report,
             },
             ensure_ascii=False,
@@ -714,6 +814,11 @@ def build_parser() -> argparse.ArgumentParser:
     korean.add_argument("output", type=Path)
     korean.add_argument("--font-size", type=int, default=15)
     korean.add_argument(
+        "--existing-allocation",
+        type=Path,
+        help="reuse a previous build's per-GCX Hangul allocation sidecar",
+    )
+    korean.add_argument(
         "--reuse-existing-font",
         action="store_true",
         help="diagnostic: overwrite existing glyph slots instead of growing GCX",
@@ -727,6 +832,26 @@ def build_parser() -> argparse.ArgumentParser:
         "--preserve-record-layout",
         action="store_true",
         help="keep every GCX string/font/procedure boundary at its original offset",
+    )
+    korean.add_argument(
+        "--preserve-file-size",
+        action="store_true",
+        help="fund appended glyphs by shrinking strings so every GCX and codec.dat keep their size",
+    )
+    korean.add_argument(
+        "--preserve-total-file-size",
+        action="store_true",
+        help="allow GCX boundaries to move while keeping total codec.dat size exact",
+    )
+    korean.add_argument(
+        "--alias-adjacent-strings",
+        action="store_true",
+        help="store adjacent identical resources once while preserving table entries",
+    )
+    korean.add_argument(
+        "--alias-all-strings",
+        action="store_true",
+        help="store every identical flags+bytes resource once per GCX",
     )
     korean.set_defaults(function=command_build_korean)
     return parser
