@@ -10,7 +10,7 @@
 
 ## Next test
 
-Repack a CCI from `staging_media_minimal`, run it in Citra, and verify the opening movie and demo subtitles for graphics corruption. If stable, expand movie/demo rows incrementally to identify the collision boundary.
+RomForge reads/writes CCI files in `C:\Users\hhlee\Desktop\Romforge\output`. The current test image is `MGS SNAKE EATER 3D_Repack.cci` in that folder. Run it in Citra and verify the opening movie and demo subtitles for graphics corruption. If stable, expand movie/demo rows incrementally to identify the collision boundary.
 
 ## Known findings
 
