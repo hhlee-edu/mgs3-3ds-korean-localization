@@ -19,6 +19,11 @@ def main() -> int:
         action="append",
         help="replace/add units by GCX/resource before applying the static map",
     )
+    parser.add_argument(
+        "--replace-character-map",
+        action="store_true",
+        help="replace a previous static allocation instead of merging it",
+    )
     args = parser.parse_args()
 
     document = json.loads(args.translation.read_text(encoding="utf-8-sig"))
@@ -32,7 +37,8 @@ def main() -> int:
             units[(int(unit["gcx"]), int(unit["resource"]))] = unit
     document["units"] = [units[key] for key in sorted(units)]
     allocation = json.loads(args.allocation.read_text(encoding="utf-8-sig"))
-    existing = dict(document.get("character_map", {}))
+    existing = ({} if args.replace_character_map
+                else dict(document.get("character_map", {})))
     overlap = set(existing) & set(allocation["characters"])
     if any(existing[key].upper() != allocation["characters"][key].upper()
            for key in overlap):

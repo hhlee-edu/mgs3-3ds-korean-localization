@@ -103,6 +103,13 @@ codec과 movie/demo는 글꼴 저장 및 참조 방식이 다르다.
 - 두 번 빌드한 SHA-256 동일
 - CCI 패킹 전 입력 파일들의 해시 기록
 
+`mgs3d_build.py`는 movie/demo 출력 manifest에 원본 SHA-256과 크기를 기록한다.
+`mgs3d_verify_build.py`는 이를 다시 확인하고, 빌드에 사용한 동일 판본 원본과
+비교해 파일 크기, 레코드 개수, 각 레코드 시작 오프셋과 크기가 모두 같은
+경우에만 통과시킨다. 판본마다 레코드 수가 다르므로 하드코딩된 개수 대신
+manifest가 가리키는 실제 원본을 기준으로 한다. 레코드 내부 텍스트/로컬
+글꼴 영역은 고정된 레코드 크기 안에서 재배분할 수 있다.
+
 `--grow-records`는 진단 외에는 사용하지 않는다. 전체 파일의 최종 크기를
 패딩으로 맞추더라도 중간 레코드 경계가 이동하면 실패다.
 
@@ -207,3 +214,39 @@ GDB 스텁이 켜져 있으면 게임이 부팅 직후 멈춘 것처럼 보인�
 
 로컬 SQLite DB, vendored Capstone, ISO 및 `analysis/`의 대형 산출물은 Git에
 넣지 않는다. 코드와 문서만 커밋한다.
+
+## 9. PS2 STAGE 공식 한국어 추출 진전 (2026-08-03)
+
+`STAGE.DAT`의 156개 스테이지를 모두 추출했다. 기존 Python 추출기는 영상
+스테이지의 plain PSQ 그룹(`7F000010`, `7F000005`, `7F000004`)을 zlib
+그룹으로 오인했으며, `tools/mgs3_ps2_stage_extract.py`에 해당 그룹 처리와
+`--list`, `--all`을 추가했다.
+
+각 스테이지의 `7f000002_180720.02`는 MGS3 GCX이며 기존 `GcxRecord`로
+156/156개가 모두 파싱된다. 여기에는 PS2 공식 한국어 토큰과 24×24 로컬
+글꼴이 들어 있다. 전체 텍스트 후보는 90,216개지만 공용 시스템 문장이
+여러 스테이지에 반복된다. 바이트 동일 중복을 제거하는 기준으로 한
+스테이지에만 존재하는 후보는 1,548개다.
+
+재현 명령:
+
+```powershell
+python tools/mgs3_ps2_stage_extract.py `
+  analysis/ps2_korean/MGS/STAGE.DAT `
+  analysis/ps2_korean/stages --all
+
+python tools/mgs3_ps2_stage_text_catalog.py `
+  analysis/ps2_korean/stages `
+  analysis/ps2_korean/korean_token_map_paragraph_span24.json `
+  analysis/ps2_korean/stage_text_unique.csv --stage-specific-only
+```
+
+카탈로그는 stage, GCX resource index, 원시 토큰, 현재 해독문, 로컬 글리프
+참조 수를 보존한다. `81/82/83` 공용 토큰은 확인된 매핑만 유니코드로
+해독하고, 미확인 공용 토큰은 `<Sxxxx>`, 레코드 로컬 글리프는 `<Lnnn>`로
+남겨 추측 번역이 공식 원문에 섞이지 않게 한다.
+
+다음 작업은 `stage_text_unique.csv`의 장면 순서를 3DS `demo.dat` type-1
+영문 카드 순서와 연결하고, PS2 로컬 글리프 비트맵을 Unicode로 확정해
+공식 한국어 build CSV를 생성하는 것이다. 플랫폼별 조작법 차이는 사용자가
+별도로 처리하므로 이 자동 이식 단계에서는 별도 교정하지 않는다.

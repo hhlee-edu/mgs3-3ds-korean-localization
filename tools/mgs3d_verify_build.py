@@ -70,6 +70,38 @@ def validate_capacity_provenance(
     return len(records)
 
 
+def validate_media_layout(
+    source_size: int,
+    built_size: int,
+    source_records: list[object],
+    built_records: list[object],
+    name: str,
+) -> None:
+    """Reject any movie/demo file or top-level record-boundary movement."""
+    if built_size != source_size:
+        raise SystemExit(
+            f"{name} file size changed: source={source_size}, built={built_size}"
+        )
+    if len(built_records) != len(source_records):
+        raise SystemExit(
+            f"{name} record count changed: source={len(source_records)}, "
+            f"built={len(built_records)}"
+        )
+    mismatches: list[int] = []
+    for source, built in zip(source_records, built_records):
+        if (
+            source.offset != built.offset
+            or len(source.raw) != len(built.raw)
+            or len(source.gap_before) != len(built.gap_before)
+        ):
+            mismatches.append(source.index)
+    if mismatches:
+        raise SystemExit(
+            f"{name} fixed-layout mismatch in {len(mismatches)} records: "
+            f"{mismatches[:10]}"
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mod", type=Path, help="title-ID directory containing build-manifest.json")
@@ -114,12 +146,13 @@ def main() -> int:
     if "romfs/codec.dat" in declared:
         codec = parse_codec((args.mod / "romfs/codec.dat").read_bytes())
         resources = sum(len(record.resources()) for record in codec)
-        if (len(codec), resources) != (2326, 198227):
+        source_codec = parse_codec((args.partition / "romfs/codec.dat").read_bytes())
+        source_resources = sum(len(record.resources()) for record in source_codec)
+        if (len(codec), resources) != (len(source_codec), source_resources):
             raise SystemExit(f"codec structure mismatch: {len(codec)} records, {resources} resources")
-        print("OK codec structure 2326 records / 198227 resources")
+        print(f"OK codec structure {len(codec)} records / {resources} resources")
         codec_item = next(item for item in outputs if item["path"] == "romfs/codec.dat")
         if str(manifest.get("codec_mode", "")).endswith("fixed"):
-            source_codec = parse_codec((args.partition / "romfs/codec.dat").read_bytes())
             mismatches = [
                 index
                 for index, (source, built) in enumerate(zip(source_codec, codec))
@@ -136,8 +169,8 @@ def main() -> int:
                     f"fixed-layout codec mismatch in {len(mismatches)} GCX records: "
                     f"{mismatches[:10]}"
                 )
-            print("OK codec fixed layout 2326/2326 records")
-            del source_codec
+            print(f"OK codec fixed layout {len(codec)}/{len(codec)} records")
+        del source_codec
         if manifest.get("codec_mode") == "safe-fixed":
             report_name = codec_item.get("capacity_report")
             report_hash = codec_item.get("capacity_report_sha256")
@@ -154,14 +187,31 @@ def main() -> int:
             print(f"OK codec capacity report {capacity_records} records")
         del codec
 
-    for name, expected in (("movie", (93, 558)), ("demo", (260, 2091))):
+    for name in ("movie", "demo"):
         if f"romfs/{name}.dat" not in declared:
             continue
-        _, records, _ = parse_records((args.mod / f"romfs/{name}.dat").read_bytes())
+        built_path = args.mod / f"romfs/{name}.dat"
+        source_path = args.partition / f"romfs/{name}.dat"
+        built_data = built_path.read_bytes()
+        source_data = source_path.read_bytes()
+        item = next(item for item in outputs if item["path"] == f"romfs/{name}.dat")
+        if (
+            item.get("source_sha256") != sha256(source_path)
+            or int(item.get("source_size", -1)) != len(source_data)
+        ):
+            raise SystemExit(f"{name} manifest source provenance mismatch")
+        _, records, _ = parse_records(built_data)
+        _, source_records, _ = parse_records(source_data)
         count = sum(len(record.subtitles) for record in records)
-        if (len(records), count) != expected:
+        source_count = sum(len(record.subtitles) for record in source_records)
+        if (len(records), count) != (len(source_records), source_count):
             raise SystemExit(f"{name} structure mismatch: {len(records)} records, {count} subtitles")
         print(f"OK {name} structure {len(records)} records / {count} subtitles")
+        validate_media_layout(
+            len(source_data), len(built_data), source_records, records, name
+        )
+        print(f"OK {name} fixed layout {len(records)}/{len(records)} records")
+        del source_records
         del records
 
     audit = Path(__file__).resolve().parent / "audit_unpacked.py"

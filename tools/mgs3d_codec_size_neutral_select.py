@@ -13,7 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mgs3d_codec_tool import CodecError, parse_codec, parse_rendered  # noqa: E402
-from mgs3d_gcx_font_tool import custom_token, font_region, freed_font_slots  # noqa: E402
+from mgs3d_gcx_font_tool import custom_token, font_region  # noqa: E402
 from mgs3d_translation import validate_codec_translation  # noqa: E402
 from mgs3d_english_korean_match import decode_western  # noqa: E402
 
@@ -88,21 +88,58 @@ def encoded_size(text: str, old_count: int,
     return len(parse_rendered(text, mapping))
 
 
+def glyph_slot_owners(resources: list[object], count: int) -> list[set[int]]:
+    token_slots = {custom_token(index): index for index in range(count)}
+    owners = [set() for _ in range(count)]
+    for resource_index, resource in enumerate(resources):
+        data = resource.data
+        cursor = 0
+        while cursor + 1 < len(data) and data[cursor]:
+            if data[cursor] >= 0x80:
+                slot = token_slots.get(data[cursor:cursor + 2])
+                if slot is not None:
+                    owners[slot].add(resource_index)
+                cursor += 2
+            else:
+                cursor += 1
+    return owners
+
+
+def free_slots(items: list[dict[str, object]], selected: set[int],
+               base_free_slots: int | set[int] = 0) -> set[int]:
+    if items and "slot_owners" in items[0]:
+        replaced = set(items[0].get("donor_resources", set()))
+        replaced.update(int(items[index]["resource"]) for index in selected)
+        return {
+            slot for slot, references in enumerate(items[0]["slot_owners"])
+            if references <= replaced
+        }
+    slots = (set(base_free_slots) if isinstance(base_free_slots, set)
+             else set(range(-base_free_slots, 0)))
+    for index in selected:
+        slots.update(items[index].get("freed_slots", set()))
+    return slots
+
+
 def balance(items: list[dict[str, object]], selected: set[int], base_savings: int = 0,
-            base_free_slots: int = 0) -> tuple[int, int, int]:
+            base_free_slots: int | set[int] = 0) -> tuple[int, int, int]:
     savings = base_savings + sum(int(items[index]["saving"]) for index in selected)
     glyphs = set().union(*(items[index]["glyphs"] for index in selected)) if selected else set()
-    cost = max(0, len(glyphs) - base_free_slots) * 64
+    cost = max(0, len(glyphs) - len(free_slots(items, selected, base_free_slots))) * 64
     return savings - cost, savings, len(glyphs)
 
 
 def select_subset(items: list[dict[str, object]], base_savings: int = 0,
-                  base_free_slots: int = 0,
-                  max_new_glyphs: int | None = None) -> set[int]:
+                  base_free_slots: int | set[int] = 0,
+                  max_new_glyphs: int | None = None,
+                  fixed_font_slots: bool = False) -> set[int]:
     selected = set(range(len(items)))
     def fits(indices: set[int]) -> bool:
         net, _, glyph_count = balance(items, indices, base_savings, base_free_slots)
-        return net >= 0 and (max_new_glyphs is None or glyph_count <= max_new_glyphs)
+        available = len(free_slots(items, indices, base_free_slots))
+        return (net >= 0
+                and (max_new_glyphs is None or glyph_count <= max_new_glyphs)
+                and (not fixed_font_slots or glyph_count <= available))
 
     if fits(selected):
         return selected
@@ -137,26 +174,48 @@ def select_subset(items: list[dict[str, object]], base_savings: int = 0,
 
 
 def select_subset_exact(items: list[dict[str, object]], base_savings: int = 0,
-                        base_free_slots: int = 0,
-                        max_new_glyphs: int | None = None) -> set[int]:
+                        base_free_slots: int | set[int] = 0,
+                        max_new_glyphs: int | None = None,
+                        fixed_font_slots: bool = False) -> set[int]:
     """Maximize translated row count exactly for small GCXs."""
     if len(items) > 16:
-        return select_subset(items, base_savings, base_free_slots, max_new_glyphs)
+        return select_subset(items, base_savings, base_free_slots, max_new_glyphs,
+                             fixed_font_slots)
     best_key: tuple[object, ...] | None = None
     best: set[int] = set()
     for mask in range(1 << len(items)):
         selected = {index for index in range(len(items)) if mask & (1 << index)}
         net, _, glyph_count = balance(items, selected, base_savings, base_free_slots)
-        if net < 0 or (max_new_glyphs is not None and glyph_count > max_new_glyphs):
+        available = len(free_slots(items, selected, base_free_slots))
+        if (net < 0
+                or (max_new_glyphs is not None and glyph_count > max_new_glyphs)
+                or (fixed_font_slots and glyph_count > available)):
             continue
         key = (
             len(selected),
+            sum(bool(items[index].get("priority")) for index in selected),
             -sum(int(items[index].get("resource", index)) for index in selected),
             -sum(index for index in selected),
             -mask,
         )
         if best_key is None or key > best_key:
             best_key, best = key, selected
+    return best
+
+
+def zero_slot_cardinality_bound(items: list[dict[str, object]],
+                                base_savings: int) -> int:
+    """Exact row-count upper bound when no local glyph slot can be used."""
+    savings = sorted(
+        (int(item["saving"]) for item in items if not item["glyphs"]),
+        reverse=True,
+    )
+    balance_bytes = base_savings
+    best = 0
+    for count, saving in enumerate(savings, 1):
+        balance_bytes += saving
+        if balance_bytes >= 0:
+            best = count
     return best
 
 
@@ -177,8 +236,16 @@ def main() -> int:
                         help="select every translation and defer capacity balancing across GCX boundaries")
     parser.add_argument("--max-new-glyphs", type=int,
                         help="runtime-safe maximum unique Hangul glyphs per GCX")
+    parser.add_argument(
+        "--fixed-font-slots", action="store_true",
+        help="select only rows whose local glyphs fit slots freed in the unchanged font region",
+    )
     parser.add_argument("--alias-savings-report", type=Path,
                         help="adjacent-alias report whose stable savings may fund more rows")
+    parser.add_argument(
+        "--donor-report", type=Path,
+        help="reuse donor resource lists from a previously verified selection report",
+    )
     parser.add_argument("--protect-review", type=Path,
                         help="combined review CSV whose codec targets may never be donors")
     parser.add_argument("--include-gcx", type=int, action="append",
@@ -221,6 +288,15 @@ def main() -> int:
         alias_records = {int(row["gcx"]): list(row.get("groups", []))
                          for row in alias_doc.get("records", [])}
 
+    fixed_donors: dict[int, list[int]] | None = None
+    if args.donor_report:
+        donor_document = json.loads(args.donor_report.read_text(encoding="utf-8-sig"))
+        fixed_donors = {
+            int(row["gcx"]): [int(resource) for resource in row["donor_resources"]]
+            for row in donor_document.get("records", [])
+        }
+        if len(fixed_donors) != len(donor_document.get("records", [])):
+            raise CodecError("duplicate GCX rows in donor report")
     selected_units: list[dict[str, object]] = []
     report = []
     for gcx in sorted(by_gcx):
@@ -238,7 +314,15 @@ def main() -> int:
                                | (protected.get(gcx, set()) - foreign_block))
         donors = []
         block_donors: list[int] = []
-        if args.reclaim_language_blocks:
+        if fixed_donors is not None:
+            donors = list(fixed_donors.get(gcx, []))
+            if any(index < 0 or index >= len(resources) or resources[index].is_script
+                   for index in donors):
+                raise CodecError(f"invalid donor resource in report for GCX {gcx}")
+            overlap = set(donors) & candidate_resources
+            if overlap:
+                raise CodecError(f"donor report overlaps candidate resources in GCX {gcx}")
+        elif args.reclaim_language_blocks:
             block_donors = sorted(foreign_block)
             donors = sorted(set(block_donors) | {
                 index for index, resource in enumerate(resources)
@@ -261,7 +345,12 @@ def main() -> int:
                          if copies > 1 else 0)
             stable_alias_savings += max(0, len(stable) - 1) * unit_size
         donor_savings += stable_alias_savings
-        donor_free_slots = len(freed_font_slots(record, set(donors)))
+        owners = glyph_slot_owners(resources, old_count)
+        donor_set = set(donors)
+        donor_slot_ids = {
+            slot for slot, references in enumerate(owners)
+            if references <= donor_set
+        }
         for unit in eligible_units:
             resource = int(unit["resource"])
             text = str(unit["text"])
@@ -271,17 +360,29 @@ def main() -> int:
                 "glyphs": hangul(text, base_map),
                 "saving": len(resources[resource].data) - encoded_size(text, old_count, base_map),
                 "priority": (gcx, resource) in priority_keys,
+                "slot_owners": owners,
+                "donor_resources": donor_set,
+                "freed_slots": {
+                    slot for slot, references in enumerate(owners)
+                    if references - donor_set <= {resource}
+                } - donor_slot_ids,
             })
-        if args.global_balance and args.max_new_glyphs is None:
+        if args.global_balance and args.max_new_glyphs is None and not args.fixed_font_slots:
             chosen = set(range(len(items)))
         else:
             # Global balancing may defer byte capacity across records, but the
             # runtime font buffer remains a per-GCX constraint.  Give the
             # subset selector effectively unlimited byte savings in that mode.
             savings = donor_savings + (1 << 60 if args.global_balance else 0)
-            chosen = select_subset_exact(items, savings, donor_free_slots,
-                                         args.max_new_glyphs)
-        net, savings, glyph_count = balance(items, chosen, donor_savings, donor_free_slots)
+            chosen = select_subset_exact(
+                items, savings, donor_slot_ids, args.max_new_glyphs,
+                args.fixed_font_slots)
+        net, savings, glyph_count = balance(items, chosen, donor_savings, donor_slot_ids)
+        available_slot_ids = free_slots(items, chosen, donor_slot_ids)
+        zero_slot_bound = (zero_slot_cardinality_bound(items, donor_savings)
+                           if args.fixed_font_slots
+                           and not available_slot_ids
+                           and not any(owners) else None)
         selected_units.extend({"gcx": gcx, "resource": resource, "kind": "string",
                                "original_size": len(resources[resource].data), "text": "<00>"}
                               for resource in donors)
@@ -290,10 +391,12 @@ def main() -> int:
             "gcx": gcx, "candidates": len(items), "selected": len(chosen),
             "excluded": len(items) - len(chosen), "string_savings": savings,
             "new_glyphs": glyph_count, "glyph_bytes": glyph_count * 64,
-            "glyph_limit": args.max_new_glyphs,
+            "glyph_limit": (len(available_slot_ids) if args.fixed_font_slots
+                            else args.max_new_glyphs),
             "excluded_translations": len(items) - len(chosen),
-            "reused_glyph_slots": min(glyph_count, donor_free_slots),
-            "appended_glyph_bytes": max(0, glyph_count - donor_free_slots) * 64,
+            "exact_zero_slot_cardinality_bound": zero_slot_bound,
+            "reused_glyph_slots": min(glyph_count, len(available_slot_ids)),
+            "appended_glyph_bytes": max(0, glyph_count - len(available_slot_ids)) * 64,
             "headroom": net,
             "donor_resources": donors, "donor_savings": donor_savings,
             "stable_alias_savings": stable_alias_savings,

@@ -67,8 +67,12 @@ def align(value: int, amount: int) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("dat", type=Path)
-    ap.add_argument("output", type=Path)
-    ap.add_argument("--stage", action="append", required=True)
+    ap.add_argument("output", type=Path, nargs="?")
+    ap.add_argument("--stage", action="append")
+    ap.add_argument("--all", action="store_true",
+                    help="extract every stage")
+    ap.add_argument("--list", action="store_true",
+                    help="list stage names without extracting")
     args = ap.parse_args()
     data = args.dat.read_bytes()
     initial = struct.unpack_from("<I", data)[0]
@@ -80,7 +84,15 @@ def main() -> int:
         raw_name, sector = struct.unpack_from("<8sI", table, 12 + index * 12)
         stages.append((index, raw_name, sector * 0x800))
     print(f"header version={version} blocks={blocks} stages={count} game={game:#x} hash={unknown:#x}")
-    wanted = set(args.stage)
+    if args.list:
+        for index, raw_name, stage_start in stages:
+            name = raw_name.split(b"\0", 1)[0].decode("ascii", "replace")
+            print(f"{index:4d} {name:8s} offset={stage_start:#010x}")
+        return 0
+    if not args.output or (not args.stage and not args.all):
+        ap.error("output and at least one --stage are required unless --list is used")
+    wanted = {raw_name.split(b"\0", 1)[0].decode("ascii", "replace")
+              for _, raw_name, _ in stages} if args.all else set(args.stage)
     for index, raw_name, stage_start in stages:
         name = raw_name.split(b"\0", 1)[0].decode("ascii", "replace")
         if name not in wanted:
@@ -95,11 +107,43 @@ def main() -> int:
         (outdir / "index.bin").write_bytes(info)
         cursor = 0
         files_written = 0
+        # Compressed groups carry offsets relative to data_start.  Plain PSQ
+        # groups follow the packed groups at the next sector boundary.
+        packed_end = 0
+        scan = 0
+        while scan + 1 < len(entries):
+            folder, unpacked_size = entries[scan]
+            if not folder or not unpacked_size:
+                break
+            scan += 1
+            if folder not in {0x7F000010, 0x7F000005, 0x7F000004}:
+                compressed_size = entries[scan][0] & 0xFFFFFF
+                relative = entries[scan][1]
+                packed_end = max(packed_end, relative + align(compressed_size, 4))
+            scan += 1
+            while scan + 1 < len(entries) and entries[scan][0] != 0x7F000000:
+                scan += 1
+            scan += 1
+        plain_start = align(data_start + packed_end, 0x800)
         while cursor + 1 < len(entries):
             folder, unpacked_size = entries[cursor]
             if not folder or not unpacked_size:
                 break
             cursor += 1
+            if folder in {0x7F000010, 0x7F000005, 0x7F000004}:
+                unpacked = data[plain_start:plain_start + unpacked_size]
+                if len(unpacked) != unpacked_size:
+                    raise ValueError(f"{name}: truncated plain group")
+                plain_start = align(plain_start + unpacked_size, 0x800)
+                while cursor + 1 < len(entries) and entries[cursor][0] != 0x7F000000:
+                    hashed, offset = entries[cursor]
+                    next_offset = entries[cursor + 1][1]
+                    stem = hashed & 0xFFFFFF
+                    (outdir / f"{stem:05x}.psq").write_bytes(unpacked[offset:next_offset])
+                    files_written += 1
+                    cursor += 1
+                cursor += 1
+                continue
             compressed_size = entries[cursor][0] & 0xFFFFFF
             relative = entries[cursor][1]
             read_size = align(compressed_size, 4)

@@ -186,6 +186,27 @@ def encode_translation(text: str, character_map: dict[str, bytes]) -> bytes:
     return bytes(output)
 
 
+def load_static_character_map(path: Path | None) -> dict[str, bytes]:
+    if path is None:
+        return {}
+    document = json.loads(path.read_text(encoding="utf-8-sig"))
+    raw = document.get("characters")
+    if not isinstance(raw, dict):
+        raise MovieError("static allocation lacks a characters object")
+    result = {}
+    for character, token_hex in raw.items():
+        if len(character) != 1:
+            raise MovieError(f"static allocation key is not one character: {character!r}")
+        try:
+            token = bytes.fromhex(token_hex)
+        except (TypeError, ValueError) as exc:
+            raise MovieError(f"invalid static token for {character!r}: {token_hex!r}") from exc
+        if len(token) != 2 or token[0] not in (0x81, 0x82, 0x83) or token[1] == 0:
+            raise MovieError(f"invalid static-page token for {character!r}: {token.hex()}")
+        result[character] = token
+    return result
+
+
 def wrap_like_source(text: str, source: bytes) -> str:
     """Preserve the subtitle card's explicit 80 7C line layout."""
     if "\n" in text or b"\x80|" not in source:
@@ -278,16 +299,18 @@ def rebuild_record_growing(
     font: ImageFont.FreeTypeFont,
     donor_offsets: set[int] | None = None,
     target_size: int | None = None,
+    static_map: dict[str, bytes] | None = None,
 ) -> tuple[bytes, dict[str, str]]:
     """Repack a record and append glyphs, for Western records with no font slots."""
     donor_offsets = donor_offsets or set()
+    static_map = static_map or {}
     if not replacements and not donor_offsets:
         return record.raw, {}
     needed = list(dict.fromkeys(
         character
         for subtitle in record.subtitles
         for character in replacements.get(subtitle.offset, "")
-        if 0xAC00 <= ord(character) <= 0xD7A3
+        if 0xAC00 <= ord(character) <= 0xD7A3 and character not in static_map
     ))
     old_count = len(record.font) // 64
     if old_count + len(needed) > 1020:
@@ -295,8 +318,9 @@ def rebuild_record_growing(
             f"record {record.index} needs {len(needed)} Hangul glyphs but only "
             f"{1020 - old_count} page-3 slots remain"
         )
-    mapping = {character: page3_token(old_count + index)
-               for index, character in enumerate(needed)}
+    local_mapping = {character: page3_token(old_count + index)
+                     for index, character in enumerate(needed)}
+    mapping = static_map | local_mapping
 
     body = bytearray(record.raw[:0x20])
     for subtitle in record.subtitles:
@@ -342,7 +366,7 @@ def rebuild_record_growing(
             )
         body.extend(b"\0" * (target_size - len(body)))
     struct.pack_into("<I", body, 4, len(body))
-    return bytes(body), {character: mapping[character].hex().upper()
+    return bytes(body), {character: local_mapping[character].hex().upper()
                          for character in needed}
 
 
@@ -351,18 +375,21 @@ def maximal_size_neutral_subset(
     replacements: dict[int, str],
     donor_offsets: set[int],
     font: ImageFont.FreeTypeFont,
+    static_map: dict[str, bytes] | None = None,
 ) -> dict[int, str]:
     """Select a deterministic large subset that fits after donor reclamation."""
     selected = dict(replacements)
     while True:
         try:
-            rebuild_record_growing(record, selected, font, donor_offsets, len(record.raw))
+            rebuild_record_growing(record, selected, font, donor_offsets,
+                                   len(record.raw), static_map)
             return selected
         except MovieError as exc:
             if "size-neutral deficit" not in str(exc) or not selected:
                 if not selected:
                     # Donor-only records must still remain structurally valid.
-                    rebuild_record_growing(record, {}, font, donor_offsets, len(record.raw))
+                    rebuild_record_growing(record, {}, font, donor_offsets,
+                                           len(record.raw), static_map)
                     return {}
                 raise
         counts = Counter(character for text in selected.values() for character in set(text)
@@ -541,6 +568,7 @@ def command_build_korean(args: argparse.Namespace) -> None:
     original = args.input.read_bytes()
     prefix, records, suffix = parse_records(original)
     replacements = read_replacements(args.translation_csv)
+    static_map = load_static_character_map(args.static_allocation)
     if not replacements:
         raise MovieError("CSV has no accepted Korean rows")
     try:
@@ -562,14 +590,15 @@ def command_build_korean(args: argparse.Namespace) -> None:
             found.update(local)
             if args.size_neutral_reclaim and local:
                 donors = {s.offset for s in record.subtitles if s.entry_type in {2, 3, 4, 5}}
-                chosen = maximal_size_neutral_subset(record, local, donors, font)
+                chosen = maximal_size_neutral_subset(record, local, donors, font, static_map)
                 excluded.update(set(local) - set(chosen))
                 rebuilt, allocation = rebuild_record_growing(
-                    record, chosen, font, donors, len(record.raw)
+                    record, chosen, font, donors, len(record.raw), static_map
                 )
                 local = chosen
             elif args.grow_records:
-                rebuilt, allocation = rebuild_record_growing(record, local, font)
+                rebuilt, allocation = rebuild_record_growing(
+                    record, local, font, static_map=static_map)
             else:
                 rebuilt, allocation = rebuild_record_fixed(record, local, font)
             stream.write(rebuilt)
@@ -589,8 +618,11 @@ def command_build_korean(args: argparse.Namespace) -> None:
         "accepted_rows": len(replacements),
         "selected_rows": len(used),
         "excluded_rows": len(excluded),
+        "excluded_offsets": sorted(excluded),
         "font": str(args.font),
         "font_size": args.font_size,
+        "static_allocation": str(args.static_allocation) if args.static_allocation else None,
+        "static_characters": len(static_map),
         "allocations": allocations,
         "sha256": digest.hexdigest(),
     }
@@ -762,6 +794,10 @@ def build_parser() -> argparse.ArgumentParser:
     korean.add_argument("font", type=Path)
     korean.add_argument("output", type=Path)
     korean.add_argument("--font-size", type=int, default=15)
+    korean.add_argument(
+        "--static-allocation", type=Path,
+        help="reuse a runtime-installed 81/82/83 static Hangul allocation",
+    )
     korean.add_argument(
         "--grow-records", action="store_true",
         help="repack records and append glyphs (required by fontless Western records)",

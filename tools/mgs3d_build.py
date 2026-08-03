@@ -243,6 +243,8 @@ def main() -> int:
                 "path": f"romfs/{name}.dat",
                 "size": target_temporary.stat().st_size,
                 "sha256": sha256(target_temporary),
+                "source_sha256": sha256(args.partition / f"romfs/{name}.dat"),
+                "source_size": (args.partition / f"romfs/{name}.dat").stat().st_size,
                 "allocation_report": f"romfs/{allocation_report.name}",
                 "allocation_report_sha256": sha256(allocation_temporary),
             })

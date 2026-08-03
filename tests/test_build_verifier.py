@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 
@@ -11,6 +12,7 @@ sys.path.insert(0, str(TOOLS))
 
 from mgs3d_verify_build import (  # noqa: E402
     validate_capacity_provenance,
+    validate_media_layout,
     validate_output_paths,
 )
 from mgs3d_build import (  # noqa: E402
@@ -166,6 +168,42 @@ class CapacityProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "summary mismatch"):
             validate_capacity_provenance(self.report, self.codec_item, "source")
 
+
+class MediaLayoutTests(unittest.TestCase):
+    @staticmethod
+    def record(offset: int = 0x30, size: int = 0x80):
+        subtitle = SimpleNamespace(offset=offset + 0x24, original=b"x" * 16, entry_type=1)
+        return SimpleNamespace(
+            index=0,
+            offset=offset,
+            raw=b"x" * size,
+            text_end=0x40,
+            font=b"f" * 64,
+            gap_before=b"",
+            subtitles=[subtitle],
+        )
+
+    def test_identical_media_layout_is_accepted(self) -> None:
+        validate_media_layout(1024, 1024, [self.record()], [self.record()], "demo")
+
+    def test_file_size_change_is_rejected(self) -> None:
+        with self.assertRaisesRegex(SystemExit, "file size changed"):
+            validate_media_layout(1024, 1040, [self.record()], [self.record()], "demo")
+
+    def test_record_offset_change_is_rejected(self) -> None:
+        with self.assertRaisesRegex(SystemExit, "fixed-layout mismatch"):
+            validate_media_layout(1024, 1024, [self.record()], [self.record(0x40)], "movie")
+
+    def test_record_size_change_is_rejected(self) -> None:
+        with self.assertRaisesRegex(SystemExit, "fixed-layout mismatch"):
+            validate_media_layout(1024, 1024, [self.record()], [self.record(size=0x90)], "movie")
+
+    def test_internal_reallocation_is_allowed(self) -> None:
+        built = self.record()
+        built.text_end += 16
+        built.font = b""
+        built.subtitles[0].original += b"xxxx"
+        validate_media_layout(1024, 1024, [self.record()], [built], "movie")
 
 if __name__ == "__main__":
     unittest.main()

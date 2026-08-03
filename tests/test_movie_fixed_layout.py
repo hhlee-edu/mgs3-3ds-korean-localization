@@ -97,6 +97,20 @@ class MovieFixedLayoutTests(unittest.TestCase):
         self.assertEqual(len(rebuilt) % 16, 0)
         self.assertIn(page3_token(2) + b"\0", rebuilt)
 
+    @patch("mgs3d_movie_tool.render_character", return_value=b"K" * 64)
+    def test_growing_rebuild_reuses_static_page_without_local_glyph(self, render) -> None:
+        record = self.make_record()
+        rebuilt, allocation = rebuild_record_growing(
+            record,
+            {record.subtitles[0].offset: "\uac00"},
+            object(),
+            static_map={"\uac00": b"\x81\x01"},
+        )
+        self.assertEqual(allocation, {})
+        self.assertEqual(len(rebuilt[record.text_end + 4:]), len(record.font))
+        self.assertIn(b"\x81\x01\0", rebuilt)
+        render.assert_not_called()
+
     def test_capacity_matches_fixed_rebuild_constraints(self) -> None:
         record = self.make_record()
         safe = fixed_capacity(record, {record.subtitles[0].offset: "가나"})

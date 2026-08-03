@@ -15,10 +15,20 @@ from mgs3d_codec_size_neutral_select import (  # noqa: E402
     language_block_donors,
     select_subset,
     select_subset_exact,
+    zero_slot_cardinality_bound,
 )
 
 
 class CodecSizeNeutralSelectionTests(unittest.TestCase):
+    def test_zero_slot_bound_is_exact_cardinality_knapsack(self) -> None:
+        items = [
+            {"saving": -8, "glyphs": set()},
+            {"saving": -3, "glyphs": set()},
+            {"saving": 1, "glyphs": set()},
+            {"saving": 100, "glyphs": {"가"}},
+        ]
+        self.assertEqual(zero_slot_cardinality_bound(items, 9), 2)
+
     def test_shared_glyph_cost_is_paid_once(self) -> None:
         items = [
             {"saving": 40, "glyphs": frozenset("한")},
@@ -54,6 +64,13 @@ class CodecSizeNeutralSelectionTests(unittest.TestCase):
             {"saving": 0, "glyphs": frozenset("bc"), "priority": True, "resource": 0},
         ]
         self.assertEqual(select_subset_exact(items, base_savings=64), {0, 1})
+
+    def test_exact_selector_prefers_priority_at_equal_cardinality(self) -> None:
+        items = [
+            {"saving": 0, "glyphs": frozenset("a"), "priority": False, "resource": 1},
+            {"saving": 0, "glyphs": frozenset("b"), "priority": True, "resource": 2},
+        ]
+        self.assertEqual(select_subset_exact(items, base_savings=64), {1})
 
     def test_language_classifier_accepts_spanish_and_french(self) -> None:
         spanish = b"El enemigo te espera en el lago y no puedes volver por aqui."
