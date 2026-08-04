@@ -304,7 +304,7 @@ def main() -> int:
         resources = record.resources()
         _, old_count = font_region(record)
         items: list[dict[str, object]] = []
-        foreign_block = (set(language_block_donors(resources, set()))
+        foreign_block = (set(language_block_donors(resources, protected.get(gcx, set())))
                          if args.reclaim_language_blocks else set())
         eligible_units = [unit for unit in by_gcx[gcx]
                           if int(unit["resource"]) not in foreign_block]
