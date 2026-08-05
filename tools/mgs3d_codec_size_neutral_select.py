@@ -21,8 +21,8 @@ from mgs3d_english_korean_match import decode_western  # noqa: E402
 WORDS = re.compile(r"[a-z]+")
 LANGUAGE_WORDS = {
     "en": {"the", "and", "you", "your", "is", "are", "to", "of", "that", "this", "it", "for", "with", "have", "not", "what", "we"},
-    "es": {"el", "los", "las", "del", "que", "una", "para", "con", "por", "como", "pero", "est", "tu", "te", "se", "lo", "nos"},
-    "fr": {"le", "les", "des", "du", "que", "qu", "un", "une", "pour", "avec", "est", "vous", "pas", "mais", "dans", "nous", "sur", "ce", "il", "sa", "ses", "qui", "au", "aux", "ennemi", "intrus", "ma", "ville", "natale", "famille", "copine", "vieux", "cole"},
+    "es": {"el", "los", "las", "del", "que", "una", "para", "con", "por", "como", "pero", "est", "tu", "te", "se", "lo", "nos", "de"},
+    "fr": {"le", "les", "des", "du", "que", "qu", "un", "une", "pour", "avec", "est", "vous", "pas", "mais", "dans", "nous", "sur", "ce", "il", "sa", "ses", "qui", "au", "aux", "ennemi", "intrus", "ma", "ville", "natale", "famille", "copine", "vieux", "cole", "de"},
     "de": {"der", "die", "das", "den", "dem", "des", "und", "ist", "nicht", "ein", "eine", "mit", "auf", "ich", "sie", "wir"},
     "it": {"il", "gli", "della", "che", "una", "per", "con", "non", "sono", "questo", "come", "ma", "nel", "dei", "alla"},
 }
@@ -220,6 +220,7 @@ def zero_slot_cardinality_bound(items: list[dict[str, object]],
 
 
 def main() -> int:
+    csv.field_size_limit(2 ** 31 - 1)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("codec", type=Path)
     parser.add_argument("translation", type=Path)

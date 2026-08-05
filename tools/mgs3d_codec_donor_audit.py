@@ -21,6 +21,7 @@ from mgs3d_english_korean_match import decode_western  # noqa: E402
 
 
 def main() -> int:
+    csv.field_size_limit(2 ** 31 - 1)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("codec", type=Path)
     parser.add_argument("selection_report", type=Path)
