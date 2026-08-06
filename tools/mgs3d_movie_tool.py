@@ -482,6 +482,40 @@ def maximal_safe_extension(
     return {}
 
 
+def existing_local_glyph_offsets(record: Record, exclude_offsets: set[int]) -> list[int]:
+    """Type-1 offsets in *record*, other than *exclude_offsets*, whose raw bytes
+    already reference a page-3 local glyph token (0x90 prefix) -- i.e. text a
+    prior build already Koreanized. Never stub or overwrite these: they are not
+    untranslated placeholder English, they are existing work. See
+    docs/session-handoff-2026-08-07.md section 4.2 for why this check exists
+    (a build against a stale/empty base file almost destroyed 558 glyphs of
+    prior demo.dat work before this check was added)."""
+    return sorted(
+        subtitle.offset
+        for subtitle in record.subtitles
+        if subtitle.entry_type == 1
+        and subtitle.offset not in exclude_offsets
+        and b"\x90" in subtitle.raw
+    )
+
+
+def audit_existing_content(records: list[Record], accepted_offsets: set[int]) -> dict[int, list[int]]:
+    """For every record touched by *accepted_offsets*, report any OTHER type-1
+    offset in that same record that already has local-glyph content. Returns
+    {record_index: [conflicting_offsets]} for records with at least one hit --
+    callers must preserve those offsets' existing text unchanged, never stub
+    or replace them as if they were plain untranslated English."""
+    conflicts: dict[int, list[int]] = {}
+    for record in records:
+        local = {s.offset for s in record.subtitles if s.offset in accepted_offsets}
+        if not local:
+            continue
+        hits = existing_local_glyph_offsets(record, local)
+        if hits:
+            conflicts[record.index] = hits
+    return conflicts
+
+
 def read_replacements(path: Path) -> dict[int, str]:
     replacements: dict[int, str] = {}
     with path.open(encoding="utf-8-sig", newline="") as stream:
@@ -652,6 +686,33 @@ def command_build_korean(args: argparse.Namespace) -> None:
           f"{len(verified)} records")
 
 
+def command_audit_existing(args: argparse.Namespace) -> None:
+    """Safety gate: run this BEFORE build-korean whenever the base DAT file
+    might not be the current live romfs copy. Refuses to proceed silently --
+    prints every record where our accepted offsets share a record with
+    existing local-glyph (already-Korean) text at other offsets, so those
+    offsets don't get treated as blank/stubbable English by mistake."""
+    _, records, _ = parse_records(args.input.read_bytes())
+    replacements = read_replacements(args.translation_csv)
+    if not replacements:
+        raise MovieError("CSV has no accepted Korean rows")
+    conflicts = audit_existing_content(records, set(replacements))
+    total_font = sum(len(record.font) for record in records)
+    print(f"입력 파일 총 글리프: {total_font // 64}개")
+    if not conflicts:
+        print("충돌 없음: 매칭 대상 레코드에 다른 offset의 기존 로컬 글리프 텍스트가 없습니다.")
+        return
+    print(f"주의: {len(conflicts)}개 레코드에 기존 작업(다른 offset의 로컬 글리프)이 있습니다.")
+    print("이 offset들은 절대 스텁하거나 덮어쓰지 마세요:")
+    for record_index, offsets in sorted(conflicts.items()):
+        print(f"  record {record_index}: {offsets}")
+    if args.output_json:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(
+            json.dumps({"total_font_glyphs": total_font // 64, "conflicts": conflicts},
+                       ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def command_capacity(args: argparse.Namespace) -> None:
     _, records, _ = parse_records(args.input.read_bytes())
     replacements = read_replacements(args.translation_csv)
@@ -807,6 +868,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="clear Western entry types 2-5, select a fitting type-1 subset, and preserve every record size",
     )
     korean.set_defaults(function=command_build_korean)
+    audit = sub.add_parser(
+        "audit-existing",
+        help="safety gate: check that accepted offsets don't share a record with existing "
+             "local-glyph (already-Korean) text at OTHER offsets -- run before every build",
+    )
+    audit.add_argument("input", type=Path)
+    audit.add_argument("translation_csv", type=Path)
+    audit.add_argument("--output-json", type=Path, default=None)
+    audit.set_defaults(function=command_audit_existing)
     capacity = sub.add_parser("capacity", help="report safe fixed-layout capacity by record")
     capacity.add_argument("input", type=Path)
     capacity.add_argument("translation_csv", type=Path)
