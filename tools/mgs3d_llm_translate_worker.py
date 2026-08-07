@@ -110,7 +110,7 @@ def main() -> int:
                     else:
                         print(f"  [{row['id']}] FAILED after {args.retries+1} attempts: {exc}")
                         failed += 1
-            writer.writerow({k: row.get(k, "") for k in fields[:-1]} | {"target_ko": result})
+            writer.writerow({**{k: row.get(k, "") for k in fields[:-1]}, "target_ko": result})
             stream.flush()
             done += 1
             if done % 10 == 0 or done == len(rows) - len(skip):

@@ -531,6 +531,19 @@ Next session: pull the two output CSVs back from the NAS, spot-check
 quality, and fold accepted rows into the same review/selection pipeline
 as §2's matched candidates.
 
+**Bug found and fixed before the overnight run actually started**: the
+first launch attempt on the NAS failed silently — `mgs3d_llm_translate_worker.py`
+line 113 used `{...} | {"target_ko": result}` (PEP 584 dict-merge,
+Python 3.9+ only); the NAS's `python3` is older, so every row raised
+`TypeError: unsupported operand type(s) for |` immediately after the
+Ollama call succeeded, before the row could be written — `demo_translate.log`
+on the NAS showed 0 rows written despite "1048 rows in batch" printing.
+Fixed to `{**a, "target_ko": result}` (3.6+ compatible) and re-copied to
+the NAS working folder (reachable from this session as
+`\\rich\WD_14\Dev\Translate`, mirrors whatever local path the user's SSH
+session used) before relaunching. Lesson for any future NAS-targeted
+stdlib script: assume Python <3.9 there, avoid PEP 584 syntax.
+
 ## 5. Housekeeping for next session
 - Live `movie.dat`/`demo.dat` were restored to their pre-experiment
   states before ending this session (SHA-256 `1244B124...` /
