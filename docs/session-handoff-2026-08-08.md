@@ -544,6 +544,124 @@ the NAS working folder (reachable from this session as
 session used) before relaunching. Lesson for any future NAS-targeted
 stdlib script: assume Python <3.9 there, avoid PEP 584 syntax.
 
+## 4.11 codec.dat growth revisited — GCX53 confirmed pinned (revises §4.9)
+
+**§4.9's conclusion ("there was never a new codec mystery, only a bad
+build mode") was premature.** Later the same day, user pushed back on
+treating "our tooling doesn't preserve position" as proof the *format*
+rejects it, and a much more targeted investigation (real hardware/Citra
+testing throughout, not just structural reparse) found a genuine,
+reproducible, GCX-specific position dependency that §4.9's spot-check
+missed. Full experiment log/tools in `project-mgs3d-codec-growth-experiment`
+memory; summary here for the repo.
+
+**New tool**: `tools/mgs3d_codec_precise_relocate.py` — grows/shrinks a
+GCX's string-region padding by an *exact* byte count (no translation or
+glyph involvement), by shrinking a known-huge-padding donor resource (e.g.
+GCX54 resource 524, French donor text padded to 3,982 bytes, almost
+entirely null) down to 1 byte and using `string_region_size` to hit a
+precise target. This gives byte-level control the translation-based
+`build-korean` tool can't. Also `tools/mgs3d_codec_swap_gcx.py` — swaps two
+GCX's positions via pure list-reorder + re-concatenate (codec.dat is a flat
+sequential stream of self-contained blocks with no absolute-offset headers,
+so reordering is structurally clean by construction).
+
+**Binary search on shift count** (growing GCX16 with a real translation,
+shrinking donor GCX progressively further out to fund it): 1/18/30/33/35/36
+GCX shifted (starting at GCX17) all passed; **37 shifted = Citra PANIC
+crash** (same failure signature as the original 2026-08-01 crash this
+project had marked abandoned); 38/1028/2101 shifted = a *different*, softer
+"codec silently never triggers" symptom, not a crash. Isolated that
+GCX53/resource115's *content* wasn't the cause (replacing its text with
+zero position change: fine).
+
+**Precise GCX53-only delta sweep** (GCX53 held byte-identical, only its
+*position* varied by growing GCX52 and shrinking GCX54 to compensate — see
+tool above): this is the core finding. GCX53 alone has a real,
+severity-graded position sensitivity:
+
+| delta   | result |
+|---------|--------|
+| +16B    | portrait doesn't render, dialogue text fine |
+| +128B   | portrait glitch on first call; **crashes** on the first call *after backpack recovery* (a later checkpoint) |
+| +192B   | crashes immediately on the first call |
+| +256B   | crashes immediately |
+| +2048B  | codec silently skips, no crash (first call only, not deep-tested) |
+
+Not monotonic with magnitude (256B crashes, 2048B doesn't) — the exact
+landing address plausibly matters more than raw distance moved.
+
+**Test S vs Test E** (same delta=192, isolating which edge of GCX53
+matters): moving GCX53's *start* (and end, since size was held fixed) =
+immediate crash. Moving only GCX53's *end* / GCX54's start (GCX53's own
+start held at its original offset) = first call fine, crashes later
+(post-backpack). **GCX53's own start offset is the more directly/
+immediately-sensitive reference point**; the end/GCX54-start boundary has a
+real but weaker or later-triggered dependency.
+
+**Same-count-different-location control (the deciding test)**: shifted the
+identical 38-GCX count at GCX1000-1037 instead — **fully normal, verified
+past the first call**. This rules out "shift count/range" as the mechanism
+entirely and retroactively re-explains the original 08-01 crash and this
+session's own 2101/1028-GCX full-range tests as "GCX53 happened to be
+inside the shifted range," not scale.
+
+**Identity vs. physical-slot swap experiments — Case 3 confirmed**:
+- Swapped GCX53 ↔ GCX1020 (list-reorder). At **GCX53's original slot**,
+  now holding GCX1020's content: first call shows one truncated/odd line
+  then play continues abnormally, and *re-calling* the radio triggers a
+  genuine Citra PANIC. The slot itself misbehaves even with different
+  content in it.
+- Swapped GCX53 ↔ GCX55 (adjacent, minimal blast radius — only GCX53/54/55
+  affected) to get a counterpart test reachable without a late-game save.
+  GCX53's *content*, now sitting in GCX55's original slot: first call and
+  re-call fine, but **crashes at the checkpoint where that content would
+  normally trigger** (around backpack recovery).
+- **Both directions fail.** Moving the slot alone breaks it; moving the
+  content alone breaks it. This is Case 3 from the investigation's own
+  framework: **GCX53's specific content and its specific original physical
+  address are referenced as a fixed pair by something external to
+  codec.dat**, not validated/looked-up independently. Structural GCX-header
+  comparison (seed/timestamp/proc-table-length/resource-count) against
+  neighboring GCX48-57 found nothing anomalous about GCX53 at that level —
+  whatever holds this pairing is not visible in the GCX's own header.
+
+**What this does NOT prove — do not overclaim**: the referencing party is
+almost certainly `code.bin` (the 3DS executable) by elimination, but this
+was **not directly confirmed**. A linear Capstone byte-search of `code.bin`
+(5.26MB) found no literal `"codec.dat"`/`"codec"` string, but did find what
+looks like a genuine engine asset-type table (`gcx`, `raw`, `nav`, `slot`,
+`rom:`, `vox.dat`, and `movie`/`bgm`/`stage` fragments) confirming `.gcx` is
+a recognized engine-level format — and a suspicious but **unconfirmed**
+`"cKodec"`/`"Kodec"`-looking byte run embedded in what appears to be
+packed/non-ASCII data on both sides. Without symbol recovery or a real
+disassembler this can't be resolved further from static bytes alone;
+treat it as an open lead, not evidence.
+
+**Current model — MOVABLE vs PINNED GCX, not "codec.dat can't grow"**:
+GCX1000-1037 (and by extension, presumably most GCX) are freely
+relocatable with no special handling. GCX53 is confirmed **pinned** — its
+content and address must stay paired. This means a real growth mechanism
+is still possible in principle: identify pinned GCX, never move their
+start offset, fund any growth entirely from movable-GCX donor capacity.
+The existing donor-reclaim pipeline (which only ever changes a GCX's
+*internal* content, never its start address) was never at risk from any of
+this — everything that broke in this investigation involved an address
+actually moving.
+
+**Next step, explicitly NOT more static analysis or delta sweeps**: switch
+to Citra's own dynamic debugger (memory breakpoints/watchpoints) — diff a
+known-good build against the minimal failing case (GCX53 +16B, portrait-only
+symptom) to catch the first code path that (a) touches GCX53's address
+range and (b) fails to render the portrait. Once a real PC/function address
+is in hand, *then* use Capstone on just that neighborhood — blind
+whole-binary static analysis is not tractable without symbols. How many
+other GCX besides 53 are pinned is completely unknown; a smarter search
+than one-by-one testing (e.g. testing every Nth GCX, or specifically GCX
+containing PERSONAL DATA / portrait-adjacent content, since GCX53 held
+Major Zero/Major Tom bio cards) would be needed before any real allocator
+could be built.
+
 ## 5. Housekeeping for next session
 - Live `movie.dat`/`demo.dat` were restored to their pre-experiment
   states before ending this session (SHA-256 `1244B124...` /
@@ -559,6 +677,20 @@ stdlib script: assume Python <3.9 there, avoid PEP 584 syntax.
 - All experiment build scripts and output `.dat` files are under
   `analysis/ps2_korean/full_build/rebuild_2026-08-08/` (gitignored, local
   only).
+- **§4.11's codec.dat growth experiments**: live `codec.dat` was restored
+  to the safe donor-reclaim build (SHA-256 `19FF34D1...`, backed up at
+  `C:\Users\hhlee\Desktop\Romforge\backups\codec_2026-08-08_120556_pre-growth-experiment.dat`)
+  after every round of testing — nothing experimental is left live. The
+  new diagnostic tools (`tools/mgs3d_codec_precise_relocate.py`,
+  `tools/mgs3d_codec_swap_gcx.py`, `tools/mgs3d_codec_gcx53_sweep.py`,
+  `tools/mgs3d_codec_boundary_table.py`, `tools/mgs3d_codec_gcx_candidates.py`,
+  `tools/mgs3d_codec_search_scenerio.py`, `tools/mgs3d_codec_experiment_padding.py`)
+  are tracked/committed since they're reusable; their generated `.dat`
+  test artifacts under `analysis/` are not (gitignored) — re-run the
+  scripts against the backup above to regenerate them. **Top of next
+  session for this thread**: Citra dynamic debugging (memory
+  breakpoints/watchpoints) per §4.11's "next step," not more static byte
+  search.
 - **Top of next session**: check on the §4.10 overnight LLM translation
   run on the NAS — pull `movie_llm_full.csv`/`demo_llm_full.csv` back,
   see how many of the ~1,367 rows actually completed, spot-check a
