@@ -10,6 +10,14 @@
 handoff 문서들과 내용이 어긋나면 `WIKI.md`가 우선한다 (2026-08-07부터
 캐노니컬 참조문서로 지정, 역사 기록은 `WIKI.md` 8절 색인 참고).
 
+**다음 세션은 여기부터 시작한다: `docs/session-handoff-2026-08-09.md`**
+(가장 최근 세션, 08-08 밤부터 08-09 새벽까지). 이 세션에서 나온 것:
+demo.dat 오프닝(파키스탄 상공) 5줄 실배포, GCX53 정적 스캔 inconclusive
+결론, **GDB 동적 디버깅 성공 레시피 확정**(`feedback_citra_azahar_gdb_debugging.md`
+필독 — 포트 프로브가 세션을 죽인다는 게 핵심 교훈), Azahar 소스
+instrumentation 준비 완료(빌드는 보류), NAS LLM 번역 작업 진행 중
+(다음 세션 최우선: 결과 회수+검수).
+
 2026-08-07 진행: codec GCX 배치1(163개) 완전 클리어, PS2 원본
 `MOVIE.DAT`/`DEMO.DAT`를 처음 추출해 하드섭 비디오임을 확인, 진짜 일본어
 3DS 원본으로 재확인한 결과 지금 작업 기준인 "서구 다국어 movie.dat 구조"가
@@ -53,17 +61,22 @@ handoff 문서들과 내용이 어긋나면 `WIKI.md`가 우선한다 (2026-08-0
 - demo 457행을 `--grow-records`로 강제 적용한 파일은 첫 영상이 나오지 않고
   정지했다. 실패 원인은 파일/레코드 확장으로 판단하며 재사용하지 않는다.
 
-## 현재 RomForge unpacked
+## 현재 RomForge unpacked (2026-08-09 갱신, 이전 내용은 stale이었음)
 
-- `demo.dat`: 영문 피벗 size-neutral 323행 진단본,
-  `772,935,680`바이트,
-  SHA-256 `EC0DC24CAF2F9544F2A69B4340A49923BA0862AE6A86846727C5CA69223C0443`
-- `movie.dat`: 영문 피벗 검토 40행 진단본,
-  `229,376`바이트,
-  SHA-256 `8E6F5FBC26976B60DC56C90C4A869D88EF4990891718F9FE39FD25F3BAC4BCEE`
+- `demo.dat`: PS2 공식 매칭 기반 오프닝 5줄(파키스탄 상공 포함) 실배포,
+  `--fixed-layout-reclaim`로 빌드, 개별 subtitle offset/capacity 전수
+  검증 통과, 씬 경계 불변 확인,
+  SHA-256 `50026766AA0308C2289D4CA668F4D4975FBCE5626E611431FCCEEECDA38938AF`
+  — **아직 실기/Citra 테스트 안 됨.**
+- `codec.dat`: 2026-08-08 재빌드분 라이브,
+  SHA-256 `19FF34D1380E1AFD3D19DFBD0C9C3DF091FBFB5743E09189B5DC943A85BF6267`
+  (`project_mgs3d_donor_reclaim_build.md` 참고)
+- `movie.dat`: 이번 세션 미변경 (마지막 알려진 상태는
+  `docs/session-handoff-2026-08-08.md` 참고, 실배포된 새 빌드 없음)
 
-이 구성은 PS2 이식 목표의 최종 후보가 아니다. 다음 작업은 PS2 공식
-movie/demo 대응 자료를 직접 매칭하는 것이다.
+`--size-neutral-reclaim`은 실기 크래시 확인 후 폐기됐다 —
+`feedback_mgs3d_movie_demo_size_neutral_reclaim_unsafe.md` 참고, 앞으로
+movie/demo 빌드는 `--fixed-layout-reclaim`만 사용한다.
 
 ## 커밋과 로컬 산출물
 

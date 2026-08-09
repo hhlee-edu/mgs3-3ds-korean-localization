@@ -293,6 +293,127 @@ def rebuild_record_fixed(record: Record, replacements: dict[int, str], font: Ima
     return bytes(body), {ch: mapping[ch].hex().upper() for ch in needed}
 
 
+def rebuild_record_fixed_reclaim(
+    record: Record,
+    replacements: dict[int, str],
+    font: ImageFont.FreeTypeFont,
+    donor_offsets: set[int] | None = None,
+) -> tuple[bytes, dict[str, str]]:
+    """Fixed-layout rebuild that may grow the record to append new glyphs.
+
+    Every subtitle keeps its own start offset (relative to the record) and
+    its own declared capacity exactly as in the source -- same discipline as
+    rebuild_record_fixed. Donor entries (French/German/Italian/Spanish) are
+    blanked *in place*, encoded within their own original capacity and
+    zero-padded, never shrunk -- unlike rebuild_record_growing's `is_donor`
+    branch, which shrinks a donor to a single b"\\0" byte and shifts every
+    later subtitle in the record backward to fill the gap (the confirmed
+    cause of the 2026-08-08 real-hardware crash; see
+    feedback_mgs3d_movie_demo_size_neutral_reclaim_unsafe.md).
+
+    Freed page-3 slots (from replaced/donor subtitles that no longer
+    reference them) are reused first. Any remaining glyphs are appended
+    after the existing font table, which is the last thing in the record --
+    appending there grows the record's total size without moving the text
+    region or any subtitle's position at all. Donor entries empirically
+    reference zero page-3 slots, so blanking them frees no glyph capacity;
+    it only satisfies the "don't leave French/German/Italian/Spanish text
+    in place" policy. The resulting record growth must be funded by the
+    caller (e.g. from a scene's own trailing padding) -- this function only
+    guarantees no subtitle moves *within* its own record.
+    """
+    donor_offsets = donor_offsets or set()
+    if not replacements and not donor_offsets:
+        return record.raw, {}
+
+    needed: list[str] = []
+    seen: set[str] = set()
+    for subtitle in record.subtitles:
+        for character in replacements.get(subtitle.offset, ""):
+            if ord(character) >= 0x80 and character not in seen:
+                seen.add(character)
+                needed.append(character)
+
+    old_count = len(record.font) // 64
+    replaced_offsets = set(replacements)
+    replaced_slots: set[int] = set()
+    retained_slots: set[int] = set()
+    for subtitle in record.subtitles:
+        slots = page3_indices(subtitle.raw)
+        if subtitle.offset in replaced_offsets:
+            replaced_slots.update(slots)
+        else:
+            retained_slots.update(slots)
+    freed = sorted(index for index in replaced_slots - retained_slots if index < old_count)
+    reused, appended = needed[:len(freed)], needed[len(freed):]
+    if old_count + len(appended) > 1020:
+        raise MovieError(
+            f"record {record.index} needs {len(appended)} appended glyphs but only "
+            f"{1020 - old_count} page-3 slots remain"
+        )
+    mapping: dict[str, bytes] = {ch: page3_token(freed[i]) for i, ch in enumerate(reused)}
+    mapping.update({ch: page3_token(old_count + i) for i, ch in enumerate(appended)})
+
+    body = bytearray(record.raw[:record.text_end])
+    for subtitle in record.subtitles:
+        replacement = replacements.get(subtitle.offset)
+        is_donor = subtitle.offset in donor_offsets
+        if replacement is None and not is_donor:
+            continue
+        text = "" if replacement is None else wrap_like_source(replacement, subtitle.raw)
+        encoded = encode_translation(text, mapping)
+        relative = subtitle.offset - record.offset
+        text_capacity = len(subtitle.original) - 4 - len(subtitle.tail)
+        if len(encoded) > text_capacity:
+            raise MovieError(
+                f"record {record.index} subtitle at 0x{subtitle.offset:x} fixed-layout text "
+                f"deficit: need {len(encoded)}, capacity {text_capacity}"
+            )
+        body[relative:relative + text_capacity] = encoded + b"\0" * (text_capacity - len(encoded))
+
+    new_font = bytearray(record.font)
+    for character in reused:
+        slot = PAGE3_TOKEN_TO_INDEX[mapping[character]]
+        new_font[slot * 64:(slot + 1) * 64] = render_character(character, font)
+    for character in appended:
+        new_font.extend(render_character(character, font))
+
+    body.extend(struct.pack("<I", len(new_font)))
+    body.extend(new_font)
+    # Never shrink below the record's own original size -- some records
+    # carry trailing slack past their natural (text+font) end (e.g. glyph
+    # capacity reserved by a prior build). Truncating that slack would pull
+    # every later record/scene backward exactly like an unfunded shrink;
+    # only appending is a verified-safe operation here, so pad back up to
+    # at least the original footprint instead.
+    body.extend(b"\0" * (max(align(len(body)), len(record.raw)) - len(body)))
+    struct.pack_into("<I", body, 4, len(body))
+    return bytes(body), {ch: mapping[ch].hex().upper() for ch in needed}
+
+
+def verify_fixed_layout(source: Record, rebuilt_raw: bytes) -> None:
+    """Postcondition for rebuild_record_fixed_reclaim: every subtitle keeps
+    its own offset relative to the record start and its own declared
+    capacity. The record's total size may have grown (font table appended
+    at the very end); nothing before text_end may have moved a single
+    subtitle's position, and the record itself may never shrink below its
+    original size (a shrink would pull every later record/scene backward
+    just as unsafely as an unfunded growth)."""
+    if len(rebuilt_raw) < len(source.raw):
+        raise MovieError(
+            f"record {source.index} fixed-layout verification failed: "
+            f"record shrank from {len(source.raw)} to {len(rebuilt_raw)} bytes"
+        )
+    _, [verified], _ = parse_records(b"\0" * FILE_PREFIX_SIZE + rebuilt_raw)
+    source_layout = [(s.offset - source.offset, len(s.original)) for s in source.subtitles]
+    verified_layout = [(s.offset - FILE_PREFIX_SIZE, len(s.original)) for s in verified.subtitles]
+    if source_layout != verified_layout:
+        raise MovieError(
+            f"record {source.index} fixed-layout verification failed: "
+            f"offsets/capacities changed {source_layout} -> {verified_layout}"
+        )
+
+
 def rebuild_record_growing(
     record: Record,
     replacements: dict[int, str],
@@ -597,8 +718,11 @@ def command_extract_font(args: argparse.Namespace) -> None:
 
 
 def command_build_korean(args: argparse.Namespace) -> None:
-    if args.grow_records and args.size_neutral_reclaim:
-        raise MovieError("select only one of --grow-records and --size-neutral-reclaim")
+    modes = [args.grow_records, args.size_neutral_reclaim, args.fixed_layout_reclaim]
+    if sum(bool(m) for m in modes) > 1:
+        raise MovieError(
+            "select only one of --grow-records, --size-neutral-reclaim, --fixed-layout-reclaim"
+        )
     original = args.input.read_bytes()
     prefix, records, suffix = parse_records(original)
     replacements = read_replacements(args.translation_csv)
@@ -615,6 +739,7 @@ def command_build_korean(args: argparse.Namespace) -> None:
     found: set[int] = set()
     excluded: set[int] = set()
     source_layout = [(record.offset, len(record.raw)) for record in records]
+    fixed_layout_records: list[Record] = []
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("wb") as stream:
         stream.write(prefix)
@@ -633,6 +758,11 @@ def command_build_korean(args: argparse.Namespace) -> None:
             elif args.grow_records:
                 rebuilt, allocation = rebuild_record_growing(
                     record, local, font, static_map=static_map)
+            elif args.fixed_layout_reclaim and local:
+                donors = {s.offset for s in record.subtitles if s.entry_type in {2, 3, 4, 5}}
+                rebuilt, allocation = rebuild_record_fixed_reclaim(record, local, font, donors)
+                verify_fixed_layout(record, rebuilt)
+                fixed_layout_records.append(record)
             else:
                 rebuilt, allocation = rebuild_record_fixed(record, local, font)
             stream.write(rebuilt)
@@ -682,8 +812,15 @@ def command_build_korean(args: argparse.Namespace) -> None:
                 f"size-neutral verification failed: file {args.input.stat().st_size} -> "
                 f"{output_size}, record mismatches {mismatches[:10]}"
             )
+    growth_note = ""
+    if args.fixed_layout_reclaim:
+        touched = {record.index for record in fixed_layout_records}
+        growth = sum(len(verified[i].raw) - size for i, (_, size) in enumerate(source_layout)
+                     if i in touched)
+        growth_note = (f", {len(touched)} records touched (donor-blanked in place), "
+                        f"+{growth} bytes appended font data (unfunded)")
     print(f"rebuilt {args.output}: {len(used)}/{len(replacements)} subtitles selected, "
-          f"{len(verified)} records")
+          f"{len(verified)} records{growth_note}")
 
 
 def command_audit_existing(args: argparse.Namespace) -> None:
@@ -866,6 +1003,13 @@ def build_parser() -> argparse.ArgumentParser:
     korean.add_argument(
         "--size-neutral-reclaim", action="store_true",
         help="clear Western entry types 2-5, select a fitting type-1 subset, and preserve every record size",
+    )
+    korean.add_argument(
+        "--fixed-layout-reclaim", action="store_true",
+        help="blank Western entry types 2-5 in place (never shrunk) and append any glyphs that "
+             "don't fit in freed slots after the record's font table; every subtitle keeps its "
+             "own offset within the record -- the record itself may grow, fund that growth "
+             "separately (e.g. scene trailing padding) before use",
     )
     korean.set_defaults(function=command_build_korean)
     audit = sub.add_parser(

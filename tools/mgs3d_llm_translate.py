@@ -35,9 +35,17 @@ SYSTEM_PROMPT = """당신은 메탈기어 솔리드 3(스네이크 이터)를 3D
 구어체 한국어로 번역하세요.
 
 규칙:
+- 번역 대상은 오직 [번역 대상] 표시가 붙은 한 줄뿐입니다. [PS2 참고 대사]는 \
+어투/문맥 참고용으로만 쓰고 그 줄 자체를 번역하지 마세요.
+- [같은 장면의 신스노트 참고 대사]가 있다면, 그 안의 인명/지명/조직명/기술 \
+용어의 기존 한글 표기를 최대한 그대로 재사용하세요 (예: 소코로프, 가가린, \
+보스토크 로켓). 그 줄들 자체를 번역 결과로 베끼지는 마세요 — 다른 내용의 \
+대사입니다.
 - 대사 톤은 밀리터리/스파이 스릴러이고, 화자 간 관계(상관-부하, 동료 등)를 \
 말투에 반영하세요.
 - 참고 대사집 문체(있다면)와 어투를 최대한 맞추세요.
+- 결과는 한글(및 필요한 경우 영문 고유명사/숫자)만 사용하세요. 키릴 문자 등 \
+다른 문자 체계를 섞지 마세요.
 - 결과는 오직 번역된 한국어 대사 한 줄만 출력하세요. 설명, 따옴표, \
 원문 반복 없이 번역문만 출력합니다.
 - 주어진 글자 예산을 넘지 않도록 간결하게 쓰세요. 예산이 빠듯하면 \
@@ -50,11 +58,52 @@ def build_prompt(card: dict, context: list[dict]) -> str:
         lines.append("[앞뒤 문맥 (PS2 원문, 참고용)]")
         for c in context:
             lines.append(f"  {c['speaker']}: {c['text']}")
-    lines.append(f"[PS2 원문(GameFAQs)] {card['ref_en']}")
-    lines.append(f"[3DS 화면 원문(placeholder 영어)] {card['source_en']}")
+    shinsnote_context = card.get("shinsnote_context") or []
+    if shinsnote_context:
+        lines.append("[같은 장면의 신스노트 참고 대사 — 용어/고유명사 참고용, "
+                     "이 줄들을 그대로 베끼지 마세요]")
+        for s in shinsnote_context:
+            lines.append(f"  {s['speaker']}: {s['text']}")
+    lines.append(f"[PS2 참고 대사 — 어투 참고용, 번역 대상 아님] {card['ref_en']}")
+    lines.append(f"[번역 대상 — 이 줄만 한국어로 번역] {card['source_en']}")
     lines.append(f"[글자 예산] 한글 기준 약 {card['char_budget']}자 이내")
     lines.append("\n번역:")
     return "\n".join(lines)
+
+
+def load_bilingual_by_line(bilingual: Path) -> dict[int, list[dict]]:
+    by_line: dict[int, list[dict]] = {}
+    with bilingual.open(encoding="utf-8-sig", newline="") as stream:
+        for row in csv.DictReader(stream):
+            try:
+                line = int(row.get("english_line", ""))
+            except ValueError:
+                continue
+            if not row.get("korean", "").strip():
+                continue
+            by_line.setdefault(line, []).append(row)
+    return by_line
+
+
+def nearby_shinsnote_context(idx: int, by_line: dict[int, list[dict]],
+                             window: int = 10, limit: int = 4) -> list[dict]:
+    rank = {"high": 0, "medium": 1, "low": 2}
+    candidates = []
+    for offset in range(-window, window + 1):
+        for row in by_line.get(idx + offset, []):
+            candidates.append((abs(offset), rank.get(row.get("confidence", ""), 3), row))
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    seen: set[str] = set()
+    picked: list[dict] = []
+    for _, _, row in candidates:
+        text = row["korean"].strip()
+        if text in seen:
+            continue
+        seen.add(text)
+        picked.append({"speaker": row.get("korean_speaker", ""), "text": text})
+        if len(picked) >= limit:
+            break
+    return picked
 
 
 def call_ollama(host: str, model: str, prompt: str, timeout: float) -> str:
@@ -79,6 +128,7 @@ def load_batch(gamefaqs: Path, bilingual: Path, dat: Path, kind: str,
                seed: Path | None) -> list[dict]:
     script = load_script(gamefaqs, bilingual)
     by_index = {r["index"]: r for r in script}
+    by_line = load_bilingual_by_line(bilingual)
     container = build_container(kind, dat, script, seed)
     rows: list[dict] = []
     for scene in container["scenes"]:
@@ -106,6 +156,7 @@ def load_batch(gamefaqs: Path, bilingual: Path, dat: Path, kind: str,
                 "ref_en": line["text"],
                 "char_budget": max(1, card["capacity"] // 2),
                 "context": context,
+                "shinsnote_context": nearby_shinsnote_context(idx, by_line),
                 "target_ko": "",
             })
     return rows
@@ -159,6 +210,7 @@ def main() -> int:
             "speaker": row["speaker"], "source_en": row["source_en"], "ref_en": row["ref_en"],
             "char_budget": row["char_budget"],
             "context": [{"speaker": c["speaker"], "text": c["text"]} for c in row["context"]],
+            "shinsnote_context": row["shinsnote_context"],
         } for row in rows]
         args.prepare_only.parent.mkdir(parents=True, exist_ok=True)
         args.prepare_only.write_text(

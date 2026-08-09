@@ -12,6 +12,8 @@ sys.path.insert(0, str(TOOLS))
 from mgs3d_codec_size_neutral_select import (  # noqa: E402
     balance,
     confident_non_english_language,
+    custom_token,
+    glyph_slot_owners,
     language_block_donors,
     select_subset,
     select_subset_exact,
@@ -98,6 +100,14 @@ class CodecSizeNeutralSelectionTests(unittest.TestCase):
             SimpleNamespace(data=b"Si un ennemi est dans la base, il ne faut pas rester avec lui.", is_script=False),
         ]
         self.assertEqual(language_block_donors(resources, {1}), [0, 2])
+
+    def test_glyph_slot_owners_is_imported_from_its_new_home(self) -> None:
+        # glyph_slot_owners moved to mgs3d_gcx_font_tool.py (2026-08-09, fixed
+        # the missing 0x1F accent-escape case there); this module now just
+        # re-exports it. Lock in that the accent-escape fix is visible here too.
+        resources = [SimpleNamespace(data=b"\x1f\x90" + custom_token(0) + b"\x00")]
+        owners = glyph_slot_owners(resources, count=1)
+        self.assertEqual(owners[0], {0})
 
 
 if __name__ == "__main__":

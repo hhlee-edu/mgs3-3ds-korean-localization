@@ -29,8 +29,13 @@ def build_prompt(row: dict) -> str:
         lines.append("[앞뒤 문맥 (PS2 원문, 참고용)]")
         for c in row["context"]:
             lines.append(f"  {c['speaker']}: {c['text']}")
-    lines.append(f"[PS2 원문(GameFAQs)] {row['ref_en']}")
-    lines.append(f"[3DS 화면 원문(placeholder 영어)] {row['source_en']}")
+    if row.get("shinsnote_context"):
+        lines.append("[같은 장면의 신스노트 참고 대사 — 용어/고유명사 참고용, "
+                     "이 줄들을 그대로 베끼지 마세요]")
+        for s in row["shinsnote_context"]:
+            lines.append(f"  {s['speaker']}: {s['text']}")
+    lines.append(f"[PS2 참고 대사 — 어투 참고용, 번역 대상 아님] {row['ref_en']}")
+    lines.append(f"[번역 대상 — 이 줄만 한국어로 번역] {row['source_en']}")
     lines.append(f"[글자 예산] 한글 기준 약 {row['char_budget']}자 이내")
     lines.append("\n번역:")
     return "\n".join(lines)

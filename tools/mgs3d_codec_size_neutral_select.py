@@ -13,7 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mgs3d_codec_tool import CodecError, parse_codec, parse_rendered  # noqa: E402
-from mgs3d_gcx_font_tool import custom_token, font_region  # noqa: E402
+from mgs3d_gcx_font_tool import custom_token, font_region, glyph_slot_owners  # noqa: E402
 from mgs3d_translation import validate_codec_translation  # noqa: E402
 from mgs3d_english_korean_match import decode_western  # noqa: E402
 
@@ -86,23 +86,6 @@ def encoded_size(text: str, old_count: int,
     mapping = dict(base_map)
     mapping.update({ch: custom_token(old_count + index) for index, ch in enumerate(chars)})
     return len(parse_rendered(text, mapping))
-
-
-def glyph_slot_owners(resources: list[object], count: int) -> list[set[int]]:
-    token_slots = {custom_token(index): index for index in range(count)}
-    owners = [set() for _ in range(count)]
-    for resource_index, resource in enumerate(resources):
-        data = resource.data
-        cursor = 0
-        while cursor + 1 < len(data) and data[cursor]:
-            if data[cursor] >= 0x80:
-                slot = token_slots.get(data[cursor:cursor + 2])
-                if slot is not None:
-                    owners[slot].add(resource_index)
-                cursor += 2
-            else:
-                cursor += 1
-    return owners
 
 
 def free_slots(items: list[dict[str, object]], selected: set[int],

@@ -159,6 +159,52 @@ def freed_font_slots(record: GcxRecord, replaced_resources: set[int]) -> list[in
     return [index for index in range(count) if custom_token(index) not in remaining]
 
 
+def glyph_slot_owners(resources: list, count: int) -> list[set[int]]:
+    """Per-resource, boundary-respecting scan of which resources reference
+    which of this record's own custom-glyph slots (this GCX's own 0x8C-page
+    tokens only -- structurally cannot match another GCX's tokens, the HPK
+    static-font pages, or movie/demo's page-3 tokens, since those numeric
+    ranges are never produced by this record's own custom_token()).
+
+    More precise than freed_font_slots(): stops at each resource's null
+    terminator and treats 0x1F as its own two-byte accent-escape (matching
+    decode_mgs_preview's `0x1F <suffix>` handling in mgs3d_codec_tool.py)
+    instead of a token lead byte, so an accent escape whose argument byte is
+    >= 0x80 can no longer misalign the scan and hide a real reference.
+    """
+    token_slots = {custom_token(index): index for index in range(count)}
+    owners: list[set[int]] = [set() for _ in range(count)]
+    for resource_index, resource in enumerate(resources):
+        data = resource.data
+        cursor = 0
+        while cursor < len(data) and data[cursor]:
+            if data[cursor] == 0x1F and cursor + 1 < len(data):
+                cursor += 2
+                continue
+            if data[cursor] >= 0x80 and cursor + 1 < len(data):
+                slot = token_slots.get(data[cursor : cursor + 2])
+                if slot is not None:
+                    owners[slot].add(resource_index)
+                cursor += 2
+            else:
+                cursor += 1
+    return owners
+
+
+def dead_font_slots(
+    record: GcxRecord, ignore_resources: set[int] = frozenset()
+) -> list[int]:
+    """Slots referenced by zero resources once ignore_resources are excluded,
+    using glyph_slot_owners' exact-parse scan rather than freed_font_slots'
+    raw cross-resource substring join. dead_font_slots(record, set()) is
+    "every slot with zero live references right now" -- the primitive for
+    finding pre-existing dead slots independent of any particular build.
+    """
+    _, count = font_region(record)
+    owners = glyph_slot_owners(record.resources(), count)
+    return [slot for slot, refs in enumerate(owners) if refs <= ignore_resources]
+
+
 def freed_glyphs(
     owners: list[frozenset[int]], selected: set[int]
 ) -> set[int]:
@@ -519,6 +565,8 @@ def command_build_korean(args: argparse.Namespace) -> None:
         args.reuse_existing_font or args.reuse_freed_font
     ):
         raise CodecError("fixed record layout requires an existing-font reuse mode")
+    if args.reuse_existing_dead_font and not args.reuse_freed_font:
+        raise CodecError("--reuse-existing-dead-font requires --reuse-freed-font")
 
     units_by_gcx: dict[int, list[dict[str, object]]] = {}
     for unit in validated_units:
@@ -531,6 +579,7 @@ def command_build_korean(args: argparse.Namespace) -> None:
     changed_records = 0
     added_total = 0
     allocation_report: dict[str, dict[str, str]] = {}
+    reuse_summary_records: list[dict[str, object]] = []
     for gcx, record in enumerate(records):
         units = units_by_gcx.get(gcx, [])
         if not units:
@@ -564,8 +613,18 @@ def command_build_korean(args: argparse.Namespace) -> None:
                         and character not in seen):
                     seen.add(character)
                     korean.append(character)
-        available_slots = (freed_font_slots(record, replaced_resource_ids)
-                           if args.reuse_freed_font else [])
+        existing_dead: list[int] = []
+        newly_freed: list[int] = []
+        if args.reuse_existing_dead_font:
+            existing_dead = dead_font_slots(record, set())
+            freed_by_this_run = dead_font_slots(record, replaced_resource_ids)
+            newly_freed = [slot for slot in freed_by_this_run if slot not in existing_dead]
+            available_slots = sorted(existing_dead) + sorted(newly_freed)
+        elif args.reuse_freed_font:
+            newly_freed = freed_font_slots(record, replaced_resource_ids)
+            available_slots = list(newly_freed)
+        else:
+            available_slots = []
         reserved_slots = {
             index
             for token in existing_map.values()
@@ -601,6 +660,14 @@ def command_build_korean(args: argparse.Namespace) -> None:
             selected_slots = list(range(len(korean)))
         else:
             selected_slots = list(range(old_count, old_count + len(korean)))
+        if selected_slots[:reused_count] != available_slots[:reused_count]:
+            raise CodecError(
+                f"GCX {gcx}: reused slot indices do not match overwrite target "
+                f"-- internal allocation bug"
+            )
+        reused_slots_used = set(selected_slots[:reused_count])
+        reused_existing_dead = len(reused_slots_used & set(existing_dead))
+        reused_newly_freed = len(reused_slots_used & set(newly_freed))
         for index, character in zip(selected_slots, korean):
             encoded = custom_token(index)
             local_map[character] = encoded
@@ -647,6 +714,14 @@ def command_build_korean(args: argparse.Namespace) -> None:
         added_total += len(korean)
         if allocation:
             allocation_report[str(gcx)] = allocation
+        if glyph_data:
+            reuse_summary_records.append({
+                "gcx": gcx,
+                "reused_existing_dead": reused_existing_dead,
+                "reused_newly_freed": reused_newly_freed,
+                "newly_appended": appended_count,
+                "final_gcx_size_delta": len(rebuilt_raw) - len(record.raw),
+            })
 
     natural_size = sum(len(raw) for raw in record_outputs)
     reflow_padding = 0
@@ -714,6 +789,25 @@ def command_build_korean(args: argparse.Namespace) -> None:
             )
     if args.preserve_total_file_size and len(output) != len(original):
         raise CodecError(f"total-file size changed: {len(original)} -> {len(output)}")
+    reuse_summary = {
+        "reused_existing_dead": sum(r["reused_existing_dead"] for r in reuse_summary_records),
+        "reused_newly_freed": sum(r["reused_newly_freed"] for r in reuse_summary_records),
+        "newly_appended": sum(r["newly_appended"] for r in reuse_summary_records),
+        "final_gcx_size_delta": sum(r["final_gcx_size_delta"] for r in reuse_summary_records),
+        "records": reuse_summary_records,
+    }
+    print(
+        f"reuse summary: reused_existing_dead={reuse_summary['reused_existing_dead']} "
+        f"reused_newly_freed={reuse_summary['reused_newly_freed']} "
+        f"newly_appended={reuse_summary['newly_appended']} "
+        f"final_gcx_size_delta={reuse_summary['final_gcx_size_delta']}"
+    )
+    if args.dry_run:
+        print(
+            f"dry-run: would write {args.output} "
+            f"({changed_records} GCX records changed, {added_total} Hangul glyphs added)"
+        )
+        return
     args.output.write_bytes(output)
     report_path = args.output.with_suffix(args.output.suffix + ".hangul.json")
     report_path.write_text(
@@ -727,6 +821,7 @@ def command_build_korean(args: argparse.Namespace) -> None:
                 "final_file_size": len(output),
                 "reflow_padding": reflow_padding,
                 "allocations": allocation_report,
+                "reuse_summary": reuse_summary,
             },
             ensure_ascii=False,
             indent=2,
@@ -827,6 +922,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--reuse-freed-font",
         action="store_true",
         help="safe fixed-layout mode: use only slots freed by translated resources",
+    )
+    korean.add_argument(
+        "--reuse-existing-dead-font",
+        action="store_true",
+        help="safe fixed-layout mode: also reuse glyph slots already dead from past "
+             "builds (regardless of this run's own resource replacements) before "
+             "appending; requires --reuse-freed-font",
+    )
+    korean.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="validate and report reuse/append counts without writing any files",
     )
     korean.add_argument(
         "--preserve-record-layout",
