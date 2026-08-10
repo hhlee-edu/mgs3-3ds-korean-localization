@@ -77,3 +77,47 @@ A final row is `confirmed` only if a script call site and runtime-selected ID
 agree, or if static decoding independently proves both. DAT physical order alone
 is never sufficient. Rows based only on observed playback are retained as
 runtime anchors and are not promoted to the requested final CSV.
+
+## Runtime boundary investigation
+
+Targeted RomFS reads established the real opening media blocks without using
+DAT order as story order:
+
+- demo scene 127 read: demo file offset `0x26103700`, covering record 287 at
+  `0x26108C30`; completion PC/LR `0x00837018/0x00836524`;
+- following movie read: a `0x10000` aligned block beginning `0x1120` before the
+  confirmed movie base; the same common asynchronous FS completion chain was
+  used.
+
+The completion stack is an archive worker chain (`0x001520B8 -> 0x00132EA4 ->
+0x0014FF00 -> 0x0011A834`) and is not the story command caller. It is useful for
+proving which data was read, but must not be reported as the movie/demo request
+PC.
+
+Targeted inspection of the decompressed 3DS command registration tables found
+that commands use the project's 24-bit string hash, not the legacy 16-bit
+constant:
+
+- `strcode24("demo") = 0x33A20F`, registered handler `0x00409DB0`;
+- `strcode24("movie") = 0x09658C`, registered handler `0x0079F6B4`;
+- checks: `strcode24("if") = 0x0D86` and `strcode24("eval") = 0x34648C`
+  match entries in the same table.
+
+The demo handler calls the generic argument decoder at `0x0022F35C`; the first
+decoded value is available at `0x00409DD0`. The movie handler has the analogous
+point at `0x0079F6C0`. A runtime hit at `0x00409DD0` produced `r0=0x10000000`,
+but it occurred around six seconds into startup, before scene 127 was read.
+It is therefore an initialization command and is not a scene-127 ID.
+
+The attempted GDB breakpoint and instruction-substitution probes are rejected
+as evidence. Both perturbations reproducibly reached an unrelated invalid GPU
+address (`0x2888E4E4` at guest PC `0x00161470`) and Vulkan assertion at roughly
+50 seconds. Repeating those probes would only ask the user to replay a known
+unstable diagnostic. Azahar was restored to upstream Dynarmic/FS code and GDB
+was disabled after the tests.
+
+The next safe approach must observe the argument decoder without pausing or
+substituting a guest instruction—for example, a host-side Dynarmic IR callout
+that preserves the translated ARM instruction exactly, validated first against
+an uninstrumented runtime hash/trace. Until then, neither `r0=0x10000000` nor
+the registered `movie` handler is promoted to a story scene mapping.
