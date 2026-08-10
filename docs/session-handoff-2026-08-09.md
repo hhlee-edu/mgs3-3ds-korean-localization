@@ -670,6 +670,20 @@ forward/backward tests raise the relevant combined suite count to 45 passing.
 
 ## Housekeeping
 
+### Movie then demo relocation/grow validation (2026-08-10 night)
+
+Movie record 0 `+0x10` shifted records 1..107 and passed Sokolov/parachute/
+landing scenes, subtitles, voice, gameplay return, and radio. The existing full
+movie grow (71 size-changing records, +225,424 bytes, 107 shifted records) then
+passed the same runtime path.
+
+Demo record 286 `+0x10` moved the actual opening record 287 and passed the full
+Pakistan opening plus movie handoff. Far-apart two-record growth and a
+seven-record distributed `+0x10` build also passed. Therefore the old “demo
+fails with exactly two grown records” conclusion is retracted: count alone is
+not causal. See `docs/movie-demo-grow-relocation-2026-08-10.md`. LayeredFS
+movie/demo overrides were removed afterward.
+
 ### Distributed codec grow runtime validation (2026-08-10 evening)
 
 Before any movie/demo work, a normal translation/font build grew GCX
