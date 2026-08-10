@@ -670,6 +670,21 @@ forward/backward tests raise the relevant combined suite count to 45 passing.
 
 ## Housekeeping
 
+### Distributed codec grow runtime validation (2026-08-10 evening)
+
+Before any movie/demo work, a normal translation/font build grew GCX
+13/100/500/1000/1501/1990/2200 by 16,720 bytes and shifted 2,312 later records.
+GCX53 moved `0x457B0 -> 0x45AE0` (+816); its three low-24 procedure targets were
+automatically relocated. The whole-file verifier passed 2,326 records and
+216,705 procedure words, including boundaries, relocation completeness, flag
+preservation, and overflow checks.
+
+Azahar runtime passed first codec, portrait/dialogue/voice, close/return,
+same-codec recall, following sequential radio, and a later event radio call.
+LayeredFS was restored to pristine SHA-256
+`19FF34D1380E1AFD3D19DFBD0C9C3DF091FBFB5743E09189B5DC943A85BF6267`.
+See `docs/codec-distributed-grow-stress-2026-08-10.md`.
+
 - Live `codec.dat`/`movie.dat` in the RomForge romfs tree were **not**
   touched this session (all codec/GCX53 work was read-only analysis
   against the live file, or against LayeredFS mod overrides in
