@@ -1,0 +1,17 @@
+{
+  "scenarios": {
+    "scenario_files": 169,
+    "parsed": 169,
+    "resources": 828396,
+    "script_resources": 341194,
+    "structured_legacy_demo_hash_hits": [],
+    "native_region_raw_hash_hits": [
+      {
+        "stage": "s032a",
+        "script_file": "C:\\Users\\hhlee\\Desktop\\Romforge\\output\\unpacked\\partition0\\romfs\\stage\\s032a\\scenerio.gcx",
+        "file_offset": 492943
+      }
+    ],
+    "parse_failures": []
+  }
+}
