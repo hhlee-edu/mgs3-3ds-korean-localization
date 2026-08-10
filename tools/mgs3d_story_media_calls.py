@@ -87,6 +87,9 @@ def scan(root: Path) -> list[dict[str, object]]:
                 absolute = proc_start + hit
                 arg_offset = hash_hit + len(hash_bytes)
                 argument = decode_tagged_argument(blob, arg_offset)
+                packed_descriptor = None if argument.value is None else (
+                    (5 << 24) | (argument.value & 0xFFFFFF)
+                )
                 proc = procedure_index(record, absolute)
                 key = (path.parent.name, proc)
                 per_proc_order[key] = per_proc_order.get(key, 0) + 1
@@ -98,6 +101,9 @@ def scan(root: Path) -> list[dict[str, object]]:
                     "scene_id": "",
                     "record_id/descriptor": "" if argument.value is None
                     else f"0x{argument.value:08X}",
+                    "packed_file_descriptor": "" if packed_descriptor is None
+                    else f"0x{packed_descriptor:08X}",
+                    "descriptor_file": "demo.dat",
                     "script_offset": f"0x{absolute:X}",
                     "argument_tag": argument.tag,
                     "argument_kind": argument.kind,
@@ -115,7 +121,8 @@ def main() -> int:
     rows = scan(args.scenario_root)
     args.output_csv.parent.mkdir(parents=True, exist_ok=True)
     fields = ["stage", "procedure", "call_order", "type", "scene_id",
-              "record_id/descriptor", "script_offset", "argument_tag",
+              "record_id/descriptor", "packed_file_descriptor", "descriptor_file",
+              "script_offset", "argument_tag",
               "argument_kind", "confidence"]
     with args.output_csv.open("w", newline="", encoding="utf-8-sig") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields)

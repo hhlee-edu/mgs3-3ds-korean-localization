@@ -172,3 +172,20 @@ cover the observed 24-bit immediate, compact constants, unresolved dynamic
 forms, and both command markers. The local Python environment does not contain
 pytest, so the focused assertions were executed directly rather than reporting
 a pytest suite result.
+
+### Descriptor ownership
+
+The first `demo` argument is now tied to a real file namespace. The handler
+calls `0x004449CC` with type `5`; that function preserves the low 24 bits and
+places `5` in the high byte. The generic loader's type table maps index `5`
+directly to `demo.dat` (the neighboring entries resolve to `stage.dat`,
+`codec.dat`, `bgm.dat`, `movie.dat`, `vox.dat`, and `slot.dat`). Candidate rows
+therefore include both the decoded low-24 value and the packed
+`0x05xxxxxx` file descriptor.
+
+This does not yet make the low-24 value a byte offset or scene ID. Multiplying
+it by the codec-style `0x10` unit does not reproduce demo scene starts, and
+interpreting its tagged payload as a GCX resource offset produces unrelated
+string interiors. Both shortcuts are rejected. The descriptor must be followed
+through the generic demo.dat resource resolver before joining it to scene 127
+or any physical record range.
