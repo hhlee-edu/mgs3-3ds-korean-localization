@@ -15,7 +15,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mgs3d_codec_tool import parse_codec, GcxRecord, CodecError  # noqa: E402
+from mgs3d_codec_tool import (  # noqa: E402
+    CodecError,
+    GcxRecord,
+    parse_codec,
+    relocate_gcx53_inner_offsets,
+)
 
 
 def grow_gcx_padding(record: GcxRecord, delta: int) -> bytes:
@@ -47,12 +52,17 @@ def shrink_gcx_via_donor(record: GcxRecord, donor_resource: int, delta: int) -> 
 
 
 def build(source: Path, grow_gcx: int, grow_delta: int,
-         shrink_gcx: int, shrink_donor_resource: int, output: Path) -> dict:
+         shrink_gcx: int, shrink_donor_resource: int, output: Path,
+         patch_gcx53_inner_offsets: bool = False) -> dict:
     data = source.read_bytes()
     records = parse_codec(data)
 
     outputs = list(r.raw for r in records)
     outputs[grow_gcx] = grow_gcx_padding(records[grow_gcx], grow_delta)
+    if patch_gcx53_inner_offsets:
+        if grow_gcx >= 53:
+            raise CodecError("GCX53 inner-offset relocation requires growth before GCX53")
+        outputs[53] = relocate_gcx53_inner_offsets(records[53], grow_delta)
 
     # recompute natural sizes so far to find the exact shrink needed
     natural_total = sum(len(r) for r in outputs)
@@ -84,6 +94,7 @@ def build(source: Path, grow_gcx: int, grow_delta: int,
         "shrink_gcx": shrink_gcx,
         "shrink_delta": -deficit,
         "gcx_with_offset_or_size_change": shifted,
+        "gcx53_inner_offsets_patched": patch_gcx53_inner_offsets,
     }
 
 

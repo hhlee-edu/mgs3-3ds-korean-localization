@@ -227,8 +227,11 @@ python tools/mgs3d_gcx_font_tool.py build-korean `
 ```
 
 The earlier 21-GCX/504-glyph output is retained only as a static research
-artifact. It is not runtime-safe because it relocates following GCX records and
-must not be distributed as a production patch.
+artifact and must not be distributed: it predates the GCX53 inner-offset fix.
+As of 2026-08-10 the builder relocates GCX53's three flagged procedure offsets
+automatically, and a minimal file-only relocation passed runtime validation.
+This does not retroactively validate old artifacts or every possible large
+reflow; see `docs/gcx53-relocation-fix-2026-08-10.md`.
 
 `make-translation` also reads the original GCX resource's `<0A>` layout. It
 wraps Korean at word boundaries into the same number of radio-window lines and

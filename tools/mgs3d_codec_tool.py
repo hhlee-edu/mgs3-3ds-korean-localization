@@ -353,6 +353,63 @@ class GcxRecord:
         }
 
 
+def relocate_gcx_internal_offsets(
+    record: GcxRecord, old_offset: int, new_offset: int
+) -> bytes:
+    """Relocate every procedure-table target at/after an internal boundary.
+
+    Procedure-table words use their high byte as flags and their low 24 bits as
+    a record-local target.  When a suffix beginning at ``old_offset`` moves to
+    ``new_offset``, preserve the flags and apply that signed delta to every
+    target in the moved suffix.
+    """
+    if not 0 <= old_offset <= 0x00FFFFFF:
+        raise CodecError(f"old GCX internal offset is outside 24-bit range: {old_offset}")
+    if not 0 <= new_offset <= 0x00FFFFFF:
+        raise CodecError(f"new GCX internal offset is outside 24-bit range: {new_offset}")
+    delta = new_offset - old_offset
+    raw = bytearray(record.raw)
+    patched_fields: list[int] = []
+    for index, word in enumerate(record.proc_table):
+        inner_offset = word & 0x00FFFFFF
+        if inner_offset < old_offset:
+            continue
+        relocated = inner_offset + delta
+        if not 0 <= relocated <= 0x00FFFFFF:
+            raise CodecError(
+                f"GCX53 relocated procedure offset is outside 24-bit range: "
+                f"0x{inner_offset:x} + {delta}"
+            )
+        new_word = (word & 0xFF000000) | relocated
+        field_offset = 4 + index * 4
+        struct.pack_into("<I", raw, field_offset, new_word)
+        patched_fields.append(field_offset)
+
+    if not patched_fields:
+        raise CodecError(
+            f"no GCX procedure offsets found at/after 0x{old_offset:x}"
+        )
+    return bytes(raw)
+
+
+def relocate_gcx53_inner_offsets(record: GcxRecord, delta: int) -> bytes:
+    """Validated GCX53 wrapper around the generic internal-offset fixer."""
+    relocated = relocate_gcx_internal_offsets(record, 0x1000, 0x1000 + delta)
+    patched_fields = {
+        4 + index * 4
+        for index, old_word in enumerate(record.proc_table)
+        if old_word != u32(relocated, 4 + index * 4)
+    }
+
+    expected_fields = {0x64, 0x70, 0x7C}
+    if patched_fields != expected_fields:
+        raise CodecError(
+            "unexpected GCX53 inner-offset fields: "
+            f"expected {sorted(expected_fields)}, got {sorted(patched_fields)}"
+        )
+    return relocated
+
+
 def parse_codec(data: bytes) -> list[GcxRecord]:
     records: list[GcxRecord] = []
     cursor = 0

@@ -288,8 +288,11 @@ exclusive.
 
 `safe-fixed` is the default and refuses unsafe codec output.
 `diagnostic-fixed` is only for runtime identification: it preserves GCX layout
-but overwrites live Japanese glyphs. `experimental-relocate` may reparse but is
-known to crash in game and must not be used for release builds.
+but overwrites live Japanese glyphs. `experimental-relocate` now repairs the
+known GCX53 inner-offset dependency and a minimal `+0x10` file-only relocation
+passed runtime validation. It remains experimental for broad reflows until
+additional moved records and later checkpoints are tested; `safe-fixed` remains
+the release default. See `docs/gcx53-relocation-fix-2026-08-10.md`.
 
 Only pass a table after it has accepted rows. The resulting directory is
 `dist/citra_mod/000400000007A000`; copy or link that title-ID directory beneath

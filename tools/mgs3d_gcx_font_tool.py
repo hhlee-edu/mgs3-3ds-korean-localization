@@ -19,6 +19,7 @@ from mgs3d_codec_tool import (  # noqa: E402
     decode_mgs_preview,
     parse_codec,
     parse_rendered,
+    relocate_gcx53_inner_offsets,
     render_bytes,
     sha256,
 )
@@ -759,6 +760,18 @@ def command_build_korean(args: argparse.Namespace) -> None:
     reparsed = parse_codec(output)
     if len(reparsed) != len(records):
         raise CodecError("Korean build failed record-count verification")
+    gcx53_delta = (
+        reparsed[53].source_offset - records[53].source_offset
+        if len(records) > 53
+        else 0
+    )
+    if gcx53_delta:
+        patched_gcx53 = relocate_gcx53_inner_offsets(reparsed[53], gcx53_delta)
+        patched_output = bytearray(output)
+        start = reparsed[53].source_offset
+        patched_output[start:start + len(patched_gcx53)] = patched_gcx53
+        output = bytes(patched_output)
+        reparsed = parse_codec(output)
     if args.preserve_record_layout:
         mismatches = [
             index
