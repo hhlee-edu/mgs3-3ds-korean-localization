@@ -147,3 +147,28 @@ accept a plain DAT record offset directly. The decoder dispatches on the high
 nibble of the script byte and handles 1-, 2-, 3-, and 4-byte immediates plus
 string/reference forms. Reconstructing this decoder for `scenerio.gcx` is now
 the preferred route to a static call-site scanner.
+
+### First static 3DS call extraction
+
+`tools/mgs3d_story_media_calls.py` implements the constant subset of the
+tagged argument decoder and scans only the procedure region of each parsed
+`scenerio.gcx`. The 3DS `demo` hash occurs in a consistent little-endian
+24-bit command frame with marker `0x06` or `0x64`; the two marker families
+account for 150 and 67 calls respectively. The scan produces 217 `demo`
+candidates across 71 stages, including repeated calls, and zero `movie`
+command frames. The first argument forms are 150 24-bit immediates and 67
+compact constants.
+
+The zero `movie` result is meaningful but not yet proof of playback semantics:
+the observed Sokolov movie may be selected by the `demo` request machinery or
+by a downstream scene transition. The candidate rows therefore retain
+`static_structural_candidate` confidence, leave `scene_id` empty, and expose
+the decoded first value as `record_id/descriptor`. Physical DAT order is not
+used. Output is
+`analysis/story_media_order/static_media_call_candidates.csv`.
+
+The scanner and its tests compile successfully. Direct decoder assertions
+cover the observed 24-bit immediate, compact constants, unresolved dynamic
+forms, and both command markers. The local Python environment does not contain
+pytest, so the focused assertions were executed directly rather than reporting
+a pytest suite result.
