@@ -121,3 +121,29 @@ substituting a guest instruction—for example, a host-side Dynarmic IR callout
 that preserves the translated ARM instruction exactly, validated first against
 an uninstrumented runtime hash/trace. Until then, neither `r0=0x10000000` nor
 the registered `movie` handler is promoted to a story scene mapping.
+
+### Non-invasive tick-marker probe
+
+A replacement probe was compiled in the external Azahar worktree. Dynarmic's
+existing per-instruction tick callback marks translated blocks containing
+`0x00409DD0` or `0x0079F6C0`. At the normal block-end tick callback it removes
+the marker before updating emulated time and logs PC/LR plus r0-r12. It neither
+replaces a guest instruction nor pauses execution, writes guest memory, or
+changes the effective tick count. Runtime output is not evidence until this
+build completes the opening path without the prior diagnostic crash.
+
+The runtime validation failed: with the ROM path correctly passed, Azahar
+terminated about 5.7 seconds after boot, before a usable media event was
+recorded. The tick-marker patch was removed and the stable bundle rebuilt.
+This probe is rejected as evidence and must not be retried.
+
+Static disassembly supplies a safer next boundary. The `movie` handler calls
+the common argument reader at `0x0022F35C`, stores its return value at offset
+`+4` of the global request object, and writes request type `5` at offset `+0`.
+The `demo` handler preserves the same reader's first return value in `fp` and
+passes it unchanged to `0x004449CC` and as argument r3 to `0x004BC2DC`.
+Both therefore consume the tagged value decoded by `0x00171C7C`; they do not
+accept a plain DAT record offset directly. The decoder dispatches on the high
+nibble of the script byte and handles 1-, 2-, 3-, and 4-byte immediates plus
+string/reference forms. Reconstructing this decoder for `scenerio.gcx` is now
+the preferred route to a static call-site scanner.
