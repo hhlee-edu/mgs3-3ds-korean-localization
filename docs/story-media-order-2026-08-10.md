@@ -189,3 +189,32 @@ interpreting its tagged payload as a GCX resource offset produces unrelated
 string interiors. Both shortcuts are rejected. The descriptor must be followed
 through the generic demo.dat resource resolver before joining it to scene 127
 or any physical record range.
+
+### Demo resource-name mapping
+
+The PS2 `.02` files use the same 24-bit `demo` command frame, not the legacy
+16-bit hash. A scan parses all 156 files and finds 139 calls; matching stages
+retain identical tagged descriptors across PS2 and 3DS. For example,
+`s000a_0` uses `0x003BC006` and `0x003CA006` on both platforms. This establishes
+that the low-24 value is a cross-platform story resource identifier rather
+than a 3DS physical file offset.
+
+The 3DS RomFS supplies the missing dictionary in
+`sound/table/sddemotable.txt`. A named entry is encoded as:
+
+```text
+((strcode24(resource_name) & 0xFFFF) << 8) | 0x06
+```
+
+Original case is significant. This rule maps 146 of 150 u24 calls. Compact
+arguments 0..3 map through the table's numeric IDs. Overall, 213 of 217 static
+calls now have a demo-table ID and resource name: 178 are unique exact rows,
+35 retain all colliding/aliased names, and four title-stage special values
+remain unresolved.
+
+The table's numeric ID is recorded as `demo_table_id`, not `scene_id`.
+Those namespaces demonstrably differ: opening resource `v020_010_p010` has
+table ID 0, while the provisional padding-derived map called its physical
+opening region scene 127. Until the physical demo.dat resolver is proven,
+`scene_id` remains empty. This prevents the known-bad scene map from silently
+re-entering the result.

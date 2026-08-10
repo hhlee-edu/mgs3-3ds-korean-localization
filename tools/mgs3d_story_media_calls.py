@@ -22,6 +22,25 @@ from mgs3d_codec_tool import GcxRecord  # noqa: E402
 COMMAND_MARKERS = (0x06, 0x64)
 
 
+def load_demo_table(path: Path) -> tuple[dict[int, list[tuple[int, str]]],
+                                          dict[int, list[str]]]:
+    by_descriptor: dict[int, list[tuple[int, str]]] = {}
+    by_id: dict[int, list[str]] = {}
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        try:
+            scene_id = int(parts[1])
+        except ValueError:
+            continue
+        name = parts[0]
+        descriptor = ((strcode24(name.encode("ascii")) & 0xFFFF) << 8) | 0x06
+        by_descriptor.setdefault(descriptor, []).append((scene_id, name))
+        by_id.setdefault(scene_id, []).append(name)
+    return by_descriptor, by_id
+
+
 @dataclass(frozen=True)
 class TaggedArgument:
     tag: int
@@ -68,8 +87,9 @@ def procedure_index(record: GcxRecord, file_offset: int) -> int | None:
     return max(candidates, default=(0, None))[1]
 
 
-def scan(root: Path) -> list[dict[str, object]]:
+def scan(root: Path, demo_table: Path | None = None) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
+    by_descriptor, by_id = load_demo_table(demo_table) if demo_table else ({}, {})
     hashes = {name: strcode24(name.encode("ascii")) for name in ("demo", "movie")}
     per_proc_order: dict[tuple[str, int | None], int] = {}
     for path in sorted(root.glob("*/scenerio.gcx")):
@@ -90,6 +110,20 @@ def scan(root: Path) -> list[dict[str, object]]:
                 packed_descriptor = None if argument.value is None else (
                     (5 << 24) | (argument.value & 0xFFFFFF)
                 )
+                mappings: list[tuple[int, str]] = []
+                if argument.value is not None:
+                    if argument.kind == "u24_immediate":
+                        mappings = by_descriptor.get(argument.value, [])
+                    elif argument.kind == "small_constant":
+                        mappings = [(argument.value, name)
+                                    for name in by_id.get(argument.value, [])]
+                scene_ids = sorted({item[0] for item in mappings})
+                resource_names = sorted({item[1] for item in mappings})
+                confidence = "static_structural_candidate"
+                if len(scene_ids) == 1 and len(resource_names) == 1:
+                    confidence = "static_table_exact"
+                elif mappings:
+                    confidence = "static_table_ambiguous"
                 proc = procedure_index(record, absolute)
                 key = (path.parent.name, proc)
                 per_proc_order[key] = per_proc_order.get(key, 0) + 1
@@ -99,15 +133,17 @@ def scan(root: Path) -> list[dict[str, object]]:
                     "call_order": per_proc_order[key],
                     "type": media_type,
                     "scene_id": "",
+                    "demo_table_id": "|".join(str(value) for value in scene_ids),
                     "record_id/descriptor": "" if argument.value is None
                     else f"0x{argument.value:08X}",
                     "packed_file_descriptor": "" if packed_descriptor is None
                     else f"0x{packed_descriptor:08X}",
                     "descriptor_file": "demo.dat",
+                    "resource_id": "|".join(resource_names),
                     "script_offset": f"0x{absolute:X}",
                     "argument_tag": argument.tag,
                     "argument_kind": argument.kind,
-                    "confidence": "static_structural_candidate",
+                    "confidence": confidence,
                 })
                 cursor = hash_hit + len(hash_bytes)
     return sorted(rows, key=lambda row: (str(row["stage"]), int(str(row["script_offset"]), 16)))
@@ -117,12 +153,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("scenario_root", type=Path)
     parser.add_argument("output_csv", type=Path)
+    parser.add_argument("--demo-table", type=Path)
     args = parser.parse_args()
-    rows = scan(args.scenario_root)
+    rows = scan(args.scenario_root, args.demo_table)
     args.output_csv.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["stage", "procedure", "call_order", "type", "scene_id",
+    fields = ["stage", "procedure", "call_order", "type", "scene_id", "demo_table_id",
               "record_id/descriptor", "packed_file_descriptor", "descriptor_file",
-              "script_offset", "argument_tag",
+              "resource_id", "script_offset", "argument_tag",
               "argument_kind", "confidence"]
     with args.output_csv.open("w", newline="", encoding="utf-8-sig") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields)
