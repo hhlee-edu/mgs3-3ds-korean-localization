@@ -24,7 +24,7 @@ stable Japanese dialogue when every GCX record keeps its original layout.
 ## Start here
 
 - [Toolkit workflow](MGS3D_KOREAN_TOOLKIT.md)
-- [Latest handoff](docs/session-handoff-2026-08-01.md)
+- [Latest glyph/space audit handoff](docs/glyph-space-audit-handoff-2026-08-12.md)
 - [Today's exact resume point](docs/work-resume-2026-08-01.md)
 - [Next milestone: Japanese source reassembly](docs/japanese-reassembly-plan-2026-08-02.md)
 - [Japanese token reconstruction audit](docs/japanese-token-audit.md)

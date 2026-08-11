@@ -4,7 +4,12 @@ This index is the authority for document status. Historical files are retained
 as experimental evidence; a struck-through entry means that its conclusion was
 superseded, not that the underlying observation was deleted.
 
-## Current conclusions (2026-08-10)
+## Current conclusions (2026-08-12)
+
+- [Glyph/space audit](glyph-space-audit-2026-08-12.md) — current read-only
+  resident/local glyph allocation and movie/demo/codec capacity analysis.
+- [Glyph/space audit handoff](glyph-space-audit-handoff-2026-08-12.md) — exact
+  resume point, confirmed boundaries, reproduction, and next safe step.
 
 - [Codec distributed grow stress](codec-distributed-grow-stress-2026-08-10.md)
   — current runtime result for general GCX relocation.
@@ -48,4 +53,5 @@ superseded, not that the underlying observation was deleted.
 - 2026-08-08: [session handoff](session-handoff-2026-08-08.md)
 - 2026-08-09: [session handoff](session-handoff-2026-08-09.md)
 - 2026-08-10: current conclusions listed above
-
+- 2026-08-12: [glyph/space audit](glyph-space-audit-2026-08-12.md),
+  [handoff](glyph-space-audit-handoff-2026-08-12.md)
