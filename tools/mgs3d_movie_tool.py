@@ -261,7 +261,11 @@ def rebuild_record_fixed(record: Record, replacements: dict[int, str], font: Ima
             replaced_slots.update(slots)
         else:
             retained_slots.update(slots)
-    freed = sorted(index for index in replaced_slots - retained_slots if index < old_count)
+    # Any existing slot not referenced by a retained subtitle is dead after
+    # this rebuild. This includes slots released by replaced English/local
+    # text and slots that were already unreferenced in the source font table.
+    # Reusing them changes no surviving subtitle and avoids needless growth.
+    freed = sorted(index for index in range(old_count) if index not in retained_slots)
     if len(needed) > len(freed):
         raise MovieError(
             f"record {record.index} fixed-layout font deficit: "
@@ -298,6 +302,7 @@ def rebuild_record_fixed_reclaim(
     replacements: dict[int, str],
     font: ImageFont.FreeTypeFont,
     donor_offsets: set[int] | None = None,
+    static_map: dict[str, bytes] | None = None,
 ) -> tuple[bytes, dict[str, str]]:
     """Fixed-layout rebuild that may grow the record to append new glyphs.
 
@@ -323,6 +328,7 @@ def rebuild_record_fixed_reclaim(
     guarantees no subtitle moves *within* its own record.
     """
     donor_offsets = donor_offsets or set()
+    static_map = static_map or {}
     if not replacements and not donor_offsets:
         return record.raw, {}
 
@@ -330,7 +336,8 @@ def rebuild_record_fixed_reclaim(
     seen: set[str] = set()
     for subtitle in record.subtitles:
         for character in replacements.get(subtitle.offset, ""):
-            if ord(character) >= 0x80 and character not in seen:
+            if (ord(character) >= 0x80 and character not in static_map
+                    and character not in seen):
                 seen.add(character)
                 needed.append(character)
 
@@ -351,8 +358,9 @@ def rebuild_record_fixed_reclaim(
             f"record {record.index} needs {len(appended)} appended glyphs but only "
             f"{1020 - old_count} page-3 slots remain"
         )
-    mapping: dict[str, bytes] = {ch: page3_token(freed[i]) for i, ch in enumerate(reused)}
-    mapping.update({ch: page3_token(old_count + i) for i, ch in enumerate(appended)})
+    local_mapping = {ch: page3_token(freed[i]) for i, ch in enumerate(reused)}
+    local_mapping.update({ch: page3_token(old_count + i) for i, ch in enumerate(appended)})
+    mapping = static_map | local_mapping
 
     body = bytearray(record.raw[:record.text_end])
     for subtitle in record.subtitles:
@@ -434,13 +442,23 @@ def rebuild_record_growing(
         if 0xAC00 <= ord(character) <= 0xD7A3 and character not in static_map
     ))
     old_count = len(record.font) // 64
-    if old_count + len(needed) > 1020:
+    replaced_or_donor = set(replacements) | donor_offsets
+    freed_slots: set[int] = set()
+    retained_slots: set[int] = set()
+    for subtitle in record.subtitles:
+        slots = page3_indices(subtitle.raw)
+        (freed_slots if subtitle.offset in replaced_or_donor else retained_slots).update(slots)
+    freed = sorted(index for index in freed_slots - retained_slots if index < old_count)
+    reused, appended = needed[:len(freed)], needed[len(freed):]
+    if old_count + len(appended) > 1020:
         raise MovieError(
-            f"record {record.index} needs {len(needed)} Hangul glyphs but only "
+            f"record {record.index} needs {len(appended)} appended Hangul glyphs but only "
             f"{1020 - old_count} page-3 slots remain"
         )
-    local_mapping = {character: page3_token(old_count + index)
-                     for index, character in enumerate(needed)}
+    local_mapping = {character: page3_token(freed[index])
+                     for index, character in enumerate(reused)}
+    local_mapping.update({character: page3_token(old_count + index)
+                          for index, character in enumerate(appended)})
     mapping = static_map | local_mapping
 
     body = bytearray(record.raw[:0x20])
@@ -474,7 +492,10 @@ def rebuild_record_growing(
     text_end = len(body)
     struct.pack_into("<I", body, 0x10, text_end - 0x14)
     new_font = bytearray(record.font)
-    for character in needed:
+    for character in reused:
+        slot = PAGE3_TOKEN_TO_INDEX[local_mapping[character]]
+        new_font[slot * 64:(slot + 1) * 64] = render_character(character, font)
+    for character in appended:
         new_font.extend(render_character(character, font))
     body.extend(struct.pack("<I", len(new_font)))
     body.extend(new_font)
@@ -529,13 +550,18 @@ def maximal_size_neutral_subset(
         del selected[max(choices)[2]]
 
 
-def fixed_capacity(record: Record, replacements: dict[int, str]) -> dict:
+def fixed_capacity(
+    record: Record,
+    replacements: dict[int, str],
+    static_map: dict[str, bytes] | None = None,
+) -> dict:
     """Report whether a record can be rebuilt without moving any bytes."""
+    static_map = static_map or {}
     needed = list(dict.fromkeys(
         character
         for subtitle in record.subtitles
         for character in replacements.get(subtitle.offset, "")
-        if ord(character) >= 0x80
+        if ord(character) >= 0x80 and character not in static_map
     ))
     replaced_offsets = set(replacements)
     replaced_slots: set[int] = set()
@@ -545,7 +571,9 @@ def fixed_capacity(record: Record, replacements: dict[int, str]) -> dict:
         (replaced_slots if subtitle.offset in replaced_offsets else retained_slots).update(slots)
     old_count = len(record.font) // 64
     freed = sorted(index for index in replaced_slots - retained_slots if index < old_count)
-    mapping = {ch: page3_token(freed[i]) for i, ch in enumerate(needed[:len(freed)])}
+    mapping = static_map | {
+        ch: page3_token(freed[i]) for i, ch in enumerate(needed[:len(freed)])
+    }
     entries = []
     for subtitle in record.subtitles:
         replacement = replacements.get(subtitle.offset)
@@ -662,6 +690,7 @@ def command_inspect(args: argparse.Namespace) -> None:
                 "entry_type": subtitle.entry_type,
                 "offset": subtitle.offset,
                 "size": len(subtitle.raw),
+                "fixed_capacity": len(subtitle.original) - 4 - len(subtitle.tail),
                 "preview": decode_mgs_preview(subtitle.raw),
                 "raw_text": render_bytes(subtitle.raw),
             })
@@ -718,7 +747,8 @@ def command_extract_font(args: argparse.Namespace) -> None:
 
 
 def command_build_korean(args: argparse.Namespace) -> None:
-    modes = [args.grow_records, args.size_neutral_reclaim, args.fixed_layout_reclaim]
+    modes = [args.grow_records, args.grow_records_reclaim,
+             args.size_neutral_reclaim, args.fixed_layout_reclaim]
     if sum(bool(m) for m in modes) > 1:
         raise MovieError(
             "select only one of --grow-records, --size-neutral-reclaim, --fixed-layout-reclaim"
@@ -741,7 +771,10 @@ def command_build_korean(args: argparse.Namespace) -> None:
     source_layout = [(record.offset, len(record.raw)) for record in records]
     fixed_layout_records: list[Record] = []
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("wb") as stream:
+    temporary_output = args.output.with_suffix(args.output.suffix + ".partial")
+    if temporary_output.exists():
+        temporary_output.unlink()
+    with temporary_output.open("wb") as stream:
         stream.write(prefix)
         for record in records:
             stream.write(record.gap_before)
@@ -755,16 +788,26 @@ def command_build_korean(args: argparse.Namespace) -> None:
                     record, chosen, font, donors, len(record.raw), static_map
                 )
                 local = chosen
+            elif args.grow_records_reclaim and local:
+                donors = {s.offset for s in record.subtitles if s.entry_type in {2, 3, 4, 5}}
+                rebuilt, allocation = rebuild_record_growing(
+                    record, local, font, donors, static_map=static_map)
             elif args.grow_records:
                 rebuilt, allocation = rebuild_record_growing(
                     record, local, font, static_map=static_map)
             elif args.fixed_layout_reclaim and local:
                 donors = {s.offset for s in record.subtitles if s.entry_type in {2, 3, 4, 5}}
-                rebuilt, allocation = rebuild_record_fixed_reclaim(record, local, font, donors)
+                rebuilt, allocation = rebuild_record_fixed_reclaim(
+                    record, local, font, donors, static_map
+                )
                 verify_fixed_layout(record, rebuilt)
                 fixed_layout_records.append(record)
-            else:
+            elif local:
                 rebuilt, allocation = rebuild_record_fixed(record, local, font)
+            else:
+                # Untouched records must remain byte-identical. Re-encoding them
+                # can fail on non-English subtitle banks and is unnecessary.
+                rebuilt, allocation = record.raw, {}
             stream.write(rebuilt)
             used.update(local)
             if allocation:
@@ -772,7 +815,9 @@ def command_build_korean(args: argparse.Namespace) -> None:
         stream.write(suffix)
     missing = sorted(set(replacements) - found)
     if missing:
+        temporary_output.unlink(missing_ok=True)
         raise MovieError(f"{len(missing)} accepted offsets do not identify subtitle entries")
+    temporary_output.replace(args.output)
     digest = hashlib.sha256()
     with args.output.open("rb") as stream:
         while chunk := stream.read(1024 * 1024):
@@ -853,6 +898,7 @@ def command_audit_existing(args: argparse.Namespace) -> None:
 def command_capacity(args: argparse.Namespace) -> None:
     _, records, _ = parse_records(args.input.read_bytes())
     replacements = read_replacements(args.translation_csv)
+    static_map = load_static_character_map(args.static_allocation)
     if not replacements:
         raise MovieError("CSV has no accepted Korean rows")
     used: set[int] = set()
@@ -860,7 +906,7 @@ def command_capacity(args: argparse.Namespace) -> None:
     for record in records:
         local = {s.offset: replacements[s.offset] for s in record.subtitles if s.offset in replacements}
         if local:
-            reports.append(fixed_capacity(record, local))
+            reports.append(fixed_capacity(record, local, static_map))
             used.update(local)
     missing = sorted(set(replacements) - used)
     if missing:
@@ -1001,6 +1047,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="repack records and append glyphs (required by fontless Western records)",
     )
     korean.add_argument(
+        "--grow-records-reclaim", action="store_true",
+        help="repack records, clear Western donor entries, and append glyphs; fund growth from local container slack",
+    )
+    korean.add_argument(
         "--size-neutral-reclaim", action="store_true",
         help="clear Western entry types 2-5, select a fitting type-1 subset, and preserve every record size",
     )
@@ -1025,6 +1075,10 @@ def build_parser() -> argparse.ArgumentParser:
     capacity.add_argument("input", type=Path)
     capacity.add_argument("translation_csv", type=Path)
     capacity.add_argument("output_json", type=Path)
+    capacity.add_argument(
+        "--static-allocation", type=Path,
+        help="reuse a runtime-installed 81/82/83 static Hangul allocation",
+    )
     capacity.add_argument("--safe-csv", type=Path, help="copy CSV with unsafe records unaccepted")
     capacity.add_argument("--max-safe-csv", type=Path, help="copy CSV with a largest safe subset per record")
     capacity.set_defaults(function=command_capacity)

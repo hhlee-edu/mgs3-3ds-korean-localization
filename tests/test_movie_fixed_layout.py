@@ -18,6 +18,7 @@ from mgs3d_movie_tool import (  # noqa: E402
     page3_indices,
     page3_token,
     rebuild_record_fixed,
+    rebuild_record_fixed_reclaim,
     rebuild_record_growing,
 )
 
@@ -92,10 +93,10 @@ class MovieFixedLayoutTests(unittest.TestCase):
         rebuilt, allocation = rebuild_record_growing(
             record, {record.subtitles[0].offset: "\uac00"}, object()
         )
-        self.assertEqual(allocation, {"\uac00": "9003"})
+        self.assertEqual(allocation, {"\uac00": "9001"})
         self.assertEqual(int.from_bytes(rebuilt[4:8], "little"), len(rebuilt))
         self.assertEqual(len(rebuilt) % 16, 0)
-        self.assertIn(page3_token(2) + b"\0", rebuilt)
+        self.assertIn(page3_token(0) + b"\0", rebuilt)
 
     @patch("mgs3d_movie_tool.render_character", return_value=b"K" * 64)
     def test_growing_rebuild_reuses_static_page_without_local_glyph(self, render) -> None:
@@ -110,6 +111,31 @@ class MovieFixedLayoutTests(unittest.TestCase):
         self.assertEqual(len(rebuilt[record.text_end + 4:]), len(record.font))
         self.assertIn(b"\x81\x01\0", rebuilt)
         render.assert_not_called()
+
+    @patch("mgs3d_movie_tool.render_character", return_value=b"K" * 64)
+    def test_fixed_reclaim_reuses_static_page_without_local_glyph(self, render) -> None:
+        record = self.make_record()
+        rebuilt, allocation = rebuild_record_fixed_reclaim(
+            record,
+            {record.subtitles[0].offset: "\uac00"},
+            object(),
+            static_map={"\uac00": b"\x81\x01"},
+        )
+        self.assertEqual(allocation, {})
+        self.assertEqual(len(rebuilt), len(record.raw))
+        self.assertIn(b"\x81\x01\0", rebuilt)
+        render.assert_not_called()
+
+    def test_capacity_uses_static_page_before_local_slots(self) -> None:
+        record = self.make_record()
+        result = fixed_capacity(
+            record,
+            {record.subtitles[0].offset: "\uac00\ub098\ub2e4"},
+            {"\uac00": b"\x81\x01"},
+        )
+        self.assertTrue(result["safe"])
+        self.assertEqual(result["needed_glyphs"], 2)
+        self.assertEqual(result["font_deficit"], 0)
 
     def test_capacity_matches_fixed_rebuild_constraints(self) -> None:
         record = self.make_record()

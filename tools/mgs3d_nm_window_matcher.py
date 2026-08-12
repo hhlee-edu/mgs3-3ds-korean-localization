@@ -552,7 +552,8 @@ ASSIST_CSS = r'''
 ASSIST_JS = r'''
 /* ===== V6.5 READ-ONLY ASSIST ===== */
 const ASSIST_CANDIDATES=__ASSIST_DATA__;
-let assistExpanded=false,assistPreview=null;
+let assistExpanded=false,assistPreview=null,assistStreamKey=null;
+let assistLeftStreamEnd=null,assistRightStreamStart=null,assistRightStreamEnd=null;
 const assistRowsById=new Map(ROWS.map((r,i)=>[r.id,{r,i}]));
 function assistWindowKey(){
   const a=[...selectedLeft].map(id=>assistRowsById.get(id)).filter(Boolean).sort((x,y)=>x.i-y.i);
@@ -563,6 +564,14 @@ function assistWindowKey(){
 function assistConflict(c){
   const kinds=new Set();for(let i=c.ps2_start;i<=c.ps2_end;i++){const u=ps2UseInfo(i);if(u.kind==="strong")kinds.add("수동확정과 충돌");else if(u.kind==="first")kinds.add("기존 관계 사용 중");}
   return [...kinds];
+}
+function resetAssistStreams(key=null){assistStreamKey=key;assistLeftStreamEnd=null;assistRightStreamStart=null;assistRightStreamEnd=null;}
+function ensureAssistLeftStream(){
+  const key=assistWindowKey();if(!key)return null;if(key!==assistStreamKey)resetAssistStreams(key);
+  const ids=key.split('|'),first=assistRowsById.get(ids[0])?.r;if(!first)return null;
+  const all=rowsForMediaGroup(first),at=all.findIndex(x=>x.id===first.id);if(at<0)return null;
+  if(assistLeftStreamEnd==null)assistLeftStreamEnd=Math.min(all.length-1,at+79);
+  return {all,start:Math.max(0,at-10),end:assistLeftStreamEnd};
 }
 function renderAssist(){
   const box=document.getElementById("assistBox");if(!box)return;
@@ -585,15 +594,24 @@ function paintAssistPreview(){
   document.querySelectorAll('.assist-preview').forEach(e=>e.classList.remove('assist-preview'));
   if(!assistPreview)return;for(let i=assistPreview.start;i<=assistPreview.end;i++)document.querySelector(`[data-right="${i}"]`)?.classList.add('assist-preview');
 }
-function clearAssistPreview(rerender=true){const had=!!assistPreview;assistPreview=null;if(had&&rerender)renderRight(state);else paintAssistPreview();}
+function clearAssistPreview(rerender=true){const had=!!assistPreview;assistPreview=null;if(had&&rerender)renderRight(segById[currentSegId]||state);else paintAssistPreview();}
 function viewAssist(rank){
   const e=ASSIST_CANDIDATES.windows[assistWindowKey()];const c=e?.candidates.find(x=>x.rank===rank);if(!c)return;
   if(assistPreview&&assistPreview.start===c.ps2_start&&assistPreview.end===c.ps2_end){clearAssistPreview();return;}
-  assistPreview={start:c.ps2_start,end:c.ps2_end};manualRightFocus=c.ps2_start;renderRight(state);paintAssistPreview();
+  assistPreview={start:c.ps2_start,end:c.ps2_end};manualRightFocus=c.ps2_start;
+  assistRightStreamStart=Math.max(1,c.ps2_start-10);assistRightStreamEnd=Math.min(SCRIPT.length,c.ps2_end+99);
+  renderRight(segById[currentSegId]||state);paintAssistPreview();
   setTimeout(()=>document.querySelector(`[data-right="${c.ps2_start}"]`)?.scrollIntoView({block:'center',behavior:'smooth'}),0);
 }
+const _assistVisibleLeftRows=visibleLeftRows;visibleLeftRows=function(s){
+  const stream=ensureAssistLeftStream();if(!stream)return _assistVisibleLeftRows(s);
+  let rows=stream.all.slice(stream.start,stream.end+1);
+  if(!($("#showFirstReview")||{}).checked)rows=rows.filter(r=>{const x=latestLeftRelation(r.id);return !x||x.authority!=="manual_reviewed_1st"||selectedLeft.has(r.id)||r.id===v6TargetId;});
+  return rows;
+};
 const _assistRightRange=rightRange;rightRange=function(s){
-  let [lo,hi]=_assistRightRange(s);if(assistPreview){lo=Math.max(1,Math.min(lo,assistPreview.start-2));hi=Math.min(SCRIPT.length,Math.max(hi,assistPreview.end+2));}return [lo,hi];
+  if(assistRightStreamStart!=null&&assistRightStreamEnd!=null)return [assistRightStreamStart,assistRightStreamEnd];
+  return _assistRightRange(s);
 };
 const _assistRenderRight=renderRight;renderRight=function(s){_assistRenderRight(s);paintAssistPreview();};
 const _assistRender=render;render=function(){_assistRender();renderAssist();};
@@ -606,6 +624,19 @@ const _assistRelationBadge=relationBadge;relationBadge=function(id){let html=_as
   return currentReviewRelId?html.replace(`data-open-rel="${currentReviewRelId}">관계 불러오기`,`data-open-rel="${currentReviewRelId}">관계 닫기`):html;
 };
 document.querySelector('#rightHead')?.insertAdjacentHTML('beforebegin','<div id="assistBox"></div>');
+function growAssistStream(side){
+  const el=document.getElementById(side==='left'?'leftRows':'rightRows');if(!el||el.scrollHeight-el.scrollTop-el.clientHeight>240)return;
+  const oldTop=el.scrollTop;
+  if(side==='left'){
+    const stream=ensureAssistLeftStream();if(!stream||stream.end>=stream.all.length-1)return;
+    assistLeftStreamEnd=Math.min(stream.all.length-1,stream.end+80);renderLeft(segById[currentSegId]||state);document.getElementById('leftRows').scrollTop=oldTop;
+  }else{
+    if(assistRightStreamEnd==null||assistRightStreamEnd>=SCRIPT.length)return;
+    assistRightStreamEnd=Math.min(SCRIPT.length,assistRightStreamEnd+120);renderRight(segById[currentSegId]||state);document.getElementById('rightRows').scrollTop=oldTop;
+  }
+}
+document.getElementById('leftRows')?.addEventListener('scroll',()=>growAssistStream('left'),{passive:true});
+document.getElementById('rightRows')?.addEventListener('scroll',()=>growAssistStream('right'),{passive:true});
 document.addEventListener('click',e=>{if(e.target.closest('[data-left]')){clearAssistPreview(false);setTimeout(renderAssist,0);}else if(e.target.closest('[data-right]'))clearAssistPreview(false);});
 document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select'))return;if(['1','2','3'].includes(e.key))viewAssist(+e.key);if(e.key==='Escape')clearAssistPreview();});
 renderAssist();
