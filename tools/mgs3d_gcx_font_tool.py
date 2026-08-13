@@ -482,7 +482,8 @@ def command_capacity(args: argparse.Namespace) -> None:
             character
             for unit in active_units
             for character in str(unit["text"])
-            if 0xAC00 <= ord(character) <= 0xD7A3
+            if (0xAC00 <= ord(character) <= 0xD7A3
+                    and character not in base_map)
         }
         free = freed_font_slots(record, replaced)
         old_string_bytes = sum(len(resources[index].data) for index in replaced)

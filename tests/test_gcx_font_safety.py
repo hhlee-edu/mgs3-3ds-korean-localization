@@ -82,6 +82,32 @@ class TranslationChangeTests(unittest.TestCase):
 
 
 class CapacityOwnershipTests(unittest.TestCase):
+    def test_capacity_does_not_allocate_externally_mapped_hangul(self) -> None:
+        source = build_synthetic_gcx(glyph_count=3)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            codec_path = tmp_path / "codec.dat"
+            codec_path.write_bytes(source)
+            translation_path = tmp_path / "translation.json"
+            translation_path.write_text(json.dumps({
+                "format": "mgs3d-codec-translation-v1",
+                "character_map": {"한": custom_token(10).hex()},
+                "units": [
+                    {"gcx": 0, "resource": 0, "kind": "string", "text": "한<00>"},
+                ],
+            }), encoding="utf-8")
+            report_path = tmp_path / "capacity.json"
+
+            args = build_parser().parse_args([
+                "capacity", str(codec_path), str(translation_path),
+                "--json", str(report_path), "--check",
+            ])
+            args.function(args)
+
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report["records"][0]["unique_hangul"], 0)
+            self.assertEqual(report["records"][0]["slot_deficit"], 0)
+
     def test_glyph_is_freed_only_when_all_owners_are_selected(self) -> None:
         owners = [frozenset({1, 2}), frozenset({2}), frozenset()]
         self.assertEqual(freed_glyphs(owners, {1}), {2})
