@@ -2,6 +2,16 @@
 /partition0/
 /analysis/
 
+# Reorganized local asset areas (source/docs stay tracked elsewhere)
+/originals/
+/translation/
+/glyph/
+/experiments/
+/builds/
+/logs/
+/archive/
+/vendor/
+
 # Emulator runtime and user state
 /Citra/
 /plugins/
@@ -35,3 +45,7 @@ __pycache__/
 Thumbs.db
 /mgs3-dialogue-tool/work/
 /mgs3-dialogue-tool/tests/tmp*/
+/.tmp/
+/.tmp_tests/
+/.test_temp_*/
+/WIP_*.patch

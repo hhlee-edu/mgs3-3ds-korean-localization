@@ -1,3 +1,0 @@
-order,stage,script_file,script_offset,type(movie/demo),scene_id,descriptor/resource_id,source_en,record_range,evidence,confidence
-1,unknown,unknown,unknown,demo,127,unknown,"Flying over Pakistan, altitude 30,000 feet. [...] Spread your wings and fly! God be with you!",287-291,"2026-08-10 runtime playback plus English type-1 records",runtime-confirmed-order
-2,unknown,unknown,unknown,movie,unknown,unknown,"Jack, I've got some important news. The head of the CIA has finally given us the green light for the Virtuous mission. [...] Nikolai Stepanovich Sokolov.",0+,"2026-08-10 runtime handoff plus English type-1 records",runtime-confirmed-order

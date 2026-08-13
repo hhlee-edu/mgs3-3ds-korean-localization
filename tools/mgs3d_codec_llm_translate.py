@@ -22,8 +22,8 @@ capacity regardless) and not worth spending translation effort on.
 
 Usage:
     python3 mgs3d_codec_llm_translate.py \\
-        --review analysis/ps2_korean/codec-3ds-INTEGRATED-review.csv \\
-        --prepare-only analysis/ps2_korean/full_build/rebuild_2026-08-08/codec_llm_batch.json
+        --review translation/10_master/codec-3ds-INTEGRATED-review.csv \\
+        --prepare-only experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_llm_batch.json
 """
 
 from __future__ import annotations

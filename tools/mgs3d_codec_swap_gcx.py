@@ -67,6 +67,6 @@ if __name__ == "__main__":
     result = swap_build(
         Path("C:/Users/hhlee/Desktop/Romforge/backups/codec_2026-08-08_120556_pre-growth-experiment.dat"),
         gcx_a=53, gcx_b=1020,
-        output=Path("analysis/ps2_korean/full_build/rebuild_2026-08-08/codec_swap_gcx53_gcx1020.dat"),
+        output=Path("experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_swap_gcx53_gcx1020.dat"),
     )
     print(json.dumps(result, indent=2))

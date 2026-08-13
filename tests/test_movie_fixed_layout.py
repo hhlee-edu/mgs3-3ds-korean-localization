@@ -154,6 +154,13 @@ class MovieFixedLayoutTests(unittest.TestCase):
         self.assertEqual(maximal_safe_subset(record, {offset: "가나"}), {offset: "가나"})
         self.assertEqual(maximal_safe_subset(record, {offset: "가나다"}), {})
 
+    def test_maximal_subset_uses_external_character_map(self) -> None:
+        record = self.make_record()
+        offset = record.subtitles[0].offset
+        text = "\uac00\ub098\ub2e4"
+        external = {"\uac00": b"\x81\x01", "\ub098": b"\x84\x01", "\ub2e4": b"\x84\x02"}
+        self.assertEqual(maximal_safe_subset(record, {offset: text}, external), {offset: text})
+
     def test_maximal_extension_preserves_safe_base(self) -> None:
         record = self.make_record()
         offset = record.subtitles[0].offset

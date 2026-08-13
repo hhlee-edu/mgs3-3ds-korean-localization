@@ -44,7 +44,7 @@ def build_table(codec_path: Path) -> list[dict]:
 
 def main() -> int:
     codec_path = Path("C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/codec.dat")
-    out_path = Path("analysis/ps2_korean/full_build/rebuild_2026-08-08/codec_gcx_candidates.json")
+    out_path = Path("experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_gcx_candidates.json")
     rows = build_table(codec_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(rows, indent=1), encoding="utf-8")

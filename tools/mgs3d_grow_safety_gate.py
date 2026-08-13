@@ -52,15 +52,15 @@ def main() -> int:
         failures.append(f"file size drift: {len(original)} -> {len(candidate)}")
 
     try:
-        # Demo records may grow into their own scene's trailing padding. This
-        # moves later records *inside that same scene*, which is runtime-proven
-        # safe when every scene start and every subtitle's record-relative
-        # layout remain fixed. Movie keeps the stricter absolute placement rule.
-        include_placement = args.kind == "movie"
-        original_layout = layout(original, include_placement)
-        candidate_layout = layout(candidate, include_placement)
+        # Runtime result 2026-08-12: a bulk demo build that preserved all scene
+        # starts and record-internal subtitle offsets still crashed on the first
+        # codec after playback. Record growth shifts later A/V blocks inside a
+        # scene and/or changes loader memory requirements. Therefore absolute
+        # record placement and size are mandatory for both movie and demo.
+        original_layout = layout(original, True)
+        candidate_layout = layout(candidate, True)
         if candidate_layout != original_layout:
-            failures.append("record-internal subtitle offsets, capacities, types, or text boundary drifted")
+            failures.append("record placement/size or internal subtitle layout drifted")
     except Exception as error:  # parser errors are hard gate failures
         failures.append(f"media parse failed: {error}")
 

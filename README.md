@@ -23,16 +23,13 @@ stable Japanese dialogue when every GCX record keeps its original layout.
 
 ## Start here
 
+- **[Wiki home](wiki/Home.md)** — the canonical knowledge base. Read
+  [Current State](wiki/Current-State.md) next, then `HANDOFF.md`.
 - [Toolkit workflow](MGS3D_KOREAN_TOOLKIT.md)
-- [Latest glyph/space audit handoff](docs/glyph-space-audit-handoff-2026-08-12.md)
-- [Today's exact resume point](docs/work-resume-2026-08-01.md)
-- [Next milestone: Japanese source reassembly](docs/japanese-reassembly-plan-2026-08-02.md)
-- [Japanese token reconstruction audit](docs/japanese-token-audit.md)
-- [Latest codec checkpoint](docs/codec-checkpoint-2026-08-01.md)
-- [codec.dat and GCX notes](docs/mgs3d-codec-tool.md)
-- [script comparison workflow](docs/mgs3d-script-comparison.md)
-- [LA2/ARC format notes](docs/la2-arc-format.md)
-- [unpacked-file integrity](docs/unpacked-integrity.md)
+
+Dated session records and topic docs formerly linked here directly now live in
+[`wiki/History/`](wiki/History/); `docs/WIKI.md` and `docs/INDEX.md` remain as
+superseded-but-preserved originals, each bannered to point at the current wiki.
 
 ## Install and diagnose
 

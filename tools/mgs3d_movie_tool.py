@@ -201,8 +201,12 @@ def load_static_character_map(path: Path | None) -> dict[str, bytes]:
             token = bytes.fromhex(token_hex)
         except (TypeError, ValueError) as exc:
             raise MovieError(f"invalid static token for {character!r}: {token_hex!r}") from exc
-        if len(token) != 2 or token[0] not in (0x81, 0x82, 0x83) or token[1] == 0:
-            raise MovieError(f"invalid static-page token for {character!r}: {token.hex()}")
+        # 0x81..0x83 are the installed shared-static pages. 0x84..0x87 are
+        # accepted for the separately verified resident global page. Both
+        # namespaces skip xx00. The build manifest remains responsible for
+        # proving that the matching HPK/page/code dependencies are installed.
+        if len(token) != 2 or not 0x81 <= token[0] <= 0x87 or token[1] == 0:
+            raise MovieError(f"invalid external-page token for {character!r}: {token.hex()}")
         result[character] = token
     return result
 
@@ -603,15 +607,19 @@ def fixed_capacity(
     }
 
 
-def maximal_safe_subset(record: Record, replacements: dict[int, str]) -> dict[int, str]:
+def maximal_safe_subset(
+    record: Record,
+    replacements: dict[int, str],
+    static_map: dict[str, bytes] | None = None,
+) -> dict[int, str]:
     """Return a largest fixed-layout-safe subset, preserving CSV/record order."""
     items = list(replacements.items())
-    if fixed_capacity(record, replacements)["safe"]:
+    if fixed_capacity(record, replacements, static_map)["safe"]:
         return replacements.copy()
     for count in range(len(items) - 1, 0, -1):
         for combination in itertools.combinations(items, count):
             candidate = dict(combination)
-            if fixed_capacity(record, candidate)["safe"]:
+            if fixed_capacity(record, candidate, static_map)["safe"]:
                 return candidate
     return {}
 
@@ -945,7 +953,7 @@ def command_capacity(args: argparse.Namespace) -> None:
         maximal_offsets = set()
         for record in records:
             local = {s.offset: replacements[s.offset] for s in record.subtitles if s.offset in replacements}
-            maximal_offsets.update(maximal_safe_subset(record, local))
+            maximal_offsets.update(maximal_safe_subset(record, local, static_map))
         with args.translation_csv.open(encoding="utf-8-sig", newline="") as source:
             reader = csv.DictReader(source)
             rows = list(reader)
@@ -1040,7 +1048,7 @@ def build_parser() -> argparse.ArgumentParser:
     korean.add_argument("--font-size", type=int, default=15)
     korean.add_argument(
         "--static-allocation", type=Path,
-        help="reuse a runtime-installed 81/82/83 static Hangul allocation",
+        help="reuse a runtime-installed 81..83 static and/or verified 84..87 global allocation",
     )
     korean.add_argument(
         "--grow-records", action="store_true",

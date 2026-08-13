@@ -34,10 +34,10 @@ def main() -> int:
         "C:/Users/hhlee/Desktop/Romforge/backups/codec_2026-08-08_120556_pre-growth-experiment.dat"
     ).read_bytes())
     new36 = parse_codec(Path(
-        "analysis/ps2_korean/full_build/rebuild_2026-08-08/codec_bisect8_test.dat"
+        "experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_bisect8_test.dat"
     ).read_bytes())  # 36-shift, PASSED
     new37 = parse_codec(Path(
-        "analysis/ps2_korean/full_build/rebuild_2026-08-08/codec_bisect9_test.dat"
+        "experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_bisect9_test.dat"
     ).read_bytes())  # 37-shift, CRASHED
 
     out: list[str] = []
@@ -77,7 +77,7 @@ def main() -> int:
                    f"end_sector_changed={o_end_sec != n_end_sec}")
 
     text = "\n".join(out)
-    out_path = Path("analysis/ps2_korean/full_build/rebuild_2026-08-08/gcx53_boundary_table.txt")
+    out_path = Path("experiments/ps2_korean/full_build/rebuild_2026-08-08/gcx53_boundary_table.txt")
     out_path.write_text(text, encoding="utf-8")
     print(text)
     print(f"\nwrote {out_path}")
