@@ -76,9 +76,9 @@ CLI behavior, and codec translation schema validation.
 
 No copyrighted game data is included or required in version control.
 
-## Version 0.6 status
+## Version 0.65 status
 
-Version 0.6 is a development checkpoint, not a finished translation release.
+Version 0.65 is a development checkpoint, not a finished translation release.
 The global Korean glyph path and codec integration are usable, but movie/demo
 subtitles still contain known omissions, timing/layout issues, and text that
 requires in-game review. Translation drafts, matching history, reference-site
