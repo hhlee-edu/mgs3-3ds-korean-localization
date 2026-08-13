@@ -47,6 +47,13 @@ Thumbs.db
 /mgs3-dialogue-tool/work/
 /mgs3-dialogue-tool/tests/tmp*/
 /.tmp/
+/.tmp_media/
 /.tmp_tests/
 /.test_temp_*/
 /WIP_*.patch
+
+# Local translation/review workflow (not part of the public minimal source)
+/tools/mgs3d_apply_direct_translation.py
+/tools/mgs3d_merge_direct_codec_master.py
+/tools/mgs3d_normalize_korean_terms.py
+/tools/mgs3d_shinsnote_style_candidates.py
