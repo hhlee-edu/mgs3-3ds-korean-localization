@@ -1,5 +1,52 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
+## Version 0.65 Handoff (2026-08-13)
+
+Version 0.65 is committed and pushed as `fee6d82`, tagged `v0.65`. The local
+RomForge `output/unpacked` staging tree is ready to repack for hardware testing;
+the CCI itself has intentionally not been built yet.
+
+Changes already present in RomForge staging:
+
+- The opening Cold War history card is patched natively in
+  `stage/v000a_0/cache.hpk`, not in `demo.dat`. Its resource chain is HPK key
+  `309d745f` -> DARC -> `timg/cold_war_text_eng_alp_ovl.bclim` (400x64 L4).
+  A Citra custom-texture probe confirmed the correct screen. The native BCLIM
+  still needs hardware validation.
+- The first briefing's duplicated Jack subtitle slots now read
+  `버추(가상)미션?`; both remain inside their original 20-byte capacities.
+  Existing normalization already corrected three `버츄어스 미션` occurrences
+  to `버추어스 미션`.
+- Corrupted GCX 13 was confirmed to be the 264-entry internal encyclopedia
+  index, not dialogue. The entire same-offset/same-size record was restored
+  byte-for-byte from the pristine Western codec (`0x1C50`, 24,864 bytes).
+
+Prepared staging hashes:
+
+- `codec.dat`: `86cc8e12504e517fd0916de95e3f7a46b7f00b9c6859c28338d187334493c524`
+- `movie.dat`: `0f7e4c961ca4d10c19a46a7076ca0155a0531ed8b10f1a54b62d382a957945dd`
+- `stage/v000a_0/cache.hpk`: `4944705794712ed6d7ea2518d1a394d02abcd9933083843f5054ca2dfd9cf87d`
+
+Validation completed: `codec.dat` parses as 2,326 GCX records / 601,657
+resources; `movie.dat` round-trips byte-identically; the patched HPK zlib entry
+decompresses and inventories correctly; all 140 unit tests pass (two Windows
+temporary-directory ACL failures were rerun successfully with permission).
+
+Next session:
+
+1. Repack the already-prepared RomForge staging tree as the v0.65 CCI.
+2. Test on hardware with no Citra custom-texture dependency.
+3. Verify the opening history card first, then the first briefing wording.
+4. Smoke-test the codec encyclopedia/radio-picture area affected by GCX 13.
+
+Reproduction tools and detailed record:
+
+- `tools/mgs3d_history_texture.py`
+- `tools/mgs3d_hpk_inventory.py`
+- `tools/mgs3d_v065_media_fix.py`
+- `tools/mgs3d_restore_gcx.py`
+- [Version 0.65 checkpoint](wiki/History/version-0.65.md)
+
 ## Current Goal
 
 Continue canonical translation integration using the append-only 929-character
@@ -38,10 +85,9 @@ silently treat the partial safe DATs as complete.
 
 ## Next First Task
 
-`mgs3d-globalpage-media-maxsafe01.cci` is REJECTED. Runtime showed `양`
-(`0x8451`) and `써` (`0x84A4`) corrupted because the inherited stress
-trampoline intercepted only `0x8401..0x8440`. Corrected full-range candidate:
-`mgs3d-globalpage-media-maxsafe02.cci`, SHA-256 `727A62F1…57E3`, runtime pending.
+Repack the prepared RomForge staging tree and perform the four v0.65 hardware
+checks listed above. Do not rebuild the old `demo.dat` history-subtitle probe;
+it targeted the first spoken demo line and was the wrong resource.
 
 ## Cautions
 
