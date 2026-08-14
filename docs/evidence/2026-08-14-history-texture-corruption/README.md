@@ -1,4 +1,54 @@
-# History-card glyph corruption — analysis only, not fixed (2026-08-14)
+# History-card glyph corruption — SOLVED (2026-08-14)
+
+> **Resolved later the same day.** The root cause is that **BCLIM format 10 is
+> ETC1**, a block-compressed format — not the 4-bit luminance image
+> `mgs3d_history_texture.py` assumed. It wrote raw nibbles into a slot the GPU
+> decodes as compressed blocks, so the card rendered as noise.
+>
+> Proof: decoding the pristine English member with a correct ETC1 reader
+> reproduces the real in-game sentence exactly —
+> *"After the end of World War II, / the world was split into two -- East and
+> West. / This marked the beginning of the era called the Cold War."*
+> (`SOLVED-english-etc1-decode.png`).
+>
+> Fix implemented and verified: `tools/mgs3d_bclim.py` (codec) and
+> `tools/mgs3d_history_texture_v2.py` (rebuild). A Korean card built with them
+> reads back legibly out of the rebuilt archive
+> (`SOLVED-korean-etc1-readback.png`), the HPK entry header stays untouched
+> (18856/3884), and `mgs3d_hpk_chain_check.py` reports no drift.
+>
+> The investigation notes below are kept as the record of how it was narrowed
+> down; the "what is NOT yet known" section is now answered.
+
+## How the format was identified
+
+Every earlier hypothesis assumed a *pixel* layout and tried to find the right
+stride/tiling. The breakthrough came from **not guessing**: the same DARC
+carries other BCLIMs, so their payload sizes against power-of-two-padded
+dimensions give the format enum directly.
+
+| fmt | example | declared | payload | padded | bpp | meaning |
+|---|---|---|---|---|---|---|
+| 2 | `demo_op_0_s_alp_ovl` | 16x18 | 512 | 16x32 | 8.0 | LA44 |
+| 10 | `cold_war_text_eng_alp_ovl` | 400x64 | 16384 | 512x64 | 4.0 | **ETC1** |
+| 12 | `black.bclim` | 8x8 | 32 | 8x8 | 4.0 | L4 |
+| 13 | `radar_base_alp_ovl` | 64x48 | 2048 | 64x64 | 4.0 | A4 |
+
+That is exactly the standard BCLIM/BFLIM enum (…10=ETC1, 11=ETC1A4, 12=L4,
+13=A4). `black.bclim` was the decisive control: a solid 8x8 tile whose 32-byte
+payload pins fmt 12 at 4 bpp, proving the enum is the standard one and that
+fmt 10 is therefore *not* L4/A4.
+
+**Storage rules** (confirmed against ground truth):
+
+* dimensions padded to the next power of two (400x64 → 512x64);
+* ETC1 4x4 blocks grouped into 8x8-texel tiles (2x2 blocks); tiles in raster
+  order, the four blocks inside a tile in Morton order;
+* **each 8-byte ETC1 block is stored byte-reversed** — the last missing piece.
+  Without the reversal the text sits in the right place but decodes as colour
+  noise, which is what made the earlier attempts look so close yet unreadable.
+
+## Original analysis (2026-08-14, before the fix)
 
 ## Hardware test result
 
@@ -97,34 +147,27 @@ Z-order convention this codebase uses is right; the bug is specific to this
 L4/A4, 400x64 BCLIM asset's width/stride/format assumptions in
 `mgs3d_history_texture.py`, not to the Morton math as a concept.
 
-## What is NOT yet known
+## Answers to the questions this file used to leave open
 
-- The correct pixel layout for this specific BCLIM asset. Five hypotheses were
-  tried and all failed; more guessing was not attempted, since instrumented,
-  ground-truth verification (below) is far more reliable than further blind
-  permutation.
-- Whether `fmt == 10` really means L4 in this game's own format-ID table (it
-  was assumed from a generic CTPK/BCLIM enum, never confirmed against this
-  engine specifically).
-- Whether other BCLIM assets patched elsewhere in this project (if any) share
-  this same defect, or whether the history card is unique in going through
-  this particular ad hoc encoder.
+- **Correct pixel layout** — ETC1, padded 512x64, 2x2-block tiles in Morton
+  order, blocks byte-reversed. Implemented in `tools/mgs3d_bclim.py`.
+- **Does `fmt == 10` mean L4?** No. It is ETC1. The assumption came from a
+  generic enum reading and was never checked against this engine; the
+  sibling-BCLIM size table above settles it.
+- **Do other assets share the defect?** No other BCLIM in this project goes
+  through the ad-hoc encoder — the history card was the only caller of
+  `encode_l4_bclim`. Other Korean text reaches the screen through the resident
+  glyph page, which is a different mechanism entirely.
 
-## Recommended next investigation (not performed)
+## Remaining caveat
 
-1. Get a hardware/emulator-verified ground-truth decode of the pristine
-   English texture — e.g. Citra/Azahar's built-in texture *dump* feature
-   (not a LayeredFS override) captures what the GPU actually renders, which
-   would show the correct pixel layout directly instead of requiring the
-   layout to be guessed.
-2. Cross-check the format-10 assumption and true tiling rule against an
-   established, independent BCLIM implementation (e.g. Kuriimu, Switch
-   Toolbox's BFLIM/BCLIM reader, or `oead`/`bclim` reference tools) rather
-   than re-deriving it from this project's own untested code.
-3. Once a decoder reconstructs the pristine English member legibly, re-derive
-   `encode_l4_bclim` from the *same* verified layout, and re-run the
-   `patch_hpk` self-checks (already present from the cursor-drift fix) plus a
-   decode-and-view step before ever staging another hardware build.
+The ETC1 encoder in `mgs3d_bclim.py` is lossy (ETC1 always is). A
+decode → encode → decode round-trip of the *original* English card moves about
+12% of pixels, mostly by small amounts on antialiased glyph edges. That
+number is not a defect measure for our use: we never re-encode the original,
+we encode freshly rendered Korean text, and the read-back
+(`SOLVED-korean-etc1-readback.png`) is clean and legible. Hardware
+confirmation of the rebuilt card is still pending.
 
 ## Evidence files
 

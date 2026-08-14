@@ -1,5 +1,32 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
+## v0.68 (2026-08-14) — QA pass, ETC1 history-card fix, glyph impact cleared
+
+Full write-up: [`docs/v0.68-release-notes.md`](docs/v0.68-release-notes.md).
+
+- **History card corruption is SOLVED.** BCLIM format 10 is **ETC1**, not the
+  4-bit luminance image `mgs3d_history_texture.py` assumed — it wrote raw
+  nibbles into a block-compressed slot. Format enum derived by measuring
+  sibling BCLIMs (`black.bclim` was the control), storage rules confirmed by
+  decoding the pristine English card back to its real sentence. New tools:
+  `tools/mgs3d_bclim.py` (codec) and `tools/mgs3d_history_texture_v2.py`
+  (rebuild, reusing the fixed padded-slot HPK rule). Verified end to end on a
+  rebuilt archive; **not yet on hardware.**
+- **Translation QA**: new `tools/mgs3d_translation_qa.py`. The handoff merge
+  introduced **no regressions** (josa/pronoun/glyphcase regressions in merged
+  rows: 0; control codes: 0 drift; new donor-rule violations: 0). Fixed 81 josa
+  errors, 3 register clashes, 87 `당신` MT-residue rows. Remaining `당신` (41)
+  are all in documented skip classes. movie/demo `당신` intentionally left —
+  it is natural cutscene address, not MT residue.
+- **Glyph impact cleared.** Applying the current text needed 10 syllables the
+  1,120-slot page does not contain (9 introduced by direct-v2 work, 1
+  pre-existing). Reworded those 10 lines instead of extending the page, so the
+  existing verified glyph page covers everything: **0 missing, 29 slots free.**
+  Total Korean text also shrank 3,735 characters.
+- Still open and unchanged: `glyphcase` inconsistency (40 rows, needs a
+  convention decision), 538 pre-existing donor-source rows carrying Korean from
+  v1, and the pristine-HPK tail walk question.
+
 ## NEW — history-card glyph corruption on hardware (2026-08-14, analysis only)
 
 **Hardware test of the packer-fixed build: crash is gone, but the opening
@@ -285,6 +312,114 @@ The canonical unpacked tree is now the v0.67 hardware candidate staging:
 - corrected `v000a_0/cache.hpk`:
   `d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc`
 
+## movie/demo autonomous batch cleanup (2026-08-14) — converged, done
+
+User stepped out and asked for autonomous batch processing ("외출할거니 일괄
+처리해둬"). Ran the contamination hunt to convergence using three methods
+(length-ratio z-score at progressively lower thresholds, duplicate-korean-text
+scan, and manual context reads of everything adjacent to a confirmed defect),
+verifying every candidate against context before fixing, same precondition-
+check-then-apply discipline as before.
+
+- **movie: confirmed fully clean.** Re-scanned down to `|z|≥2.0` (37
+  candidates) — 0 additional real defects; all were legitimate EN→KO
+  word-order splits or natural short-answer expansion. No more edits needed.
+- **demo: 46 more rows fixed this session** (3 from a duplicate-text re-scan,
+  24 from a `2.0≤|z|<3.0` sweep, 19 from tracing what that sweep's
+  re-verification surfaced) — cumulative **115 demo rows fixed today**
+  across all rounds. `|z|≥3.0` still reports 55 candidates, but the top ones
+  are all reverified as correct; diminishing returns reached (variance keeps
+  shrinking each round, so previously-normal rows keep looking like new
+  outliers). Judgment call: stopped here rather than chasing an
+  ever-lower threshold.
+- Full tables and the explicit stopping-point reasoning:
+  `translation/10_master/movie-demo-batch-cleanup-2026-08-14.md`.
+- Final hashes: `movie_natural_full.csv`
+  `a022c716c9b4c047c3c19505e2ba54e328479a233c63aa45a816bc9ee15b4da9`
+  (unchanged this session), `demo_natural_full.csv`
+  `d386d0b189234ccea8d9dfb1083c005691307d6b66301916f81c12f769a4326e`.
+- **Caveat that still stands**: this method catches "a whole other scene's
+  line landed here" contamination, not subtler mistranslation/register issues
+  of similar length. Don't read "converged" as "movie/demo translation is
+  fully verified" — only that this specific contamination pattern is
+  exhausted to the point of steep diminishing returns.
+
+## movie/demo full trace-and-fix (2026-08-14) — done, 70 rows fixed total
+
+Follow-up to the light audit below, per explicit instruction ("수정해줘" →
+"하나씩 추적 수정" — fix them, tracing each one individually). All 75
+candidates from the light audit (movie 7 + demo 75, movie's first 3 clusters
+already fixed there) were traced one at a time against surrounding rows before
+touching anything.
+
+- **movie: 5/7 remaining candidates were false positives** (legitimate EN→KO
+  word-order reordering split across two subtitle cards, not contamination).
+  2 were real and fixed (`1590`, `1600`).
+- **demo: 17/75 were false positives**, same reordering pattern or a
+  proper-noun the checker's name list didn't recognize. **58 were real
+  contamination** (korean holding a different scene's dialogue entirely) —
+  fixed, plus 4 more cells in the same off-by-one shift chains that weren't
+  individually flagged but were clearly part of the confirmed defect (verified
+  the same way movie's rec-92 cluster was: two demo copies of that exact scene,
+  rec 275 and rec 305, had the identical shift). 62 demo cells changed total.
+- Every change was precondition-checked (script aborts if the file's current
+  value doesn't match what was traced) before writing, and structurally
+  verified after (0 non-korean-column diffs, row counts unchanged).
+- Full before/after tables and confidence caveats:
+  `translation/10_master/movie-demo-full-trace-fix-2026-08-14.md`.
+- **Round 2 (same session, user said "다음"):** 7 more contaminated cells
+  noticed by eye while reading context (not from a systematic rescan) — demo
+  idx 2759, 3026, 3031, 5196, 6856, 8847, 8852 — traced and fixed the same way.
+  demo final sha256 `d1336a1857c7ebfcb9a34b34a83f709eec0f9082bd93af01d0c2c49c5371a523`.
+  These were spotted incidentally, not via a full rescan, so more of the same
+  contamination likely remains undiscovered in movie/demo.
+
+## movie/demo full light audit (2026-08-14) — movie fixed, demo scoped out
+
+Full statistical scan (length-ratio z-score + missing-proper-noun heuristics)
+across all 2,917 movie+demo rows, per user request ("전체 검수, 비교적 가볍게").
+Confirms the cross-scene contamination flagged below is **not isolated** — it's
+a real pattern with many instances, concentrated far more heavily in demo.dat.
+
+- **movie: 3 cascading off-by-one shift clusters found and fixed (8 rows)** —
+  traced each to its correct row using neighbouring content as ground truth,
+  pre-condition-checked before writing, verified 0 non-korean-column diffs.
+  4 more length-outliers checked and confirmed benign (natural EN→KO
+  expansion, not contamination). 7 additional suspects found via the
+  missing-proper-noun heuristic are **not yet traced/fixed** (8 others in that
+  list were false positives — Khrushchev already correctly rendered as
+  흐루쇼프/후르시쵸프, just missing from the checker's name dictionary).
+- **demo: 27 length-outliers + 48 proper-noun-mismatch found, none fixed.**
+  Confirms the two clusters found last session (rec 228-229, rec 235-236) are
+  part of this same wider pattern, not separate incidents. Scale is
+  meaningfully larger than movie's — tracing each would mean redoing what was
+  just done for the movie clusters, dozens of times over, which exceeds
+  "가볍게". Left for a scoped decision: trace-and-fix row by row like movie, or
+  treat as a matching/alignment-algorithm problem to be rerun.
+
+Full detail, tables, and the exact top demo examples:
+`translation/10_master/movie-demo-light-audit-2026-08-14.md`.
+
+## movie/demo remaining untranslated text (2026-08-14) — done, one issue flagged
+
+Scanned `translation/10_master/bundle_natural_full/{movie,demo}_natural_full.csv`
+(the movie/demo translation authority per `wiki/Translation.md`) for cells with
+no Hangul at all. Most hits were correctly-English proper nouns (Snake, Boss,
+EVA, Ocelot, C3...); 16 were genuine blank/placeholder defects (`.`/`...`/`!`
+with the real content missing). **15 fixed directly in `demo_natural_full.csv`**
+(structural diff clean: exactly 15 `korean` cells changed, no other column
+touched). 1 (`movie_natural_full.csv` idx 1024) left alone — its content is
+already fully present in the previous card (`idx=1019`) due to EN/KO word-order
+reordering; filling it would duplicate "일주일 전". Full detail, before/after
+table and reasoning: `translation/10_master/movie-demo-untranslated-2026-08-14.md`.
+
+**Bigger issue found, not fixed, out of this task's scope:** several rows have
+a `korean` value that belongs to a *different, unrelated scene* than their own
+`raw_text` (not blank — wrong content). Example: demo idx 7572/7591/7601/7746/
+7756/7766, movie idx 1034/1044. This looks like a 3-way alignment/matching
+defect, not a missing-translation gap, and is potentially large in scope
+(not yet measured). See the "별도로 발견한, 더 큰 문제" section in the doc above.
+
 ## direct-v2 Translation Quality Pass (2026-08-14)
 
 Separate track from the glyph/hardware work below — codec.dat Korean
@@ -304,10 +439,31 @@ this section, for exact resume steps; this is just a pointer.
   (GCX 443's entire D2_missing bucket, 49 rows, turned out to be 0% English).
   Needs GCX-level EN/FR/ES/DE/IT/unknown classification before any
   `D2_missing_en` translation starts; that classification hasn't begun.
-- **Batch order**: keep mining D4_mt (235 left, 108 still have a "당신/귀하"
-  literal — fast, mechanical next batch) → then D6_mix (581, only
-  formal-vs-informal clashes are real defects) / D3_abbrev (47) → D2 language
-  cleanup + `D2_missing_en` translation last.
+- **Handoff file merged back — done (2026-08-14).** The full handoff CSV
+  (`translation/10_master/direct-v2-FULL-HANDOFF.csv`, 1,528 data rows) came
+  back with `final_korean` filled for 795 rows. **Important:** per that file's
+  own `direct-v2-RESUME.md` trail, it was filled by an AI session running in a
+  *different* environment (no access to this repo's v1/v2 CSV), not by an
+  external human translator — that session did the fill plus three self-QA
+  passes (register recheck, re-reading the 318 "no defect" D6_mix rows that
+  had only been ending-checked and finding 14 more real mistranslations there,
+  and a josa/particle consistency sweep after English proper nouns). This
+  session verified rather than trusted that record: cross-checked specific
+  logged fixes against the merged file and re-ran the known-bad-josa-pattern
+  search against the 795 merged rows (0 hits; 16 remain elsewhere in the
+  22,362-row file, outside this merge's scope).
+  Merged into `codec-3ds-INTEGRATED-review-direct-v2.csv`: 507 rows actually
+  changed, 288 rows confirmed by the translator as not actually defective
+  (concentrated in D6_mix, matching the already-documented over-detection
+  issue). D6_mix (487) and D3_abbrev (46) are now **fully resolved**.
+  D2_missing's required GCX-level language classification is also done — all
+  734 rows were individually read; 693 confirmed non-English (excluded for
+  good) and 41 translated. Structural diff clean (row count/columns/keys
+  unchanged, 0 non-korean-column diffs). Full tables:
+  `translation/10_master/direct-v2-batch11-15-changelog.md`.
+- **Remaining**: D4_mt_other (3 rows), broken_english (37, needs context
+  restoration, not translation), and 16 stray josa errors found outside this
+  merge's scope (locations in the changelog).
 
 ## Hardware crash investigation handoff (2026-08-13) — SUPERSEDED
 
