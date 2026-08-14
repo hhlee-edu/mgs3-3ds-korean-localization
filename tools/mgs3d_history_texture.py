@@ -99,21 +99,45 @@ def patch_hpk(source: Path, output: Path, font: Path, font_size: int) -> dict[st
     replacement = encode_l4_bclim(template, native)
     patched_darc = bytearray(darc)
     patched_darc[entry.offset:entry.offset + entry.size] = replacement
+    if len(patched_darc) != len(darc):
+        raise ValueError(
+            f"DARC size changed: {len(patched_darc)} != {len(darc)}; the header's "
+            "unpacked size would have to move and the entry cannot be patched in place"
+        )
     packed = zlib.compress(bytes(patched_darc), 9)
     if len(packed) > old_packed_size:
         raise ValueError(f"compressed entry grew: {len(packed)} > {old_packed_size}")
-    struct.pack_into("<II", hpk, offset + 4, len(patched_darc), len(packed))
+
+    # The loader walks entries sequentially -- `pos += 12 + packed`, no seeks and
+    # no offset table (0x0014EFE8..0x0014F050 in the decompressed ARM11 code). So
+    # the header's `packed` field must keep describing the *whole* physical slot.
+    # Pad the stream back up to old_packed_size and leave the header untouched;
+    # zlib stops at the end of the stream and ignores the padding.
+    #
+    # Writing the shorter length into the header instead -- while still padding
+    # the slot -- is what caused the 2026-08-14 hardware Data Abort: the loader
+    # ran `old_packed_size - len(packed)` bytes early for the rest of the archive.
+    # See docs/evidence/2026-08-14-hpk-cursor-drift/README.md. Do not "optimise"
+    # this by rewriting the size field.
     start = offset + 12
     hpk[start:start + old_packed_size] = packed.ljust(old_packed_size, b"\0")
+
+    check_unpacked, check_packed = struct.unpack_from("<II", hpk, offset + 4)
+    if (check_unpacked, check_packed) != (len(darc), old_packed_size):
+        raise AssertionError("entry header was modified; the archive chain would desynchronise")
+    if zlib.decompress(hpk[start:start + old_packed_size]) != bytes(patched_darc):
+        raise AssertionError("padded slot does not decompress back to the patched DARC")
+
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(hpk)
     return {
-        "format": "mgs3d-opening-history-texture-v1",
+        "format": "mgs3d-opening-history-texture-v2",
         "source": str(source),
         "output": str(output),
         "hpk_entry_offset": offset,
-        "old_packed_size": old_packed_size,
-        "new_packed_size": len(packed),
+        "declared_packed_size": old_packed_size,
+        "zlib_stream_size": len(packed),
+        "slot_padding": old_packed_size - len(packed),
         "member": entry.path,
         "dimensions": [width, height],
         "text": list(DEFAULT_LINES),

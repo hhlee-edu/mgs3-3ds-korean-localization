@@ -76,11 +76,12 @@ CLI behavior, and codec translation schema validation.
 
 No copyrighted game data is included or required in version control.
 
-## Version 0.65 status
+## Version 0.67 status
 
-Version 0.65 is a development checkpoint, not a finished translation release.
-The global Korean glyph path and codec integration are usable, but movie/demo
-subtitles still contain known omissions, timing/layout issues, and text that
-requires in-game review. Translation drafts, matching history, reference-site
-material, game data, DAT/CCI outputs, and other large generated artifacts are
-kept outside the public repository.
+Version 0.67 is a development checkpoint, not a finished translation release.
+The HPK padded-slot cursor-drift crash is fixed and the fix is confirmed on
+hardware. The native opening-history Korean texture remains visibly corrupted
+because its BCLIM pixel layout is not yet modelled correctly. Codec direct-v2
+quality correction is still in progress, and movie/demo subtitles retain known
+omissions and review items. Translation drafts, game data, DAT/CCI outputs, and
+other large generated artifacts remain outside the public repository.

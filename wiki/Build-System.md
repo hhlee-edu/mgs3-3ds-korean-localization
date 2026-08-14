@@ -4,6 +4,16 @@
 
 - Analysis/translation/verification work: `D:\dev\3dsmetal\analysis` (this repo).
 - RomForge unpack + CCI output: `C:\Users\hhlee\Desktop\Romforge\output`.
+- **Canonical path reaffirmed 2026-08-14:** use the path above. Do not use
+  `C:\Users\hhlee\Desktop\metagear3d\romforge\output`; that was a mistaken
+  parallel output tree and produced a build-lineage mix-up.
+- The canonical `output` root now keeps only `unpacked/` (current staging).
+  Other former output-root folders were moved, not deleted, to
+  `C:\Users\hhlee\Desktop\Romforge\archive\output-20260814`.
+- The seven-underscore CCI was initially retained as a presumed golden build,
+  then extracted and identified as the controlled `ABC 호프번 XYZ` probe
+  (`fb8215dd...47fb`), not the recorded golden build. It is archived under
+  `output-20260814\cci-abc-hofbeon-probe` and must not be used as a baseline.
 - `Romforge\output\unpacked` gets overwritten by later builds — for a past
   version, trust the archived staging directory + hash, not the live unpacked
   tree.
@@ -51,6 +61,30 @@ byte-exact against `analysis/REPACK_VERSION_INDEX.md (kept at its original path 
 **never assume two similarly-named CCIs share an input set.** Two same-day
 (2026-08-03) archived CCIs at the golden's exact byte size turned out to be
 two entirely different builds (confirmed by hash), not copies of the golden.
+
+## Safety rule for codec builds
+
+## v0.67 HPK pre-pack gate
+
+The hardware candidate uses this exact staging file:
+
+`C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0\romfs\stage\v000a_0\cache.hpk`
+
+Immediately before every CCI repack, run:
+
+```powershell
+python tools/mgs3d_hpk_chain_check.py "C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0\romfs\stage\v000a_0\cache.hpk"
+Get-FileHash -Algorithm SHA256 "C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0\romfs\stage\v000a_0\cache.hpk"
+```
+
+Required result: exit 0, `OK: no padded-slot drift`, SHA-256
+`d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc`.
+The defective archive is
+`4944705794712ed6d7ea2518d1a394d02abcd9933083843f5054ca2dfd9cf87d`.
+Both have the same size, so size is not an identity check.
+
+After repacking, extract the new CCI and hash its internal
+`romfs/stage/v000a_0/cache.hpk`. A staging-only check is insufficient.
 
 ## Safety rule for codec builds
 

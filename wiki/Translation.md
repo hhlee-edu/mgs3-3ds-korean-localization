@@ -28,6 +28,44 @@ DAT / GCX  →  CCI
 track ([Glyph System](Glyph-System.md)) removes the per-GCX glyph-diversity
 limit, high-quality text should be restorable *from* MASTER.
 
+## Canonical production paths (fixed 2026-08-14)
+
+Use this section as the authority for all future translation and staging work.
+Do not choose a file merely because its name contains `final`, `direct`, or
+`build`.
+
+| Stage | Codec | Movie | Demo |
+|---|---|---|---|
+| Completed translation authority | `translation/10_master/codec-3ds-INTEGRATED-review-direct-v1.csv` | `translation/10_master/bundle_natural_full/movie_natural_full.csv` | `translation/10_master/bundle_natural_full/demo_natural_full.csv` |
+| Active Korean quality correction | `translation/10_master/codec-3ds-INTEGRATED-review-direct-v2.csv` | edit the completed authority above | edit the completed authority above |
+| 3DS/global-page converted input | `translation/40_build_input/global_page_v2/codec_natural_full_global_page.json` | `translation/40_build_input/global_page_v2/movie_natural_full_global_page.csv` | `translation/40_build_input/global_page_v2/demo_natural_full_global_page.csv` |
+| Capacity-checked build input | generated from the chosen codec review CSV by `tools/mgs3d_build.py` | `translation/40_build_input/global_page_v2/movie-max-safe.csv` | `translation/40_build_input/global_page_v2/demo-max-safe.csv` |
+| Verified DAT candidate | builder output; never edit the DAT directly | `translation/40_build_input/global_page_v2/movie-global-max-safe.dat` | `translation/40_build_input/global_page_v2/demo-global-max-safe.dat` |
+| RomForge staging destination | `.../romfs/codec.dat` | `.../romfs/movie.dat` | `.../romfs/demo.dat` |
+
+Canonical RomForge root:
+
+`C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0`
+
+Rules:
+
+1. Translation corrections are made only in the authority/quality-correction
+   files above, never in a staged DAT.
+2. `direct-v1` is the last completed codec baseline. `direct-v2` is the active
+   quality pass and is not promoted to production until that pass and its
+   structural verification are complete.
+3. Files under `40_build_input/global_page_v2` are derived 3DS inputs. Do not
+   hand-edit them as translation masters; regenerate them after master changes.
+4. Copy to RomForge only after a separate build output has been produced and
+   verified. There is no automatic master-to-staging synchronization.
+5. Record the source CSV/JSON hash and output DAT hash whenever staging is
+   updated. A staging hash without its source identity is not reproducible.
+
+The v0.67 hardware candidate currently staged on 2026-08-14 is a checkpoint,
+not the newest full translation integration: its `codec.dat` and `movie.dat`
+come from the v0.65/direct-v1 lineage. Later `direct-v2` edits are therefore not
+present until a deliberate rebuild and staging promotion is performed.
+
 ## Current ground truth ([DEC-012](Decisions.md))
 
 The `analysis/1 korean_localization_bundle_2026-08-12/` bundle was the

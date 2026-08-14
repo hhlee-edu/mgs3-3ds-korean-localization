@@ -1,9 +1,57 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
+## NEW — history-card glyph corruption on hardware (2026-08-14, analysis only)
+
+**Hardware test of the packer-fixed build: crash is gone, but the opening
+history card's Korean glyphs are all illegible/corrupted. Demo and other
+Korean text display normally. `codec.dat` is excluded (still mid-translation,
+unrelated to rendering). Not fixed — documentation and analysis only, by
+instruction.**
+
+Full analysis, evidence images and extracted BCLIM members:
+[`docs/evidence/2026-08-14-history-texture-corruption/README.md`](docs/evidence/2026-08-14-history-texture-corruption/README.md).
+
+This is a **second, independent defect** from the HPK cursor-drift crash below
+— it is about pixel-data correctness inside one texture, not archive-chain
+integrity, and the crash fix is unaffected and now hardware-confirmed working.
+Summary:
+
+- The user's hardware build used
+  `builds/current/mgs3d-v065-hpk-cursor-fix/romfs/stage/v000a_0/cache.hpk`,
+  confirmed sha256 `d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc`
+  — the corrected archive from the RESOLVED section below. **No Data Abort.**
+  That is the first hardware confirmation the cursor-drift fix works.
+- `tools/mgs3d_history_texture.py`'s pixel-layout model
+  (`encode_l4_bclim`/`decode_a4_bclim`: 8x8 Morton tiling, stride = declared
+  width 400, 4 bits/pixel) is demonstrably wrong for this asset. Proof:
+  decoding the **pristine, untouched, hardware-correct** English texture
+  through this exact code produces illegible noise, under every layout
+  variant tried (stride 400, stride 512, linear, linear+vflip,
+  tiled+byteswap — five hypotheses, all failed).
+- The payload is 16,384 bytes for a 64-row, 4bpp image, which implies 512
+  texels/row, not the 400 the tool assumes — but stride 512 alone doesn't fix
+  the decode either, so the defect is not simply "the width constant is
+  wrong."
+- The tool's own decode of its own encode looks legible — that is a false
+  positive: encode and decode share the same wrong formula, so they agree
+  with each other while both disagreeing with the real hardware layout.
+  `wiki/History/version-0.65.md` already flagged this exact path as
+  hardware-unvalidated before this session; this test is the first time it was
+  actually checked, and it failed.
+- The Morton/Z-order primitive itself is not the suspect — an identical
+  formula is validated working elsewhere (`tools/mgs3d_gcx_font_tool.py:34-39`,
+  a different 2bpp/16x16 glyph asset). The bug is specific to this L4/A4
+  400x64 asset's stride/format assumptions.
+
+**Next step (not performed):** get a hardware/emulator texture-dump ground
+truth for the pristine English member (not a LayeredFS substitute image) to
+read the real layout directly instead of guessing further, then re-derive
+`encode_l4_bclim` from that. Full detail in the linked evidence doc.
+
 ## RESOLVED — hardware Data Abort / HPK cursor drift (2026-08-14)
 
-**Root cause found and reproduced. No further crash investigation is needed;
-what remains is a one-line packer fix and a rebuild.**
+**Root cause found and reproduced. Hardware-confirmed fixed (see the section
+above): the corrected archive produced no Data Abort.**
 
 Full evidence, decoded dump, disassembly and reproduction:
 [`docs/evidence/2026-08-14-hpk-cursor-drift/README.md`](docs/evidence/2026-08-14-hpk-cursor-drift/README.md).
@@ -28,11 +76,22 @@ offset table — so keeping offsets fixed *physically* does not keep them fixed
 early, walks the zero padding as empty 12-byte headers, and finally reads a
 header straddling the last `(old - new) mod 12` padding bytes.
 
-For v0.65: entry 31 = key `309d745f` = the Cold War history texture, the one
-entry that patch touches. `old = 3884`, `new = 3146`, padding 738,
-`738 mod 12 = 6`. The loader reads entry 32's header from `0x494951` instead of
-`0x494957`, decodes `packed = 0x03A00EB1` (60.8 MiB), the allocation fails and
-returns NULL, the NULL is not checked, and a memcpy writes to address 0.
+For v0.65 the affected entry is **entry 31, key `309d745f`** — the Cold War
+history texture, the one entry that patch touches. `old_packed_size = 3884`,
+`new_packed_size = 3146`, so the slot carries **738 bytes of zero padding**.
+
+A header whose `packed` field is 0 still consumes its 12 bytes and is otherwise
+skipped (`0x0014F024` → `0x0014F0BC`), so the loader eats the padding as empty
+12-byte headers:
+
+```
+738 = 12 × 61 + 6
+```
+
+61 empty headers, then 6 bytes left over. The loader therefore reads entry 32's
+header **6 bytes early**, from `0x494951` instead of `0x494957`, and decodes
+`packed = 0x03A00EB1` (60.8 MiB). That allocation fails and returns NULL, the
+NULL is not checked, and a memcpy writes to address 0 → Data Abort.
 
 Reproduction is exact: re-running the patch on the clean archive yields sha256
 `4944705794712ed6d7ea2518d1a394d02abcd9933083843f5054ca2dfd9cf87d`, the
@@ -50,14 +109,35 @@ recorded v0.65 HPK hash, and reproduces the identical bad header offset and
 `DFSR=0x805` (write, section translation fault), `FAR=0`, `r6=r8=0x03A00EB1`.
 The 96-byte code dump matches the V2 build byte-for-byte at `0x001833F0`.
 
-### Retired hypotheses — do not resume these
+### Retired hypotheses — withdrawn as causes of this crash, do not resume
 
-- The Korean renderer trampoline at `0x00183A04` → `0x0087FA80` is **not**
-  implicated. The branch word is intact. The 2026-08-13 "primary suspect:
-  invalid text pointer in the trampoline path" conclusion was built on the
-  misread PC `0x00183A4C` and is withdrawn.
-- `stage/v000a_0/scenerio.gcx` and its appended Korean page at `0x622DC` are
-  not implicated in this crash.
+All five are ruled out for **this** Data Abort. None of them is re-opened by
+anything in this section.
+
+1. **`scenerio.gcx` +399 KB causing RAM exhaustion.** Not the cause. The
+   oversized allocation is `0x03A00EB1` (60.8 MiB), read directly out of a
+   misparsed HPK header; it has no relation to the 399 KB appended to
+   `scenerio.gcx`.
+2. **The Korean glyph page itself.** Not the cause. The appended page at
+   `0x622DC` matches `korean_page_full.bin` and is never touched on the faulting
+   path.
+3. **V2 trampoline / text pointer.** Not the cause. The branch word at
+   `0x00183A04` → `0x0087FA80` is intact. The 2026-08-13 "invalid text pointer
+   in the trampoline path" assessment rested on the misread PC `0x00183A4C` and
+   is withdrawn.
+4. **Alignment.** Not the cause. HPK entries are tightly packed at arbitrary
+   (often odd) offsets by design; entry 31's header sits at `0x493A1F` and the
+   chain is byte-exact. No alignment rule is violated.
+5. **HPK loader header/cursor arithmetic error.** Not the cause. The loader is
+   correct: `0x0014F00C` always requests 12, `0x00165110` advances
+   `[stream+0x0C]` by exactly the bytes copied, and all four read paths in
+   `0x00164774` consume exactly `packed`. The only sub-request advance is the
+   EOF path (`0x001651A4`), which did not apply. **The cursor never lost 6
+   bytes — the archive handed the loader a size that disagreed with its own
+   physical layout.**
+
+Two further notes:
+
 - The requested dynamic Azahar/GDB cursor observation is **complete/unnecessary**
   — the hardware dump already contained the value it was meant to capture
   (`[stream+0x0C] = 0x1495D` → absolute `0x49495D`). Do not restart that session.
@@ -65,18 +145,145 @@ The 96-byte code dump matches the V2 build byte-for-byte at `0x001833F0`.
   diagnostic-only candidate: adding it would convert the crash into silent
   asset loss and hide the real defect. Do not apply it as a solution.
 
-### Next task
+### Packer fix — DONE (2026-08-14)
 
-1. Fix `tools/mgs3d_history_texture.py` so the header and the physical slot
-   agree. The correct pattern is already in
-   `tools/mgs3d_hpk_static_korean.py:120-125`: pad the payload back to the
-   original `packed_size` and **leave the header's size field untouched**.
-   (zlib ignores trailing bytes, so the padded stream still decompresses.)
-2. Rebuild `cache.hpk`, then gate it with
-   `python tools/mgs3d_hpk_chain_check.py <cache.hpk>` — exit 0 required.
-3. Only then rebuild the CCI and repeat the v0.65 hardware checks below.
+`tools/mgs3d_history_texture.py` now leaves the entry header untouched and pads
+the zlib stream back up to the original `packed_size`, matching the pattern in
+`tools/mgs3d_hpk_static_korean.py:120-125`. The logical chain and the physical
+layout agree again. Two self-checks were added that abort the patch if the
+header ever changes or if the padded slot fails to decompress, plus a comment
+naming this crash so the size field is not "optimised" back in.
 
-No binary was modified and no CCI was built during this investigation.
+The fix was verified by building a corrected archive from the clean source. That
+archive was **not** left staged — build preparation is the user's step. Rebuild
+it during build prep with the tool's normal entry point, using the clean
+`cache.hpk` as source and `malgun.ttf` size 12:
+
+- expected sha256 `d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc`
+- expected size 6,453,287 bytes (unchanged from the clean archive)
+- for reference, the defective build was `49447057…`; anything producing that
+  hash again means the fix was lost
+
+Verification performed on that build:
+
+- Header at `0x493A1F` byte-identical to the clean archive
+  (`key 309d745f`, unpacked 18856, packed 3884); file size unchanged.
+- Every byte outside entry 31's payload slot byte-identical to the clean archive.
+- Slot decompresses to 18856 bytes; the DARC keeps all 7 members with an
+  identical member table, and exactly one member's bytes differ —
+  `timg/cold_war_text_eng_alp_ovl.bclim`, the intended target.
+- `tools/mgs3d_hpk_chain_check.py` exits 0, and `--reference` against the clean
+  archive reports all 133 walked entries identical.
+- The defective `49447057…` archive is **not present anywhere on this machine**;
+  nothing on disk needs to be purged.
+
+Residual assumption: the game's inflate ignores the 738 trailing zero bytes in
+the slot. This is standard zlib behaviour and is the same assumption
+`mgs3d_hpk_static_korean.py` has always relied on, but it has not been
+re-confirmed on hardware for this specific entry.
+
+### Second hardware crash (Luma dump 00000002) — same defect, fix was not in the build
+
+A second physical crash was captured after the packer fix landed in the
+repository. It is **not a new failure**: the dump differs from the first in 8
+bytes total (`fpinst`/`fpinst2` dead FPU state and two stack bytes). Every
+meaningful value is identical, including the stream state
+(`cursor=0x1495D`, absolute `0x49495D`) and `r6=r8=0x03A00EB1`.
+
+That cursor is only reachable from an archive whose entry 31 declares a short
+`packed` size, so the CCI that crashed **still contained the defective
+`cache.hpk`**. The fix was never in that build — most likely the previously
+staged archive was reused rather than regenerated.
+
+**Trap to avoid:** the corrected archive is the *same size* as the defective one
+(6,453,287 bytes). Size cannot tell them apart. Compare SHA-256 or run the gate.
+
+| archive | sha256 |
+|---|---|
+| defective | `4944705794712ed6d7ea2518d1a394d02abcd9933083843f5054ca2dfd9cf87d` |
+| corrected | `d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc` |
+
+### Crash-fix hardware validation — DONE
+
+The corrected `cache.hpk` (`d46373e1...`) was built, staged at the canonical
+RomForge path, packed into a CCI, and tested on real hardware: **no Data
+Abort.** This closes out the cursor-drift crash end to end. What remains open
+from that work is only the low-priority pristine-HPK-tail TODO below, which
+was already known not to block anything.
+
+### Next task — top priority
+
+**Investigate the history-card glyph corruption** found by that same hardware
+test — see the `NEW` section at the top of this file and
+[`docs/evidence/2026-08-14-history-texture-corruption/README.md`](docs/evidence/2026-08-14-history-texture-corruption/README.md).
+Per instruction this session was documentation/analysis only; the actual fix
+has not been attempted. Recommended starting point: get a hardware/emulator
+texture-dump ground truth for the pristine English member instead of guessing
+more layout variants (five were already tried and failed).
+
+No CCI has been built and no game binary has been modified as part of *this*
+history-texture investigation.
+
+### Low-priority TODO — pristine HPK tail is not fully modelled
+
+Recorded, deliberately not investigated:
+
+- The pristine retail `cache.hpk` is **also** not fully walkable to EOF under
+  the current sequential HPK model. The walk stops around key `3e6af67a`, whose
+  `packed` field reads `0xbf1d1192`.
+- So there is a later archive structure that `tools/mgs3d_hpk_chain_check.py`
+  does not yet explain.
+- It occurs in the **unmodified retail file**, so it is not connected to the
+  Korean patch work and not connected to this crash.
+- It is a separate problem from the entry 31 (`309d745f`) → entry 32 failure
+  documented above.
+- It does **not** block the packer fix or the rebuild.
+- Do not investigate it now.
+- `mgs3d_hpk_chain_check.py` must keep reporting this tail condition as a
+  **NOTE, not a FAIL** — otherwise the gate would reject known-good archives.
+  Only the padded-slot signature is a FAIL.
+
+### Canonical RomForge staging correction (2026-08-14)
+
+The only canonical RomForge output root is:
+
+`C:\Users\hhlee\Desktop\Romforge\output`
+
+Do not use `C:\Users\hhlee\Desktop\metagear3d\romforge\output`. That parallel
+tree caused the corrected HPK to be staged in one location while a CCI was
+packed from another. The repeated hardware crash was a build-lineage failure,
+not a new crash mechanism.
+
+Current canonical staging file:
+
+`C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0\romfs\stage\v000a_0\cache.hpk`
+
+- SHA-256: `d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc`
+- chain checker: exit 0, `OK: no padded-slot drift` (the known pristine-tail
+  condition remains a NOTE)
+
+Before the next CCI is created, re-run the chain checker and SHA-256 on that
+exact path. After creation, extract the CCI and verify that its internal
+`stage/v000a_0/cache.hpk` has the same corrected SHA-256. Do not promote to
+v0.67 until the hardware result is reported.
+
+Output cleanup: only `unpacked/` remains directly under the canonical output
+root. Other backup/experiment folders were moved without deletion to
+`C:\Users\hhlee\Desktop\Romforge\archive\output-20260814`. The
+seven-underscore CCI was extracted and identified as the controlled
+`ABC 호프번 XYZ` probe, not the golden build, and moved to
+`output-20260814\cci-abc-hofbeon-probe`.
+
+The canonical unpacked tree is now the v0.67 hardware candidate staging:
+
+- V2 `code.bin`: `8c542191bdc62dffbd851d730dac14bc4dcf14208e54b4d15dbd409c885da7d0`
+- V2 exheader: `2268b757185418b3c2c334048fc6b8bbdfcc9508786e06c126707b12522ce1ab`
+- v0.65 `codec.dat`: `86cc8e12504e517fd0916de95e3f7a46b7f00b9c6859c28338d187334493c524`
+- v0.65 `movie.dat`: `0f7e4c961ca4d10c19a46a7076ca0155a0531ed8b10f1a54b62d382a957945dd`
+- probe-free `v000a_0/scenerio.gcx`:
+  `badca5afc7e1a372b43cf1d60366732d229d3623f92ce1d525ddd8a097f0354d`
+- corrected `v000a_0/cache.hpk`:
+  `d46373e1c042c37d9a76fa221dee4d79381c6b8cc31e9e9d535f98c43491dacc`
 
 ## direct-v2 Translation Quality Pass (2026-08-14)
 
@@ -359,15 +566,11 @@ silently treat the partial safe DATs as complete.
 
 ## Next First Task
 
-**Blocked until the packer fix lands.** The prepared RomForge staging tree
-carries a `cache.hpk` produced by the defective
-`tools/mgs3d_history_texture.py`, so repacking it as-is reproduces the hardware
-Data Abort. Order of work:
-
-1. Fix `tools/mgs3d_history_texture.py` (see the RESOLVED section at the top).
-2. Rebuild `cache.hpk` and gate it with `tools/mgs3d_hpk_chain_check.py`.
-3. Then repack the staging tree and perform the four v0.65 hardware checks
-   listed above.
+**Superseded — the packer fix landed and was hardware-tested (see the RESOLVED
+and Canonical RomForge sections above).** No Data Abort on hardware. Current
+top task is the NEW section at the top of this file: the history card renders
+but its glyphs are corrupted, which is an unrelated pixel-layout bug in the
+same tool. Analysis only has been done so far; the fix has not been attempted.
 
 Do not rebuild the old `demo.dat` history-subtitle probe; it targeted the first
 spoken demo line and was the wrong resource.
@@ -382,9 +585,11 @@ spoken demo line and was the wrong resource.
 
 ## Key Artifacts
 
-- `docs/evidence/2026-08-14-hpk-cursor-drift/` (tracked: hardware dump + full
+- `docs/evidence/2026-08-14-hpk-cursor-drift/` (tracked: hardware dumps + full
   crash analysis; note `experiments/` is gitignored, so irreplaceable primary
   evidence belongs here instead)
+- `docs/evidence/2026-08-14-history-texture-corruption/` (tracked: extracted
+  BCLIM members + decode attempts for the glyph-corruption analysis above)
 - `experiments/2026-08-13-clean-glyph-baseline/clean-build-manifest.json`
 - `experiments/2026-08-13-clean-glyph-baseline/runtime-verification.txt`
 - `experiments/2026-08-13-clean-glyph-baseline/full-page-rebuild-audit/full-928-validation.json`

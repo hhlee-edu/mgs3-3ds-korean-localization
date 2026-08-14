@@ -9,11 +9,34 @@ renderer trampoline.
 
 | file | sha256 | note |
 |---|---|---|
-| `hardware-crash-v2.dmp` | `2840ad54c2239aa556775a2e6743db4c762b4ea3ac11f2689f69ac68ee9d0115` | Luma3DS exception dump v3.1, from the physical 3DS |
+| `hardware-crash-v2.dmp` | `2840ad54c2239aa556775a2e6743db4c762b4ea3ac11f2689f69ac68ee9d0115` | Luma3DS exception dump v3.1, from the physical 3DS (Luma `crash_dump_00000001`) |
+| `hardware-crash-v2-second.dmp` | `1f29fa4fc7d868b7fa43b5296886c5e2ee9522bb5cf7da400809019d44b0d8a3` | second occurrence (Luma `crash_dump_00000002`), **same defect** |
+| `hardware-crash-earlier-unrelated.dmp` | `06e0e7bee9b3047981c2a485e6c6f2e25e6be8fa123b08518d5e17d20fad28f6` | older, different fault (Luma `crash_dump_00000000`); see the note at the end |
 
-The dump was previously an untracked working-copy file named
-`tests/crash_dump_00000001(1).dmp`. It is irreplaceable (a physical-device
-fault) so it is committed here rather than under the gitignored `experiments/`.
+The first dump was previously an untracked working-copy file named
+`tests/crash_dump_00000001(1).dmp`. These are irreplaceable (physical-device
+faults) so they are committed here rather than under the gitignored
+`experiments/`. Decode them with `tools/mgs3d_crash_dump.py`.
+
+Note that Luma's file timestamps are meaningless here (the console RTC reads
+2001); only the dump numbering gives ordering.
+
+### Second occurrence — identical
+
+`hardware-crash-v2-second.dmp` differs from the first dump in **8 bytes total**:
+`fpinst`/`fpinst2` (dead FPU state) and two stack bytes. Every meaningful value
+matches exactly — `pc=0x0018344C`, `lr=0x00165160`, `r6=r8=0x03A00EB1`,
+`r4=0x00919CC8`, and the same stream state (`valid=0x80000`, `cursor=0x1495D`,
+`total=0x627827`, `remaining=0x127827`) giving the same absolute cursor
+`0x49495D`.
+
+That cursor value is only reachable from an archive whose entry 31 declares a
+short `packed` size, so **the CCI that produced this dump still carried the
+defective `cache.hpk`**; the packer fix was not in that build.
+
+Beware that the corrected archive is the **same size** as the defective one
+(6,453,287 bytes), so size cannot distinguish them — compare SHA-256 or run
+`tools/mgs3d_hpk_chain_check.py`.
 
 ## Decoded dump
 
@@ -181,6 +204,15 @@ zero padding before the next header — the exact defect above. Verified results
 | `originals/3ds_pristine/.../cache.hpk` | OK |
 | clean `145a82e9…` | OK |
 | v0.65 repro `49447057…` | FAIL — entry 31, 738 zero bytes, residue 6 |
+
+## Earlier, unrelated dump
+
+`hardware-crash-earlier-unrelated.dmp` (Luma `crash_dump_00000000`) is a
+different fault and is kept only so it is not mistaken for this one:
+`PC=0x00115098`, `LR=0x00106F5C`, `FAR=0x00030000`, DFSR `0x5` — a **read**
+translation fault, not a write, at a non-zero address, in an unrelated function.
+It predates both HPK dumps and is not explained by the drift above. Not
+investigated.
 
 ## Open, unrelated to this crash
 
