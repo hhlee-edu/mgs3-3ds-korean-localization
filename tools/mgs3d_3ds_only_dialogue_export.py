@@ -13,12 +13,12 @@ PARTS = [
     ROOT / "experiments/story_media_order/mgs3d_raw_unmatched_manual_part1.csv",
     ROOT / "experiments/story_media_order/mgs3d_raw_unmatched_manual_part2.csv",
 ]
-OUTPUT = ROOT / "translation/10_master/3ds_only/3ds_only_movie_demo_english_korean.json"
+OUTPUT = ROOT / "translation/10_master/archive/3ds_only/3ds_only_movie_demo_english_korean.json"
 CODEC_OFFICIAL = ROOT / "experiments/translation_checkpoints/04_selected_translation.json"
 CODEC_3DS_TRANSLATION = ROOT / "experiments/translation_checkpoints/05_translation.json"
 CODEC_ORIGINAL = ROOT / "translation/00_source/codec_3ds_english/codec_3ds_english_original_resources.json"
-CODEC_OUTPUT = ROOT / "translation/10_master/3ds_only/3ds_only_codec_english_korean.json"
-ALL_OUTPUT = ROOT / "translation/10_master/3ds_only/3ds_only_all_english_korean.json"
+CODEC_OUTPUT = ROOT / "translation/10_master/archive/3ds_only/3ds_only_codec_english_korean.json"
+ALL_OUTPUT = ROOT / "translation/10_master/archive/3ds_only/3ds_only_all_english_korean.json"
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:

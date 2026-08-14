@@ -46,8 +46,8 @@ ROOT = Path(__file__).resolve().parent.parent
 
 TARGETS = {
     "codec": {
-        "path": ROOT / "translation/10_master/codec-3ds-INTEGRATED-review-direct-v2.csv",
-        "reference": ROOT / "translation/10_master/codec-3ds-INTEGRATED-review-direct-v1.csv",
+        "path": ROOT / "translation/10_master/current/codec.csv",
+        "reference": ROOT / "translation/10_master/archive/codec-older/codec-3ds-INTEGRATED-review-direct-v1.csv",
         "korean": "korean",
         "english": "english",
         "key": ("gcx", "resource"),
@@ -58,7 +58,7 @@ TARGETS = {
         "empty_scope": lambda r: bool((r.get("korean") or "").strip()),
     },
     "movie": {
-        "path": ROOT / "translation/10_master/bundle_natural_full/movie_natural_full.csv",
+        "path": ROOT / "translation/10_master/current/movie.csv",
         "reference": None,
         "korean": "korean",
         "english": "raw_text",
@@ -66,7 +66,7 @@ TARGETS = {
         "encoding": "utf-8-sig",
     },
     "demo": {
-        "path": ROOT / "translation/10_master/bundle_natural_full/demo_natural_full.csv",
+        "path": ROOT / "translation/10_master/current/demo.csv",
         "reference": None,
         "korean": "korean",
         "english": "raw_text",

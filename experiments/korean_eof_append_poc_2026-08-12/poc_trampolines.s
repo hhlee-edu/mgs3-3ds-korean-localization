@@ -170,6 +170,25 @@ pre_draw_fallback:
 .align 2
 .global korean_layout_classify
 korean_layout_classify:
+    @ 2026-08-15 fix: this classifier only recognised the legacy 0xA0..0xA3
+    @ static range and fell through to the raw bic-mask for every global-page
+    @ token (0x84xx..0x87xx), unlike korean_draw_1/2 and korean_width_1/2
+    @ which both already check this range first. Confirmed live via GDB
+    @ (unconditional breakpoint hits at the fallback, 0x87FAAC) that this
+    @ fallback path is reached during normal play; the missing check is what
+    @ makes global-page Hangul render as blank glyphs (docs/v0.69-... glyph
+    @ report). Mirrors the same range check already proven correct in the
+    @ draw/width trampolines above, reusing the existing 0x8101 "is Korean"
+    @ sentinel for the match case exactly as the legacy range does.
+    mov r0, r1, lsr #8
+    cmp r0, #0x84
+    blo layout_raw_check
+    cmp r0, #0x87
+    bhi layout_raw_check
+    and r0, r1, #0xFF
+    cmp r0, #0
+    bne layout_normalized
+layout_raw_check:
     mov r0, r1, lsr #8
     cmp r0, #0xA0
     blo layout_fallback
@@ -178,6 +197,7 @@ korean_layout_classify:
     and r0, r1, #0xFF
     cmp r0, #0
     beq layout_fallback
+layout_normalized:
     mov r0, #0x8100
     add r0, r0, #1
     b 0x00183A08

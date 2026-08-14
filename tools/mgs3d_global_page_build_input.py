@@ -16,11 +16,14 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
+
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 from mgs3d_codec_tool import parse_rendered  # noqa: E402
 from mgs3d_movie_tool import encode_translation  # noqa: E402
+import mgs3d_script_compare  # noqa: E402
 FIXED = ROOT / "experiments/shared_glyph_optimized_build_2026-08-12/sna01-allocation-report.json"
 FIXED_HPKS = [
     ROOT / "experiments/shared_glyph_optimized_build_2026-08-12/stage/r_sna01/resident.hpk",
@@ -28,14 +31,41 @@ FIXED_HPKS = [
 ]
 GLOBAL = ROOT / "glyph/pages/global_korean_page_v2/korean_token_map_full.csv"
 PAGE = ROOT / "glyph/pages/global_korean_page_v2/korean_page_full.bin"
-MASTER = ROOT / "translation/10_master/bundle_natural_full"
-SOURCES = [
-    MASTER / "movie_natural_full.csv",
-    MASTER / "demo_natural_full.csv",
-    MASTER / "codec_natural_full.json",
-    MASTER / "mgs3d_review_v10_natural_full.json",
-]
+# translation/10_master was reorganized 2026-08-14: current/{movie,demo,codec}.csv
+# are now the single canonical sources (see translation/10_master/README.md).
+# codec has no standalone translation-unit JSON anymore -- one is regenerated
+# below from current/codec.csv via the real make-translation converter, using
+# the same reference codec.dat verified in docs/capacity-recheck-2026-08-14.md.
+MASTER = ROOT / "translation/10_master/current"
+CODEC_REFERENCE_DAT = ROOT / "experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs/codec.dat"
 OUT = ROOT / "translation/40_build_input/global_page_v2"
+SOURCES = [
+    MASTER / "movie.csv",
+    MASTER / "demo.csv",
+    # codec.csv itself is not scanned directly: it has 22,362 rows including
+    # unaccepted drafts, and would over-count corpus characters that never
+    # ship. codec-from-current.json (accepted-only, regenerated in main())
+    # is the equivalent of the old pre-filtered codec_natural_full.json.
+    OUT / "codec-from-current.json",
+]
+
+
+def codec_units_document() -> dict:
+    """Fresh mgs3d-codec-translation-v1 document from current/codec.csv.
+    character_map is left empty here -- main() overwrites it with the
+    regenerated combined map further down, so it does not matter what
+    make-translation embeds at this stage."""
+    import argparse
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        output = Path(tmp) / "codec-current.json"
+        mgs3d_script_compare.command_make_translation(argparse.Namespace(
+            comparison=MASTER / "codec.csv",
+            output=output,
+            codec=CODEC_REFERENCE_DAT,
+            character_map=None,
+        ))
+        return json.loads(output.read_text(encoding="utf-8"))
 
 
 def sha(path: Path) -> str:
@@ -70,6 +100,12 @@ def source_characters(path: Path) -> Counter[str]:
 
 
 def main() -> int:
+    OUT.mkdir(parents=True, exist_ok=True)
+    codec_source = OUT / "codec-from-current.json"
+    codec_document = codec_units_document()
+    codec_source.write_text(
+        json.dumps(codec_document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
     fixed_doc = json.loads(FIXED.read_text(encoding="utf-8-sig"))
     fixed = {character: bytes.fromhex(token) for character, token in fixed_doc["characters"].items()}
     with GLOBAL.open(encoding="utf-8-sig", newline="") as stream:
@@ -99,7 +135,7 @@ def main() -> int:
     # glyph cost, not each container's string-region boundary.
     encoding_reports = []
     for media in ("movie", "demo"):
-        source = MASTER / f"{media}_natural_full.csv"
+        source = MASTER / f"{media}.csv"
         accepted = encoded = over_original_size = 0
         failures = []
         with source.open(encoding="utf-8-sig", newline="") as stream:
@@ -121,8 +157,6 @@ def main() -> int:
             "rows_larger_than_original_slot": over_original_size,
         })
 
-    codec_source = MASTER / "codec_natural_full.json"
-    codec_document = json.loads(codec_source.read_text(encoding="utf-8-sig"))
     codec_failures = []
     for index, unit in enumerate(codec_document["units"]):
         try:
@@ -205,7 +239,7 @@ def main() -> int:
     # provenance note, leaving every authored unit unchanged.
     derived = []
     for media in ("movie", "demo"):
-        source = MASTER / f"{media}_natural_full.csv"
+        source = MASTER / f"{media}.csv"
         target = OUT / f"{media}_natural_full_global_page.csv"
         shutil.copy2(source, target)
         derived.append({"path": target.relative_to(ROOT).as_posix(), "sha256": sha(target),

@@ -1,5 +1,126 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
+## NEW — `korean_layout_classify` renderer fix, staged (2026-08-15)
+
+Root-caused and fixed the hardware "characters render blank" bug reported
+live during v0.69 testing (듣/얼/마/임/백/업/외/워/팀 and more — 434 codec
+rows carry the tell-tale stale `missing_glyphs` flag). **Not a translation
+or data bug** — character-map, glyph bitmap page, built codec.dat bytes,
+and all early-stage `scenerio.gcx` page-append content were all verified
+correct. The bug is in the renderer patch itself: of the six trampoline
+functions `tools/mgs3d_clean_glyph_v2.py` injects into `code.bin`,
+`korean_layout_classify` (0x00183A04 → 0x0087FA80) never got the
+`0x84xx-0x87xx` global-page range check that the other four (draw_1/2,
+width_1/2) already have correctly — it only recognised the legacy
+`0xA0xx-0xA3xx` range and fell through to a raw bic-mask fallback for every
+global-page Hangul token, so layout/line-wrap logic never recognized them
+as Korean even though draw/width could render them fine.
+
+Fixed in `experiments/korean_eof_append_poc_2026-08-12/poc_trampolines.s`
+(mirrors the already-correct pattern from the other four functions); new
+tool `tools/mgs3d_layout_classify_fix.py` re-assembles and patches an
+already-built V2 `code.bin` in place with strict verification (refuses an
+unrecognized input hash, confirms the five other trampoline functions
+decode identically except for one expected literal-pool relocation,
+recompresses via 3dstool, verifies the round-trip). All 6 original branch
+patch sites stayed byte-identical — this is a single-function, body-only
+patch. Staged to `exefs/code.bin` + `exheader.bin` in RomForge (previous
+files archived, not deleted, to
+`Romforge\archive\pre-layout-classify-fix-20260815\`). **No CCI built.**
+Full writeup, including the live-GDB confirmation attempt (unconditional
+breakpoint hits proved the fallback path is reachable; conditional
+breakpoints crash this GDB/stub combination — new recipe gotcha) and what's
+still open:
+[`docs/korean-layout-classify-fix-2026-08-15.md`](docs/korean-layout-classify-fix-2026-08-15.md).
+
+## v0.69 re-staged with pending corrections (2026-08-14, latest)
+
+Re-ran the full capacity recheck + rebuild + stage cycle after merging the 4
+pending corrections into `current/`. One of them (demo offset 11537816,
+"지금부터... 버추어스 미션을 개시한다.") is **2 bytes over its fixed slot** — kept
+correct in `current/demo.csv`, but excluded from this build's derived safe
+CSV (falls back to English on-screen for now) rather than reintroducing the
+confirmed-wrong old line. The other 3 corrections (movie wordplay fix, demo
+mis-mapping fix, codec SAVE-menu wording) build clean. Same verification
+depth as before: 0 build errors, 0 layout/offset drift on all three `.dat`,
+`audit-existing` gate clean. Full detail:
+[`docs/v0.69-safe-staging-round2-2026-08-14.md`](docs/v0.69-safe-staging-round2-2026-08-14.md).
+Round-1 staged files archived to
+`Romforge\archive\pre-v0.69-safe-round2-20260814\`. **No CCI built.**
+
+## pending corrections merged, history card staged (2026-08-14, earlier)
+
+`translation/10_master/` was reorganized (by the user) into
+`current/{codec,movie,demo}.csv` (single canonical) +
+`pending/runtime-corrections.csv` (single correction point) — see
+`translation/10_master/README.md`. Reviewed and merged 4 hardware-tested
+corrections (movie/demo mistranslation + subtitle mis-mapping, codec SAVE
+menu wording); regenerated `translation/40_build_input/global_page_v2` from
+the new `current/` layout, fixing `tools/mgs3d_global_page_build_input.py`
+which still referenced pre-reorg filenames. Also staged the (already-fixed
+in v0.68 but never staged) history-card ETC1 fix — the user's hardware
+report of "rainbow noise over English text" matches exactly the *original*
+unfixed corruption, confirming the tested CCI predated this session's
+staging. Full detail:
+[`docs/v0.69-pending-corrections-and-history-fix-2026-08-14.md`](docs/v0.69-pending-corrections-and-history-fix-2026-08-14.md).
+
+**Still open, not resolved:** 4 reported glyphs render as "x" on hardware
+(듣/얼/마/임) despite verified-correct character-map data, token-map data,
+and non-blank glyph bitmaps — root cause needs live debugging or a
+per-stage page-completeness audit, both beyond static analysis. See that
+doc's §3.
+
+**Not re-staged:** RomForge's codec/movie/demo.dat still reflect the
+pre-this-round `v0.69-safe` build; the 4 text corrections above exist in
+`current/` but weren't rebuilt into a new staged `.dat` (wasn't asked for
+this round).
+
+## v0.69 safe staging (2026-08-14) — no CCI built
+
+Staged a byte-capacity-safe codec/movie/demo build to
+`C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0\romfs\`
+(codec.dat, movie.dat, demo.dat only — `cache.hpk` untouched). **The user
+does the CCI repack and hardware/Citra test**; nothing beyond staging was
+done here.
+
+Along the way, fixed two real, previously-live tool bugs (details below and
+in the staging doc): the codec CSV→JSON converter was corrupting 7,369/7,372
+accepted rows, and `mgs3d_build.py` never wired the global glyph page into
+either the codec or the movie/demo build path. Both fixed in
+`tools/mgs3d_script_compare.py` / `tools/mgs3d_build.py`.
+
+Excluded from this round (masters untouched, exclusions live only in derived
+`translation/40_build_input/v0.69-safe/*` copies): codec 329/7,372 accepted
+rows (22 MUST_SHORTEN GCX + 44 REVIEW GCX, no donor reclaim applied + 33
+pre-existing broken-token rows), movie 101/689, demo 308/2,228 — all by real
+byte-capacity failure, verified against the actual build code end-to-end (0
+errors, 0 layout drift, 0 offset drift on the resulting three `.dat` files).
+Full detail, exact exclusion reasons, hashes, and reproduction commands:
+[`docs/v0.69-safe-staging-2026-08-14.md`](docs/v0.69-safe-staging-2026-08-14.md).
+
+Previously-staged `romfs/{codec,movie,demo}.dat` (dated 2026-08-13, not
+re-verified by this task) were moved, not deleted, to
+`C:\Users\hhlee\Desktop\Romforge\archive\pre-v0.69-safe-20260814\`.
+
+## NEW — byte-capacity recheck vs. final natural translation (2026-08-14, analysis only)
+
+Glyph scarcity is solved (see v0.68 below); this checks the *separate* real
+byte/structural capacity of each GCX record (codec) / subtitle entry
+(movie, demo) against the final, unshortened translation. **431 lines total
+actually need shortening** (codec 22 GCX + movie 101 + demo 308) — versus
+roughly 10x that many previously excluded/shortened under the old
+glyph-diversity gate (1,500+ lines recover to natural-level translation:
+codec 31, movie 341+3, demo 1,189+59). Full report, MUST_SHORTEN list, and
+calculation basis (verified against the literal running build code):
+[`docs/capacity-recheck-2026-08-14.md`](docs/capacity-recheck-2026-08-14.md).
+No translation text or `.dat` file was touched.
+
+**Also found while verifying that script against the real build code (not
+fixed, needs a decision):** `mgs3d_build.py --codec-review`'s CSV→JSON
+conversion step corrupts/crashes on 7,369 of 7,372 accepted codec rows —
+unrelated to capacity, blocks any codec build via that path today. Details:
+[`docs/codec-review-csv-escaping-bug-2026-08-14.md`](docs/codec-review-csv-escaping-bug-2026-08-14.md).
+
 ## v0.68 (2026-08-14) — QA pass, ETC1 history-card fix, glyph impact cleared
 
 Full write-up: [`docs/v0.68-release-notes.md`](docs/v0.68-release-notes.md).

@@ -28,10 +28,10 @@ MOVIE_CSV = ROOT / "experiments/shared_glyph_optimized_build_2026-08-12/movie_li
 DEMO_CSV = ROOT / "experiments/scene_fixed_natural_2026-08-12/demo_live_natural_rebased.csv"
 CODEC_JSON = ROOT / "experiments/full_korean_apply_2026-08-12/codec_translation_official_plus_3ds.json"
 REVIEW = ROOT / "experiments/story_media_order/html/mgs3d_review_v10.json"
-CANONICAL_MOVIE_CSV = ROOT / "translation/10_master/bundle_natural_full/movie_natural_full.csv"
-CANONICAL_DEMO_CSV = ROOT / "translation/10_master/bundle_natural_full/demo_natural_full.csv"
-CANONICAL_CODEC_JSON = ROOT / "translation/10_master/bundle_natural_full/codec_natural_full.json"
-CANONICAL_REVIEW = ROOT / "translation/10_master/bundle_natural_full/mgs3d_review_v10_natural_full.json"
+CANONICAL_MOVIE_CSV = ROOT / "translation/10_master/current/movie.csv"
+CANONICAL_DEMO_CSV = ROOT / "translation/10_master/current/demo.csv"
+CANONICAL_CODEC_JSON = ROOT / "translation/10_master/archive/bundle-support/codec_natural_full.json"
+CANONICAL_REVIEW = ROOT / "translation/10_master/archive/bundle-support/mgs3d_review_v10_natural_full.json"
 DEFAULT_OUT = ROOT / "analysis/global_korean_page_build_2026-08-12"
 DEFAULT_ROMFS = Path(r"C:\Users\hhlee\Desktop\Romforge\output\unpacked\partition0\romfs")
 

@@ -17,7 +17,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mgs3d_codec_tool import decode_mgs_preview, parse_codec, parse_rendered, render_bytes  # noqa: E402
+from mgs3d_codec_tool import TOKEN, decode_mgs_preview, parse_codec, render_bytes  # noqa: E402
 
 
 SPACE = re.compile(r"\s+")
@@ -455,6 +455,33 @@ def validate_accepted_review_row(
     return key
 
 
+def escape_stray_brackets(text: str) -> str:
+    """Escape '<'/'>' that are not part of a well-formed <HH> control token
+    (the render_bytes()/parse_rendered() notation), leaving already-valid
+    tokens untouched. The `korean` review column stores final,
+    control-code-annotated text -- see wiki/Translation.md -- so this must
+    not re-derive line wrapping or re-escape tokens the reviewer already
+    placed deliberately (that previously corrupted every accepted row's
+    trailing <0A><00>; see docs/codec-review-csv-escaping-bug-2026-08-14.md)."""
+    out: list[str] = []
+    cursor = 0
+    while cursor < len(text):
+        match = TOKEN.match(text, cursor)
+        if match:
+            out.append(match.group(0))
+            cursor = match.end()
+            continue
+        char = text[cursor]
+        if char == "<":
+            out.append("<3C>")
+        elif char == ">":
+            out.append("<3E>")
+        else:
+            out.append(char)
+        cursor += 1
+    return "".join(out)
+
+
 def command_make_translation(args: argparse.Namespace) -> None:
     units: list[dict[str, object]] = []
     seen: set[tuple[int, int]] = set()
@@ -470,46 +497,9 @@ def command_make_translation(args: argparse.Namespace) -> None:
             korean_plain = row["korean"].strip().translate(str.maketrans({
                 "“": '"', "”": '"', "‘": "'", "’": "'", "…": "...",
             }))
-            # Preserve the original radio resource's line layout.  GCX text is
-            # not guaranteed to wrap automatically, so distribute Korean words
-            # across the same number of lines and keep a trailing newline when
-            # the source has one.
-            raw_template = row.get("game_raw_text", "")
-            if raw_template:
-                template = parse_rendered(raw_template)
-                source_lines = template.rstrip(b"\0").split(b"\x0a")
-                trailing_newline = bool(source_lines and source_lines[-1] == b"")
-                if trailing_newline:
-                    source_lines.pop()
-                capacities: list[int] = []
-                for line in source_lines:
-                    line_units = cursor = 0
-                    while cursor < len(line):
-                        cursor += 2 if line[cursor] >= 0x80 and cursor + 1 < len(line) else 1
-                        line_units += 1
-                    capacities.append(max(1, line_units))
-                if len(capacities) > 1:
-                    words = korean_plain.split()
-                    lines: list[str] = []
-                    start = 0
-                    remaining_capacity = sum(capacities)
-                    for line_index, capacity in enumerate(capacities[:-1]):
-                        remaining_chars = sum(len(word) for word in words[start:]) + max(0, len(words) - start - 1)
-                        target = round(remaining_chars * capacity / max(1, remaining_capacity))
-                        length = 0
-                        end = start
-                        while end < len(words):
-                            addition = len(words[end]) + (1 if end > start else 0)
-                            if end > start and length + addition > max(1, target):
-                                break
-                            length += addition
-                            end += 1
-                        lines.append(" ".join(words[start:end]))
-                        start = end
-                        remaining_capacity -= capacity
-                    lines.append(" ".join(words[start:]))
-                    korean_plain = "\n".join(lines) + ("\n" if trailing_newline else "")
-            korean = korean_plain.replace("<", "<3C>").replace(">", "<3E>").replace("\n", "<0A>")
+            korean = escape_stray_brackets(korean_plain)
+            if not korean.endswith("<00>"):
+                korean += "<00>"
             units.append(
                 {
                     "gcx": key[0],
@@ -517,12 +507,15 @@ def command_make_translation(args: argparse.Namespace) -> None:
                     "kind": "string",
                     "source_page": int(row.get("page") or row.get("korean_page") or 0),
                     "speaker": row.get("speaker") or row.get("korean_speaker", ""),
-                    "text": korean + "<00>",
+                    "text": korean,
                 }
             )
+    character_map: dict[str, str] = {}
+    if args.character_map:
+        character_map = json.loads(args.character_map.read_text(encoding="utf-8-sig"))["characters"]
     document = {
         "format": "mgs3d-codec-translation-v1",
-        "character_map": {},
+        "character_map": character_map,
         "note": "Generated only from comparison rows explicitly marked accept=y.",
         "units": units,
     }
@@ -1284,6 +1277,11 @@ def build_parser() -> argparse.ArgumentParser:
     make.add_argument("comparison", type=Path)
     make.add_argument("output", type=Path)
     make.add_argument("--codec", type=Path, help="validate accepted raw-resource hashes against this codec")
+    make.add_argument("--character-map", type=Path,
+                       help="global-page character-map.json; embeds its \"characters\" "
+                            "map as the translation document's character_map so "
+                            "build-korean encodes Hangul via the resident global page "
+                            "instead of appending new per-GCX glyphs")
     make.set_defaults(function=command_make_translation)
     merge = commands.add_parser("merge-comparison")
     merge.add_argument("bilingual", type=Path)

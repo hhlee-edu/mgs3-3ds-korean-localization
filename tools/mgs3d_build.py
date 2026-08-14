@@ -110,6 +110,12 @@ def main() -> int:
     )
     parser.add_argument("--movie-csv", type=Path)
     parser.add_argument("--demo-csv", type=Path)
+    parser.add_argument(
+        "--character-map", type=Path,
+        help="global Korean glyph page character-map.json; when set, codec is "
+             "encoded via the resident global page (no per-GCX glyph append) and "
+             "movie/demo use --fixed-layout-reclaim --static-allocation with it",
+    )
     args = parser.parse_args()
     build_lock: Path | None = None
     temporary_artifacts: list[Path] = []
@@ -145,9 +151,14 @@ def main() -> int:
         codec_translation = args.codec_translation
         if args.codec_review:
             codec_translation = args.output_root / tid / "accepted_codec_translation.json"
-            run([python, str(tools / "mgs3d_script_compare.py"), "make-translation",
-                 str(args.codec_review), str(codec_translation), "--codec",
-                 str(args.partition / "romfs/codec.dat")])
+            make_translation_command = [
+                python, str(tools / "mgs3d_script_compare.py"), "make-translation",
+                str(args.codec_review), str(codec_translation), "--codec",
+                str(args.partition / "romfs/codec.dat"),
+            ]
+            if args.character_map:
+                make_translation_command.extend(["--character-map", str(args.character_map)])
+            run(make_translation_command)
 
         if codec_translation:
             target = romfs / "codec.dat"
@@ -225,9 +236,16 @@ def main() -> int:
             temporary_artifacts.extend([target_temporary, allocation_temporary])
             discard_temporary(target_temporary, allocation_temporary)
             try:
-                run([python, str(tools / "mgs3d_movie_tool.py"), "build-korean",
-                     str(args.partition / f"romfs/{name}.dat"), str(translation),
-                     str(args.font), str(target_temporary), "--font-size", str(args.font_size)])
+                movie_command = [
+                    python, str(tools / "mgs3d_movie_tool.py"), "build-korean",
+                    str(args.partition / f"romfs/{name}.dat"), str(translation),
+                    str(args.font), str(target_temporary), "--font-size", str(args.font_size),
+                ]
+                if args.character_map:
+                    movie_command.extend([
+                        "--fixed-layout-reclaim", "--static-allocation", str(args.character_map),
+                    ])
+                run(movie_command)
                 if not allocation_temporary.is_file():
                     raise BuildError(
                         f"{name} builder did not create allocation report: {allocation_temporary}"

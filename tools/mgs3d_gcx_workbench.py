@@ -35,7 +35,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TOOLS_DIR = Path(__file__).resolve().parent
 
-DEFAULT_REVIEW = REPO_ROOT / "translation/10_master/codec-3ds-INTEGRATED-review.csv"
+DEFAULT_REVIEW = REPO_ROOT / "translation/10_master/current/codec.csv"
 DEFAULT_WORKLIST = REPO_ROOT / "translation/30_shortened/translator_worklist_4994.csv"
 DEFAULT_BASELINE_CODEC = (
     REPO_ROOT / "archive/old-data/ps2_korean/romforge_codec.dat.before-ps2none-donor-build-2026-08-05.bak"
