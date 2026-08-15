@@ -1,6 +1,24 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
-## NEWEST — v0.81 staged: final dialogue fitting, round 1 (2026-08-16)
+## NEXT — v0.82 plan recorded (2026-08-16)
+
+**Read [`docs/v0.82-plan-2026-08-16.md`](docs/v0.82-plan-2026-08-16.md).**
+
+Accounting for 586 → 301 applied → 302 remaining, by set difference: **284
+edited rows entered the build, 17 were edited but still fall short, 285 were
+never edited. Zero rows were newly added and zero were reclassified.**
+
+The 17 shortfalls share one cause: they were shortened to land exactly on the
+budget the worklist showed, and the movie/demo encoder needs 1–2 bytes more than
+the raw encoded length. **The worklist's movie/demo budget model is optimistic —
+leave at least 2 bytes of slack until it is fixed.**
+
+Also recorded there, so it is not repeated: the capacity report's record-level
+`safe:false` flag does **not** mean a whole record is dropped. The build uses
+`--max-safe-csv`, exclusion is per row, and excluded rows match deficient entries
+one-for-one. Record-level aggregates must not be used to plan this work.
+
+## v0.81 staged: final dialogue fitting, round 1 (2026-08-16)
 
 **Read [`docs/v0.81-staging-2026-08-16.md`](docs/v0.81-staging-2026-08-16.md).**
 Purpose: **final dialogue fitting**. No CCI built.
