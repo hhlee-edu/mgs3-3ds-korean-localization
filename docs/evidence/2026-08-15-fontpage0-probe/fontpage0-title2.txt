@@ -1,0 +1,163 @@
+# font page table[0] probe - label=title2
+
+table[0] = 0x08688578  (matches the 2026-08-15 measurement)
+  table[0]=0x08688578  table[1]=0x087A973C  table[2]=0x08954BB4  table[3]=0x00000000  table[4]=0x08964AB4  table[5]=0x08698478  table[6]=0x086A8378
+
+page span            0x08688578 .. 0x08698478  (65280 bytes, 1020 slots of 64B)
+slots with data      1005 / 1020
+slots all-zero       15 / 1020
+distinct slot values 946
+
+contiguous non-zero runs (index -> token):
+     0-  15  0x8401-0x8410  (16 slots)
+    17-  23  0x8412-0x8418  (7 slots)
+    25-  53  0x841A-0x8436  (29 slots)
+    55-  94  0x8438-0x845F  (40 slots)
+    96- 521  0x8461-0x860C  (426 slots)
+   523- 537  0x860E-0x861C  (15 slots)
+   539- 552  0x861E-0x862B  (14 slots)
+   554- 597  0x862D-0x8658  (44 slots)
+   599- 751  0x865A-0x86F2  (153 slots)
+   753- 789  0x86F4-0x8719  (37 slots)
+   796-1019  0x8720-0x87FF  (224 slots)
+
+named tokens from the audit:
+  0x8401 idx    0  korean-page char 호  nonzero_bytes=20 set_bits= 53
+  0x8421 idx   32  korean-page char 코  nonzero_bytes= 1 set_bits=  1
+  0x8422 idx   33  korean-page char 임  nonzero_bytes= 7 set_bits= 22
+  0x841D idx   28  korean-page char 워  nonzero_bytes=28 set_bits= 71
+  0x8490 idx  143  korean-page char 외  nonzero_bytes=14 set_bits= 53
+  0x84D4 idx  211  korean-page char 업  nonzero_bytes=22 set_bits= 34
+  0x8505 idx  259  korean-page char 백  nonzero_bytes=23 set_bits= 38
+  0x865B idx  600  korean-page char 팀  nonzero_bytes=14 set_bits= 50
+
+slot 0 (token 0x8401, korean-page char 호):
+                    
+                    
+    ..     +        
+     .##.#+ ..+.  #+
+    #+   # +.++   + 
+                    
+                    
+     .##.#+ ..+.+ #+
+                    
+       .            
+       .            
+       +            
+       .            
+       .            
+      ..            
+                    
+
+slot 1 (token 0x8402, korean-page char 프):
+    +               
+    +               
+    +.              
+    #+              
+           .        
+     #     .        
+    ++     .        
+    .      +        
+    +   .## ## . .. 
+    .#   # #        
+        +#  ## . .. 
+    .#   .          
+                    
+     +  . .+        
+    .+..+++ ++##.  +
+     .+##+.++.+..  #
+
+slot 2 (token 0x8403, korean-page char 번):
+    .++++##++# #.  +
+    .      +        
+     +.## ###+. #  +
+      #+ +#.+ +++###
+     + +###.+...#  +
+    +#   #..        
+    ++++  .#.#++    
+                    
+    ################
+                    
+                    
+                    
+       +            
+                    
+                    
+                    
+
+slot 3 (token 0x8404, korean-page char 페):
+    +. +   +        
+                    
+    .+..+++ ++##.  +
+     .+##+.++.+..  #
+    .++++##++# #.  +
+            +    ###
+     +.## ###+. #  +
+      #+ +#.+ +++###
+     + +###.+...#  +
+            +    ###
+                    
+                    
+                    
+            +    ###
+        +      .  + 
+                    
+
+slot 4 (token 0x8405, korean-page char 예):
+                    
+            +  +   +
+        +    #.+    
+       + .          
+                    
+    +  +   + .      
+                    
+      ..            
+     ..             
+                    
+     .  +# #...+...#
+    ..+             
+                    
+                    
+          #  .   .  
+     .              
+
+slot 5 (token 0x8406, korean-page char 잡):
+                    
+                    
+     . .            
+    .#+.+++###      
+      ..            
+                    
+                    
+       .            
+       +            
+       #            
+      .             
+                    
+                    
+                    
+                    
+                    
+
+slot 32 (token 0x8421, korean-page char 코):
+       .            
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+
+VERDICT (this sample): 1005 of 1020 slots carry data -- the page is in use. Wholesale replacement would lose those glyphs.
+
+CAVEAT: one sample from one screen. The font buffer is loaded once at boot (0x00643554) and table[0] never moved across the three 2026-08-15 samples, so a post-title sample should be representative -- but re-run with a second --label from a different screen before treating it as settled.
+CAVEAT: rendering assumes the Korean page's verified 16x16 2bpp MSB-first linear-row-major layout. If the retail font page uses a different layout the zero/non-zero census still holds; only the ASCII art would be wrong.

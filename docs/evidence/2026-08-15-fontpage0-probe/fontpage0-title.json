@@ -1,0 +1,119 @@
+{
+  "label": "title",
+  "table": {
+    "table[0]": "0x08688578",
+    "table[1]": "0x087A973C",
+    "table[2]": "0x08954BB4",
+    "table[3]": "0x00000000",
+    "table[4]": "0x08964AB4",
+    "table[5]": "0x08698478",
+    "table[6]": "0x086A8378"
+  },
+  "table0": "0x08688578",
+  "table0_matches_2026_08_15_measurement": true,
+  "font_pages_contiguous": {
+    "table5_is_table0_plus_0xFF00": true,
+    "table6_is_table0_plus_0x1FE00": true
+  },
+  "page_bytes": 65280,
+  "slots_total": 1020,
+  "slots_nonzero": 1005,
+  "slots_zero": 15,
+  "nonzero_runs": [
+    {
+      "first_index": 0,
+      "last_index": 15,
+      "count": 16,
+      "first_token": 33793,
+      "last_token": 33808
+    },
+    {
+      "first_index": 17,
+      "last_index": 23,
+      "count": 7,
+      "first_token": 33810,
+      "last_token": 33816
+    },
+    {
+      "first_index": 25,
+      "last_index": 53,
+      "count": 29,
+      "first_token": 33818,
+      "last_token": 33846
+    },
+    {
+      "first_index": 55,
+      "last_index": 94,
+      "count": 40,
+      "first_token": 33848,
+      "last_token": 33887
+    },
+    {
+      "first_index": 96,
+      "last_index": 521,
+      "count": 426,
+      "first_token": 33889,
+      "last_token": 34316
+    },
+    {
+      "first_index": 523,
+      "last_index": 537,
+      "count": 15,
+      "first_token": 34318,
+      "last_token": 34332
+    },
+    {
+      "first_index": 539,
+      "last_index": 552,
+      "count": 14,
+      "first_token": 34334,
+      "last_token": 34347
+    },
+    {
+      "first_index": 554,
+      "last_index": 597,
+      "count": 44,
+      "first_token": 34349,
+      "last_token": 34392
+    },
+    {
+      "first_index": 599,
+      "last_index": 751,
+      "count": 153,
+      "first_token": 34394,
+      "last_token": 34546
+    },
+    {
+      "first_index": 753,
+      "last_index": 789,
+      "count": 37,
+      "first_token": 34548,
+      "last_token": 34585
+    },
+    {
+      "first_index": 796,
+      "last_index": 1019,
+      "count": 224,
+      "first_token": 34592,
+      "last_token": 34815
+    }
+  ],
+  "distinct_slot_values": 946,
+  "page_all_zero": false,
+  "equals_staged_korean_page": false,
+  "control_pages": {
+    "table5": {
+      "bytes_sampled": 65280,
+      "slots_sampled": 1020,
+      "slots_nonzero": 1020,
+      "equals_table0": false
+    },
+    "table6": {
+      "bytes_sampled": 65280,
+      "slots_sampled": 1020,
+      "slots_nonzero": 1020,
+      "equals_table0": false
+    }
+  },
+  "font_header_before_table0": "00000000000003000fff03000c0003000c0003000c0003000c0003000c0003f00c0003000c0003000fffc3000000030000000300000003000000030000000000"
+}

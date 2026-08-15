@@ -21,9 +21,26 @@
 @ kept byte-for-byte so this build differs from the known-good one only where
 @ intended.
 
+@ 2026-08-15: the anchor moved off the shared font slot table[2].
+@ table[2] is a per-screen slot: during a codec conversation the engine points
+@ it at the loaded codec.dat GCX record's own page-2 glyph area (measured:
+@ table[2]=0x15A278DC == codec.dat file offset 0x78A77C, 8192/8192 bytes), so
+@ table[2]+K lands outside the resident scenerio.gcx buffer and the whole
+@ global page draws as zeros.  The stage text object keeps its OWN page-2
+@ pointer, snapshotted at 0x007801CC into [obj+0x4C], and that object is
+@ reachable from the single-writer global 0x008E1618 (writer 0x007801C4).
+@ Measured live during a failing codec conversation: obj[0x4C]=0x08982744 !=
+@ table[2]=0x15A278DC, and obj[0x4C]+K matched korean_page_full.bin 64/64.
+@ K itself is unchanged and still parser-relative (K gate: 169/169 stages).
+@ If the global is still NULL (early boot, before 0x007801B8 has run) the old
+@ table[2] path is used, so this can never be worse than the previous build.
 .macro KOREAN_BASE reg, scratch
     ldr \reg, korean_desc_literal
     ldr \reg, [\reg]
+    cmp \reg, #0
+    ldrne \reg, [\reg, #0x4C]
+    ldreq \reg, korean_table2_literal
+    ldreq \reg, [\reg]
     ldr \scratch, korean_delta_literal
     add \reg, \reg, \scratch
 .endm
@@ -207,6 +224,8 @@ layout_fallback:
 
 .align 2
 korean_desc_literal:
+    .word 0x008E1618
+korean_table2_literal:
     .word 0x00A46FE0
 korean_delta_literal:
     .word 0x00056000

@@ -30,6 +30,8 @@ FIXED_HPKS = [
     ROOT / "experiments/shared_glyph_optimized_build_2026-08-12/stage/r_sna02/resident.hpk",
 ]
 GLOBAL = ROOT / "glyph/pages/global_korean_page_v2/korean_token_map_full.csv"
+
+from mgs3d_korean_global_page_build import CONTROL_CODE_COLLIDING  # noqa: E402
 PAGE = ROOT / "glyph/pages/global_korean_page_v2/korean_page_full.bin"
 # translation/10_master was reorganized 2026-08-14: current/{movie,demo,codec}.csv
 # are now the single canonical sources (see translation/10_master/README.md).
@@ -107,7 +109,13 @@ def main() -> int:
         json.dumps(codec_document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     fixed_doc = json.loads(FIXED.read_text(encoding="utf-8-sig"))
-    fixed = {character: bytes.fromhex(token) for character, token in fixed_doc["characters"].items()}
+    # 감/달 are dropped from the static allocation because their static tokens
+    # (0x8308/0x8309) are consumed as control codes by the layout engine; they
+    # are supplied by the global page instead. See CONTROL_CODE_COLLIDING in
+    # tools/mgs3d_korean_global_page_build.py for the disassembly evidence.
+    fixed = {character: bytes.fromhex(token)
+             for character, token in fixed_doc["characters"].items()
+             if character not in CONTROL_CODE_COLLIDING}
     with GLOBAL.open(encoding="utf-8-sig", newline="") as stream:
         rows = list(csv.DictReader(stream))
     global_map = {row["character"]: bytes.fromhex(row["bytes"]) for row in rows}
@@ -176,8 +184,8 @@ def main() -> int:
     round_trip_ok = all(encoded_to_character[token.hex().upper()] == character
                         for character, token in combined.items())
     checks = {
-        "fixed_characters_191": len(fixed) == 191,
-        "global_characters_929": len(global_map) == 929,
+        "fixed_characters": len(fixed) == 191 - len(CONTROL_CODE_COLLIDING),
+        "global_characters": len(global_map) == 929 + len(CONTROL_CODE_COLLIDING),
         "combined_characters_1120": len(combined) == 1120,
         "character_sets_disjoint": not (set(fixed) & set(global_map)),
         "fixed_tokens_unique": len(fixed_tokens) == len(fixed),

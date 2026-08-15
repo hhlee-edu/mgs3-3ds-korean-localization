@@ -1,0 +1,8 @@
+﻿page,token_range,pointer,status,glyph_count,movie_tokens,demo_tokens,codec_tokens,notes
+0,0x8401-0x87FF (xx00 excluded),runtime; static image cannot supply value,initialized_not_seen_in_scanned_dialogue,1020,0,0,0,direct write at 0x643594: font_base+0x3080
+1,0x8801-0x8BFF (xx00 excluded),runtime; static image cannot supply value,runtime_state_unknown,1020,0,0,0,setter-capable; no direct initializer found
+2,0x8C01-0x8FFF (xx00 excluded),runtime; static image cannot supply value,used_in_scanned_dialogue,1020,0,0,68,setter-capable; page 4 is derived when page 2 is set
+3,0x9001-0x93FF (xx00 excluded),runtime; static image cannot supply value,runtime_state_unknown,1020,0,0,0,setter-capable; no direct initializer found
+4,0x9401-0x97FF (xx00 excluded),runtime; static image cannot supply value,initialized_not_seen_in_scanned_dialogue,1020,0,0,0,0x10A8A0/0x10A8A4: page2_pointer+0xFF00
+5,0x9801-0x9BFF (xx00 excluded),runtime; static image cannot supply value,initialized_not_seen_in_scanned_dialogue,1020,0,0,0,direct write at 0x6435A0: font_base+0x12F80
+6,0x9C01-0x9FFF (xx00 excluded),runtime; static image cannot supply value,initialized_not_seen_in_scanned_dialogue,1020,0,0,0,direct write at 0x6435A4: font_base+0x22E80

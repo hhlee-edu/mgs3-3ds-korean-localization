@@ -1,6 +1,226 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
-## NEW — `korean_layout_classify` renderer fix, staged (2026-08-15)
+## NEWEST — v0.81 staged: final dialogue fitting, round 1 (2026-08-16)
+
+**Read [`docs/v0.81-staging-2026-08-16.md`](docs/v0.81-staging-2026-08-16.md).**
+Purpose: **final dialogue fitting**. No CCI built.
+
+The English still on screen was never untranslated -- it was translated text
+dropped for byte capacity. 301 of the 586 worklist rows were filled and applied
+(checker: PASS 301 / FAIL 0), giving:
+
+| | v0.80 | v0.81 |
+|---|---:|---:|
+| codec units in build | 8,303 | **8,441** |
+| codec units dropped | 175 | **37** |
+| movie subtitles | 588 | **608** |
+| demo subtitles | 1,919 | **2,045** |
+
+Of the 301: **114 were not dialogue at all** -- GCX 13 is the encyclopedia index,
+whose "translation" had replaced the `<80>` field separators with spaces and
+corrupted an identifier; restoring `raw_text` fits to the byte. The other **187
+are shortened dialogue that has not had a translator's read** and can be revised
+in the same one-file loop.
+
+Staged: `codec.dat` `80f78457…`, `movie.dat` `54bc9566…`, `demo.dat` `8612ec45…`.
+978 files in the tree, exactly 3 changed, all sizes unchanged, HPK gate exit 0.
+Glyph page, `code.bin`, `scenerio.gcx` and `cache.hpk` untouched this round.
+
+**Worklist now 302 rows** (was 586): `translation/10_master/review/dialogue-worklist.csv`.
+Loop is one file → `mgs3d_review_check.py` → `--apply` → rebuild.
+
+**Open:** `억` renders corrupted right after a codec call ends. Data verified
+clean end to end (map, token map, 931/931 bitmaps, 63/63 built units). That line
+has exactly one global-page character and thirteen static ones, so the leading
+hypothesis is a transient stale anchor at the codec→cutscene transition, not a
+glyph defect. Same line exists at demo offsets `11537428` / `533694288` -- if it
+reads fine when not reached straight after a codec call, that confirms it.
+
+## v0.80 CONFIRMED ON HARDWARE; one-file dialogue worklist (2026-08-16)
+
+**v0.80 works.** Anchor fix, 감/달 relocation and the approvals all verified on
+real hardware. Korean now renders in codec conversations.
+
+**Next work is in one place:** `translation/10_master/review/dialogue-worklist.csv`
+— every line that still shows English, all three media in one file. See
+[`translation/10_master/review/README.md`](translation/10_master/review/README.md).
+
+The remaining English is **not untranslated** — it is translated text dropped for
+byte capacity: demo 309 + codec 176 + movie 101 = **586 lines**. 543 are over
+budget, median overage **3 bytes (2 Hangul)**, and 493 need ≤3 characters cut.
+
+Workflow: fill `korean_new` → `python tools/mgs3d_review_check.py` →
+`--apply` writes only the rows that fit into `current/*.csv`
+(precondition-checked, masters backed up).
+
+New tools: `mgs3d_dialogue_worklist.py`, `mgs3d_review_check.py`,
+`mgs3d_codec_review_export.py`, `mgs3d_codec_safe_select.py`.
+
+**Speaker data does not exist in the game.** `radio_picture` ids appear only in
+the encyclopedia index; `20_matching/mgs3d_script_comparison.csv` has speakers
+for 3,031 rows but is keyed to stale parser offsets (2,719/3,031 keys absent from
+the master, text similarity ~0.10 on the rest). Speakers are therefore derived
+from vocatives within each conversation — 176 of 586 rows, labelled
+`vocative`/`mentioned` — and left blank rather than guessed elsewhere.
+
+## v0.80 staged: approvals + 감/달 relocation + encoding cleanup (2026-08-16)
+
+**Read [`docs/v0.80-staging-2026-08-16.md`](docs/v0.80-staging-2026-08-16.md).**
+
+Three changes on top of the anchor fix below, all staged, **no CCI built**:
+
+- **1,106 already-translated codec rows approved** (`accept=yes` 7,372 → 8,478).
+  They were translated and QA'd but never approved, so they shipped as English.
+  Capacity dry-run first: zero new failures. One row held back (gcx 724/14 needs
+  `뱌`, absent from the page).
+- **감/달 moved off their control-code tokens** — 달 `0x8309` → `0x87A5`,
+  감 `0x8308` → `0x87A6`; verified in the built binary. See
+  [`docs/gam-dal-control-code-fix-2026-08-15.md`](docs/gam-dal-control-code-fix-2026-08-15.md).
+- **39 encoding-preflight failures fixed** (Spanish `¿`/`¡` residue, zero-width
+  spaces, `<제목>` brackets, `×`, `·`). `coverage-report.json` is **PASS** for the
+  first time — `all_authoring_text_encodes` had always been failing.
+
+Build: **+1,257 codec lines** vs v0.69 (8,303 units vs 7,046). New tool
+`tools/mgs3d_codec_safe_select.py` reconstructs the never-committed byte-capacity
+safe-subset generator. All staged file sizes unchanged; HPK gate exit 0.
+
+**Do not run `tools/mgs3d_clean_glyph_v1.py` against live staging** — it resets
+every whitelisted partition0 file to the clean baseline first and would destroy
+the staged `code.bin`, DATs and `cache.hpk`.
+
+Codec translation is effectively complete: of the 1,094 rows without Korean,
+803 are FR/ES donor residue, 90 internal identifiers, 90 short tokens, and only
+~20-40 are real English (mostly PERSONAL DATA profile cards). Worklist:
+`translation/10_master/review/codec-review-worklist.csv`.
+
+## Korean base re-anchored, staged (2026-08-15)
+
+**Read [`docs/korean-base-obj-snapshot-2026-08-15.md`](docs/korean-base-obj-snapshot-2026-08-15.md).**
+
+Root cause is closed and the fix is staged. `table[2]` is a per-screen slot: in a
+codec conversation the engine points it at the loaded **codec.dat** GCX record's
+own glyph area (proved byte-exact: `table[2]` buffer == codec.dat offset
+`0x78A77C`, 8192/8192), so `table[2]+0x56000` left the resident scenerio.gcx
+buffer entirely. Option 2 (pointer cache/refresh) is therefore **dead** — the
+data is not in that buffer at any offset.
+
+The fix uses the engine's own per-object snapshot instead:
+`obj = *(0x008E1618)` (single-writer global, writer `0x007801C4`), Korean base =
+`obj[0x4C] + 0x56000`, with a NULL fallback to the old `table[2]` path. Verified
+live during a failing conversation: `obj[0x4C]=0x08982744 != table[2]=0x15A278DC`
+and `obj[0x4C]+0x56000` matched the staged page 64/64.
+
+Only `korean_draw_1/2`'s `KOREAN_BASE` changed. All static gates PASS; staging
+tree diff is exactly 2 files. New staged `code.bin`
+`ea2bb144194cd5509ce5340715e4c003fee7bd65e49bf1c40f381efae4bee20c`, `exheader.bin`
+`39bd66cdc9b90aefdf2ff997c6e71ac120c668de4c97f9f79a92920082f1d87d`; previous pair
+archived to `Romforge\archive\pre-objsnapshot-20260815\`. **No CCI built** —
+RomForge is GUI-only and is the repack step; see §5 of that doc.
+
+## NEW — global-page blank-glyph bug ROOT-CAUSED at runtime (2026-08-15, latest)
+
+**Read [`docs/global-page-render-path-audit-2026-08-15.md`](docs/global-page-render-path-audit-2026-08-15.md) first.**
+Nothing was modified this session — no `code.bin`, no trampoline, no CCI, no
+glyph-slot reassignment. Analysis and measurement only.
+
+### What the bug actually is
+
+Not "nine specific characters". **The entire 929-character global glyph page
+renders blank in the codec screen while the 191 static characters render
+correctly.** Proven live under Azahar+GDB:
+
+| slot | boot | **codec (broken)** | **in-game (working)** |
+|---|---|---|---|
+| `table[0]` | `0x08688578` | `0x08688578` | `0x08688578` |
+| `table[1]` | `0x087A973C` | `0x087A973C` | `0x087A973C` |
+| **`table[2]`** | `0x08954BB4` | **`0x15A278DC`** | `0x08852520` |
+| `table[4]` | `0x08964AB4` | `0x15A377DC` | `0x08862420` |
+
+`table[4] == table[2] + 0xFF00` in every sample — the signature the setter at
+`0x0010A894` writes only for index 2. So `table[2]` really is a **shared font
+slot that seven different call sites reassign**, and the trampoline's
+`korean_page_base = *(0x00A46FE0) + 0x56000` depends on it.
+
+In the codec, `table[2]+0x56000` = `0x15A7D8DC` and that memory is **all
+zeros** — the renderer is faithfully drawing a 64-byte run of zeros. In the
+working context, `table[2]+0x56000` = `0x088A8520` and the 64 bytes there are
+**byte-identical to the staged page**.
+
+Natural experiment that confirms the split by eye: the codec save prompt
+`게임을 저장하시겠습니까?` has exactly one global-page character — `임`
+(`0x8422`) — and ten static ones. Only `임` is invisible.
+
+### Conclusion on the fix formula
+
+- **`table[0] + FIXED_OFFSET` is impossible.** `table[0]` is constant across all
+  three samples but the page distance is not (`0x0032263C` / `0x0D3F5364` /
+  `0x0021FFA8`). Structural: `table[0]` lives in the font archive (loaded once),
+  the page lives in the per-stage `scenerio.gcx` buffer whose `page2_offset`
+  ranges 49,872–369,396 across the 169 stages.
+- **The `0x56000` offset is correct**; only the pointer is unreliable.
+- Two candidate fixes, neither implemented — see the audit doc §7.
+  Minimal: validate `table[2]+0x56000` against a known page signature and fall
+  back to a private cached copy. Structural: relocate the glyphs into
+  `table[0]`'s font page (a font page is `0xFF00` = 65,280 bytes, **exactly** the
+  Korean page's size, and the engine already routes `0x84xx-0x87xx` there).
+
+### Option 3 (relocate into `table[0]`'s font page) — probe prepared, not yet run
+
+New evidence folder:
+[`docs/evidence/2026-08-15-fontpage0-probe/`](docs/evidence/2026-08-15-fontpage0-probe/README.md).
+
+- **Static result, done:** the pristine Western `codec/movie/demo.dat` reference
+  **zero** page-0 tokens (`0x8401-0x87FF`, flag-normalized so `0xA4xx-0xA7xx`
+  counts too). Page 2 is the only generic page retail dialogue uses (68 tokens,
+  codec) — consistent with `table[2]` being a live shared slot. Caveat: those
+  three DATs are dialogue only; UI/menu text was not scanned.
+- **Runtime result — VERDICT: `table[0]`'s page is NOT free, Option 3 as framed
+  is not supported.** Measured with `tools/mgs3d_fontpage0_probe.py` (read-only)
+  across two independent Azahar launches at the title screen:
+  - `table[5] == table[0]+0xFF00`, `table[6] == table[0]+0x1FE00` confirmed live;
+    `table[0] = 0x08688578` reproduced.
+  - **1005 of 1020 slots non-zero**, 946 distinct slot values, and the two
+    captures are **byte-identical 65280/65280 across separate processes** — so it
+    is deterministic asset content, not heap garbage.
+  - It does not render as readable characters under any of ~40 searched layouts,
+    but its glyph-coherence score under the renderer's own format (3.26 for slots
+    0-199, 3.87 for 400-599) matches the staged Korean page (3.47), while the
+    page tail (slots 800-999) scores 9.37 (noise).
+  - The buffer region immediately *before* `table[0]` decodes into **legible
+    Hangul** under that same format, proving the decoder is right and the
+    surrounding buffer is a glyph store.
+  - So roughly the first 600-790 slots hold real glyph-textured content that a
+    wholesale replacement would destroy. Whether it is ever drawn is unproven;
+    the burden is now on proving it dead.
+  - Not run: `--registry` resolution of `0x6E383C45` (session ended first; it
+    does not change the verdict). A `-data-read-memory-bytes` gotcha was also
+    closed out — bulk 1024-byte reads were **verified** against 64-byte reads,
+    so they are trustworthy on this stub after all.
+
+### Two other results from the same audit
+
+- **Yesterday's `korean_layout_classify` fix is a proven no-op** for every
+  assigned character — see §3 of the audit doc. It is harmless and need not be
+  reverted, but it does not fix anything and a CCI built to test it would test
+  nothing. The `missing_glyphs` evidence that motivated it is also invalid:
+  865 of the 1,120 assigned characters carry that flag.
+- **New real defect, not fixed:** `감` (`0x8308`) and `달` (`0x8309`) collide
+  with control-code tests in the layout engine (`0x00183D68`, `0x00183D70`, and
+  three mirrors) and are consumed instead of drawn. Cheapest fix is reassigning
+  those two characters to free global-page slots — data only, no code patch.
+  Do **not** allocate `0x8100`, `0x81B0`, `0x825C`, `0x8301`, `0x831E` either.
+
+### Environment left behind
+
+Azahar (with the 2026-08-15 00:15 CCI) and the GDB daemon were still running at
+handoff; close Azahar normally when done. `qt-config.ini` was restored to
+`use_gdbstub=false` so the next launch boots normally instead of stalling for a
+debugger.
+
+## SUPERSEDED — `korean_layout_classify` renderer fix, staged (2026-08-15)
+
+> Superseded the same day: the fix is a no-op (audit doc §3). The staging and
+> tooling record below is still accurate; its *diagnosis* is not.
 
 Root-caused and fixed the hardware "characters render blank" bug reported
 live during v0.69 testing (듣/얼/마/임/백/업/외/워/팀 and more — 434 codec

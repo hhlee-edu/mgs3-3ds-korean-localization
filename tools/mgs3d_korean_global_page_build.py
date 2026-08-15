@@ -20,6 +20,21 @@ from PIL import ImageFont
 BASE = 0x8400
 CAPACITY = 1020
 FONT = Path(r"C:\Windows\Fonts\malgun.ttf")
+
+# 2026-08-15: the layout engine tests decoded tokens against control constants.
+# `sub r1,r0,#0x8000 / subs r1,r1,#0x308 / subne r1,r0,#0x8300 / subsne r1,r1,#9
+#  / beq 0x183d90` at 0x00183D68 (mirrored at 0x00184544) means tokens 0x8308
+# and 0x8309 branch to a special handler instead of being drawn.  Those are the
+# static allocation's slots for 감 and 달, so both characters are consumed as
+# control codes wherever they appear.
+#
+# Fix is data-only: keep them out of the static allocation so they fall through
+# to the global page instead.  Global-page tokens are normalised to the 0x8101
+# sentinel by korean_layout_classify before these tests run, so they no longer
+# collide.  The static allocation report itself is left untouched -- it maps
+# character -> explicit token, so dropping two entries here does not renumber
+# the other 189.
+CONTROL_CODE_COLLIDING = {"감", "달"}
 MOVIE = ROOT / "experiments/shared_glyph_optimized_build_2026-08-12/movie_live_base.dat"
 DEMO = ROOT / "experiments/scene_fixed_natural_2026-08-12/demo_live_safe_base.dat"
 CODEC = ROOT / "experiments/full_korean_apply_2026-08-12/codec_official_plus_3ds.dat"
@@ -84,7 +99,7 @@ def translation_chars(canonical_master: bool = False) -> tuple[list[str], set[st
         chars = hangul_from_obj(obj); all_chars.update(chars)
         # Frequency is only a stable ordering aid; JSON string representation is sufficient.
         counts.update(ch for ch in json.dumps(obj, ensure_ascii=False) if '\uac00' <= ch <= '\ud7a3')
-    fixed = set(json.loads(ALLOC.read_text(encoding="utf-8"))["characters"])
+    fixed = set(json.loads(ALLOC.read_text(encoding="utf-8"))["characters"]) - CONTROL_CODE_COLLIDING
     new = sorted(all_chars - fixed, key=lambda ch: (-counts[ch], ord(ch)))
     return new, fixed, dict(counts)
 
@@ -128,7 +143,13 @@ def build(out: Path, limit: int|None, canonical_master: bool = False,
             raise SystemExit("extend-map contains duplicate characters")
         unknown = set(previous_chars) - set(chars)
         if unknown:
-            raise SystemExit(f"extend-map contains {len(unknown)} characters outside current corpus")
+            # Append-only means an already-allocated slot is never reclaimed:
+            # dropping a character would renumber every token after it. Text
+            # edits legitimately stop using a character (v0.68 reworded ten
+            # lines), so this is reported, not fatal -- the concatenation below
+            # keeps the previous order intact either way.
+            print(f"note: {len(unknown)} previously allocated character(s) are no longer "
+                  f"in the corpus and are retained: {''.join(sorted(unknown))}")
         chars = previous_chars + [character for character in chars if character not in set(previous_chars)]
     selected=chars if limit is None else chars[:limit]
     font=ImageFont.truetype(str(FONT),16)
