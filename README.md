@@ -123,13 +123,20 @@ Coverage is now computed without self-reference: `ACTUAL_CODEC_ENGLISH` comes
 from the binary, `MASTER_KNOWN` from the master's own index, and
 `MASTER_MISSING` is the **set difference** — never a subtraction of totals.
 
-See [`docs/SESSION-2026-08-16.md`](docs/SESSION-2026-08-16.md) for the full day
-and [`docs/v0.88-icon-token-parser-fix-2026-08-16.md`](docs/v0.88-icon-token-parser-fix-2026-08-16.md)
-for the parser work.
+Method, measurements and the gate list are written up in
+[`docs/codec-extraction-method.md`](docs/codec-extraction-method.md).
 
-## Translation decision records
+## Game text is not in this repository
 
-`translation/` is gitignored, so the master CSVs never enter version control.
-The hand-adjudicated translation, register and terminology decisions — and the
-evidence behind each one — are preserved instead under
-[`docs/decisions/`](docs/decisions/), keyed by `(gcx, resource)`.
+Konami's script — English or Japanese — the PS2 Korean localization, and
+third-party transcriptions of it are copyrighted. None of it is committed here,
+in any form:
+
+- `translation/` and `docs/decisions/` are gitignored, so master CSVs and the
+  hand-adjudicated translation tables stay local;
+- evidence files that embed script are excluded by name in `.gitignore`;
+- the documentation does not quote dialogue either. Positions are identified by
+  `gcx` / `resource` number, never by their text.
+
+What stays in version control is tooling, byte-level format documentation, and
+aggregate counts.

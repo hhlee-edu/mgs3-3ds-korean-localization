@@ -66,3 +66,32 @@ Thumbs.db
 /tools/mgs3d_merge_direct_codec_master.py
 /tools/mgs3d_normalize_korean_terms.py
 /tools/mgs3d_shinsnote_style_candidates.py
+
+# ---------------------------------------------------------------------------
+# Game text is copyrighted. Konami's script (English or Japanese), the PS2
+# Korean localization, and Shinsnote's transcription of it must never be
+# committed -- not as data, not as evidence, not quoted inside documentation.
+# Only tools, byte-level format notes, and counts belong in this repository.
+# ---------------------------------------------------------------------------
+/docs/decisions/
+/docs/*-2026-08-16.md
+/docs/SESSION-*.md
+/docs/ps2*
+/docs/**/ps2*
+*shinsnote*
+*_ps2_*
+*ps2_korean*
+
+# evidence files that embed game script
+/docs/evidence/codec-accepted-but-english-2026-08-16.json
+/docs/evidence/codec-census-iconaware-2026-08-16.json
+/docs/evidence/codec-gap-1368-2026-08-16.json
+/docs/evidence/codec-gate-final-2026-08-16.json
+/docs/evidence/codec-parser-icon-delta-2026-08-16.json
+/docs/evidence/codec-qa-round2-2026-08-16.json
+/docs/evidence/codec-recovery-append-2026-08-16.json
+/docs/evidence/codec-recovery-survey-2026-08-16.json
+/docs/evidence/codec-round3-apply-2026-08-16.json
+/docs/evidence/codec-round5-proposed-2026-08-16.json
+/docs/evidence/donor-reclassify-2026-08-16.json
+/docs/evidence/remaining-english-2026-08-16.json
