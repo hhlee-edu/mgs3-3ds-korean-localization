@@ -11,6 +11,88 @@ record.
 
 ## Confirmed
 
+### v0.81 hardware defects — root-caused 2026-08-16 (newest)
+
+Full evidence: [`docs/v0.81-hardware-defects-rootcause-2026-08-16.md`](../docs/v0.81-hardware-defects-rootcause-2026-08-16.md).
+Analysis only — no data, apply, staging or build change was made.
+
+- **Codec English residue is a duplicate-propagation gap, not a fitting
+  problem.** The master CSV dedupes strings and records every position in
+  `locations`; the build input holds **only the canonical `(gcx, resource)`**.
+  Attribution over all **211,458** English display_text location instances in the
+  staged `codec.dat`, zero residual: duplicate never written **193,138
+  (91.34%)**, master has no Korean 10,265 (4.85%), Korean in build 8,009
+  (3.79%), **byte-capacity drops 30 (0.01%)**, `accept≠yes` 16 (0.01%).
+  Measured directly: canonical locations 7,971 Korean / duplicates **0 Korean,
+  193,162 English**.
+- **Real codec Korean reach is 3.79% of in-game locations** (3.0% counting
+  dialogue only), not the 8,441 units the build reported. The optional-call
+  library records (gcx ~1403-1459, ~1,764-1,792 lines each) are **0%**.
+  `resource 0-13` of every GCX is a PERSONAL DATA/PROFILE prologue cloned from
+  gcx 15, so every codec screen shows an English info card.
+- **Propagation looks byte-feasible** — Korean is *shorter* than the English in
+  the big records (gcx 1412: 116,455 → 82,866 B, −33,589). Estimate; re-run the
+  real per-GCX capacity gate before relying on it.
+- **The `추`/`션` corruption is the same defect as `억`, and the same family as
+  the v0.69 외/워/백/업/팀 report.** Both post-v0.80 reports are consecutive
+  subtitles in **demo record 5, offsets 11,537,428 and 11,537,816** (the opening
+  cutscene). In each line the broken characters are *exactly* the global-page
+  (`0x84xx-0x87xx`) ones; all fixed (`0x81xx-0x83xx`) characters render. Across
+  every hardware report: 11/11 broken are global-page, 39/39 correct are fixed.
+- **That defect is not a data defect.** Verified byte-perfect: `추`=`845E`
+  (index 93), `션`=`84E0` (index 223), `억`=`846E`; bitmaps non-blank and
+  correctly formed at 16×16 2bpp; **169/169** staged `scenerio.gcx` carry the
+  exact 65,280 B page; staged `demo.dat`/`movie.dat` bytes correct at all three
+  offsets.
+- **Exposure:** global-page characters are 17.6% of all Korean characters, but
+  **78-87% of accepted lines contain at least one** (movie 83.7%, demo 78.0%,
+  codec 87.0%). Respelling around it is not viable — all 931 characters are
+  affected.
+- **The shipped CCI carried correct data.** Scanning
+  `Romforge\output\MGS SNAKE EATER 3D_Repack___.cci` (3,303,145,472 B,
+  2026-08-16 01:28 — the tested build) finds the exact Korean byte strings for
+  all three reported lines: the `추`/`션` demo subtitle ×1, the movie one ×1, and
+  the `억` subtitle ×2 (matching demo offsets 11,537,428 and 533,694,288). So the
+  corruption is not a build or packaging fault.
+
+### Duplicate propagation — dry run 2026-08-16
+
+Full evidence: [`docs/duplicate-propagation-dryrun-2026-08-16.md`](../docs/duplicate-propagation-dryrun-2026-08-16.md).
+Scratch only; **nothing staged**.
+
+- **Propagation costs no bytes — it frees them.** New tool
+  `tools/mgs3d_codec_expand_locations.py` expands 8,478 → **201,482** units; the
+  shipped capacity gate then drops **0** with **0 failing GCX**. The same gate on
+  the canonical-only input reproduces v0.81 exactly (8,478 → 8,441, 37 dropped,
+  31 failing), which is what makes the expanded verdict credible.
+- **Why:** replacing more strings makes a record *smaller*. Korean at 2 bytes per
+  syllable is shorter than the long English sentences, so once every string in a
+  record is replaced it shrinks well under its original size. The 31 failures came
+  from swapping only one or two strings each — individually longer than the short
+  English they replaced, with no compensating saving. **The 37 codec rows the
+  worklist tracks as capacity drops are an artefact of propagating too little.**
+- **Verified layout-neutral.** Rebuilding every record with
+  `preserve_layout=True`: 2,264 of 2,326 records changed, **0 changed size**,
+  total `67,204,976 → 67,204,976` (delta +0), sha256 `40eead32…`.
+- **Reach measured on the built file: 3.79% → 94.94%** (+192,759 locations), and
+  the `dropped_for_capacity` category goes to **0**. The residual is the 10,265
+  locations whose master row has no Korean at all.
+- **`mgs3d_codec_tool.py apply` is the wrong tool for a safe codec build** — it
+  omits `preserve_layout=True`, so it may grow records, and it is quadratic
+  (`record.resources()` once per unit, each re-decrypting the record's whole
+  string region: 13+ min without finishing at 201,482 units).
+- The expander's byte-identity guard refused **411** locations across 16 canonical
+  rows, all French case differences — which surfaced that **42 accepted non-donor
+  rows are actually French (34) or Spanish (8)** mislabelled `language=en`.
+
+### New tools (2026-08-16)
+
+| tool | purpose |
+|---|---|
+| `mgs3d_translation_coverage.py` | the missing gate: reach measured over *binary* locations, per-cause attribution, `--min-reach` threshold, detector control against the pristine build |
+| `mgs3d_codec_expand_locations.py` | copy canonical translations to duplicate locations, guarded by byte identity |
+| `citra_gdb_mi_controller.py anchor` | one-shot read of both glyph-base formulas (`obj[0x4C]` and `table[2]`) plus the `추`/`션` glyph slots, using no breakpoints |
+
 ### Resident asset / global Korean glyph track (newest)
 - **Media max-safe01 rejected (2026-08-13):** its inherited stress trampoline
   intercepted only `0x8401..0x8440`. Runtime observation showed `양` (`0x8451`)
@@ -124,6 +206,9 @@ retired.
 | Japanese source reassembly pipeline | abandoned in favour of the English→Korean pivot |
 | `weak_foreign_anchor()` | removed; misclassified English as foreign |
 | fixed-radius batch dialogue matching | rejected; GCX adjacency does not imply conversation |
+| "codec English residue is translated text dropped for byte capacity" (v0.80/v0.81 staging docs) | 2026-08-16 attribution: capacity explains **30 of 203,449** instances (0.015%); 91.34% is the duplicate-propagation gap |
+| "`억` corrupts because of a stale anchor right after a codec call ends" (v0.81 staging doc) | 2026-08-16: the line is demo record 5 @11,537,428 — the **opening cutscene, before any codec call** — and 11,537,428 is that occurrence, not an alternative location |
+| "v0.80 shipped correct rendering" (v0.81 staging doc) | 2026-08-16: global-page characters still fail; `code.bin` is identical in v0.80 and v0.81, so both reports are one defect |
 
 ---
 
@@ -212,6 +297,17 @@ probe. See `experiments/2026-08-13-clean-glyph-baseline/clean-build-manifest.jso
 - ⚠️ Backup files are sitting **inside** the live RomForge romfs tree
   (`demo.dat.bak-before-autofit106-2026-08-07`, 772,935,680 B, and a movie.dat
   backup). Repack bundles the whole folder.
+- ⚠️ **No gate measures translation coverage.** `coverage-report.json` is a
+  *glyph-page* report (character/token set integrity, page round-trip,
+  "does the authored Korean encode"); its `encoding_preflight` denominator is
+  accepted master rows (`units: 8478`). It passed all 13 checks on a build that
+  reached 3.79% of in-game locations. The encoding preflight, staging tree diff,
+  file-size and HPK chain checks share the blind spot. A gate whose denominator
+  is *locations inside the shipped binary* has to be written.
+- ⚠️ The duplicate-propagation tools
+  (`tools/mgs3d_codec_duplicate_propagate.py`, `mgs3d_codec_sync_duplicates.py`,
+  `expand_codec_exact_duplicates.py`) exist but appear in **no** v0.69/v0.80/v0.81
+  build procedure.
 
 ## Next
 

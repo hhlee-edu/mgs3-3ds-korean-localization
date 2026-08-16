@@ -1,8 +1,179 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
-## NEXT — v0.82 plan recorded (2026-08-16)
+## NEXT — v0.83: dialogue fitting COMPLETE; repack a CCI and test (2026-08-16)
+
+**Read [`docs/v0.83-fitting-complete-2026-08-16.md`](docs/v0.83-fitting-complete-2026-08-16.md).**
+
+**The worklist is empty.** Every accepted line fits: movie **689/689**, demo
+**2228/2228**, codec 0 capacity drops. The last 37 rows closed — 18 retranslated,
+14 kept English in 3-byte slots, 1 respelled off the missing `뱌` (and accepted,
+8,436 → 8,437 rows), 1 tightened, and 3 that I had wrongly filed as mismatches but
+were correct Korean clause reordering across split subtitle lines.
+
+All gates pass: sizes **delta +0** on all three DATs, codec record drift 0,
+coverage **94.93%**, glyph page unchanged, HPK exit 0, 169/169 pages.
+
+Staged: `codec.dat` `06a325de…`, `movie.dat` `7978657c…`, `demo.dat` `43937073…`;
+`code.bin`/`exheader.bin` unchanged from the hardware-passed v0.82 renderer.
+**CCI not built — RomForge is GUI-only, that repack is yours.**
+
+## v0.82 fitting round 1 (superseded by v0.83 above)
+
+**Read [`docs/v0.82-fitting-2026-08-16.md`](docs/v0.82-fitting-2026-08-16.md).**
+
+228 rows shortened and applied (checker **PASS 228 / FAIL 0**), 14 kept English
+(3-byte `No,`/`But` slots), 23 left infeasible (21 EN/KO mismatch, 1 too tight,
+1 needs the missing `뱌`). Safe subsets: movie **608 → 685/689**, demo
+**2045 → 2196/2228**.
+
+All gates pass — both media DATs rebuilt at **delta +0** with +0 font bytes, codec
+coverage **94.93%**, glyph page and character map unchanged (no `scenerio.gcx`
+re-staging), HPK gate exit 0, 169/169 pages intact.
+
+Staged: `code.bin` `1de8f4d9…`, `exheader.bin` `5ea5ddd5…`, `codec.dat`
+`ffdc1ddc…`, `movie.dat` `b9879840…`, `demo.dat` `ce2a04bc…`.
+**CCI not built — RomForge is GUI-only, that repack is yours.**
+
+Check on hardware: the renderer regression list; the newly-visible cutscene
+subtitles (most movie/demo text ships for the first time); and the 14 English
+`No,`/`But` lines.
+
+## v0.82 confirmed on hardware; remaining translation work (2026-08-16)
+
+**Read [`docs/v0.82-confirmed-2026-08-16.md`](docs/v0.82-confirmed-2026-08-16.md).**
+Hardware PASS: all glyphs render, codec reach **3.79% → 94.93%**.
+
+Two follow-ups, both translation rather than engineering:
+
+1. **Residual English is mostly donor.** Of 10,265 non-Korean locations, 8,889 are
+   French/Spanish donor branch (no work — an English console never shows them) and
+   only **313 rows / 825 locations** are genuine English. List:
+   `translation/10_master/review/quality-worklist.csv` (`kind=ENGLISH`), ranked by
+   `occurrences`, which after propagation *is* on-screen frequency.
+2. **Awkward wording is MT register drift**, not the v0.81 shortening (only 17
+   codec rows were shortened and they read fine). Proven in gcx 2181 res 21-27:
+   one speaker's continuous story flips 반말→존댓말 mid-turn, calls the same person
+   아버지 then 아빠, and opens a line `그것은 …` (literal "It was"). There is **no
+   speaker field** in the data, so drift cannot be separated from normal
+   two-speaker structure automatically — it needs conversation-ordered review.
+
+Dialogue fitting still open at 265 worklist rows; no `korean_new` authored.
+
+## v0.82 test build (superseded by the confirmation above)
+
+**Read [`docs/v0.82-test-build-2026-08-16.md`](docs/v0.82-test-build-2026-08-16.md)**
+for the renderer guard design and the full static verification.
+
+Three files differ from the v0.81 staging: `exefs/code.bin` (`1de8f4d9…`),
+`exheader.bin` (`5ea5ddd5…`), `romfs/codec.dat` (`ffdc1ddc…`). Previous ones
+archived to `Romforge\archive\pre-v082-test-20260816\`.
+
+The renderer now uses a **multi-candidate validating guard**: try `obj[0x4C]+K`,
+validate it against the page's own bytes at `+0x0C` (`0F FF FF F0`), else
+`table[2]+K`. All 931 glyphs take that one path; no per-character logic.
+**No cache** — 15 runtime samples proved it cannot help (samples 10/11 share the
+identical address `0x089d8744`, valid then invalid, so caching the address hands
+back the stale one), and the cave is in RX `.text` anyway.
+
+Static verification all PASS: **0 unexpected changed regions** (only the 6 patch
+words + the cave), 6/6 branches on target, all symbols relocated and in-cave,
+exheader `.text` +684 exactly, fixed-glyph path untouched, HPK gate exit 0,
+169/169 glyph pages intact.
+
+Regression list: codec 외/워/백/업/팀 · demo/movie opening 억/추/션 · the fixed
+characters in those same sentences · no Data Abort. If it fails, roll `code.bin`
++ `exheader.bin` back to `ea2bb144…`/`39bd66cd…` to isolate the two changes.
+
+## v0.82 earlier stages (2026-08-16)
+
+**Read [`docs/v0.82-progress-2026-08-16.md`](docs/v0.82-progress-2026-08-16.md).**
+**Nothing is staged** — the RomForge tree is still v0.81 byte for byte.
+
+Done: the 42 misclassified rows (**reclassified as donor, not retranslated** — all
+816 of their in-game positions hold French/Spanish in the game data itself);
+**duplicate propagation applied and verified** (coverage **3.79% → 94.93%**,
+`dropped_for_capacity` 0, record drift 0, file size delta +0, HPK gate exit 0);
+worklist regenerated **302 → 265** with the codec 37 gone as predicted.
+
+Renderer root cause is settled statically: `table[2]` is live-but-shared, and
+`[obj+0x4C]` is a **snapshot frozen at scene setup** that dangles once a cutscene
+reallocates the buffer — blank vs garbled is that difference. The decided fix is the
+GCX parser's live pointer `*(0x00A472BC+0xC)+4+K`. Not built, by choice.
+
+**Blocked, needs you at the emulator:** the GDB `anchor` sample
+([recipe](docs/gdb-anchor-sample-recipe-2026-08-16.md)), then the renderer patch,
+its regression test, the translator pass over the 265 rows, and only then staging.
+
+## v0.81 hardware test root-caused; fitting is not the lever (2026-08-16)
+
+**Read [`docs/v0.81-hardware-defects-rootcause-2026-08-16.md`](docs/v0.81-hardware-defects-rootcause-2026-08-16.md).**
+Analysis only — no data, apply, staging or build change was made. Two defects
+reported on hardware, both root-caused:
+
+1. **Codec English residue is a duplicate-propagation gap.** The master dedupes
+   strings; the build writes only the canonical `(gcx, resource)`. Of the
+   **211,458** English display_text locations in the staged `codec.dat`:
+   **193,138 (91.34%)** are duplicates that never received their translation,
+   10,265 (4.85%) have no Korean in the master, 8,009 (3.79%) are Korean, and
+   **byte capacity accounts for 30 (0.01%)**. Measured: canonical 7,971 Korean /
+   duplicates **0** Korean. **Real codec reach is 3.79%, not 8,441 units.**
+   `coverage-report.json` passed because it is a *glyph-page* report whose
+   denominator is master rows — no gate measures translation coverage.
+2. **`추`/`션` corruption is the `억` defect, and the v0.69 외/워/백/업/팀
+   family.** Both reports are consecutive subtitles in demo record 5
+   (@`11537428`, @`11537816`) — the opening cutscene. In each line the broken
+   characters are exactly the global-page (`0x84xx-0x87xx`) ones; all fixed
+   (`0x81xx-0x83xx`) characters render. Data is byte-perfect end to end, so this
+   is a renderer defect in the glyph-page base. **The "stale anchor after a codec
+   call" hypothesis is refuted.** 78-87% of lines carry at least one global-page
+   character, so respelling around it is not viable.
+
+### Follow-up work done the same day (2026-08-16) — still nothing staged
+
+**1. Duplicate propagation is affordable.**
+[`docs/duplicate-propagation-dryrun-2026-08-16.md`](docs/duplicate-propagation-dryrun-2026-08-16.md).
+New `tools/mgs3d_codec_expand_locations.py` takes 8,478 → **201,482** units; the
+shipped capacity gate then drops **0** with **0 failing GCX**. The same gate on
+the canonical-only input reproduces v0.81 exactly (8,478 → 8,441, 37 dropped, 31
+failing), which is what makes that credible. Replacing more strings makes records
+*smaller* — Korean is shorter than the long English sentences — so the 31 failures
+came from propagating too little, and **the 37 codec "capacity" worklist rows are
+an artefact**. Verified layout-neutral: 2,264 of 2,326 records rebuilt with
+`preserve_layout=True`, **0 changed size**, file size identical to the byte
+(`67,204,976`, sha `40eead32…`). Reach measured on that build: **3.79% → 94.94%**
+(+192,759 locations), with the capacity category gone to **0**.
+
+**2. The missing gate now exists.** `tools/mgs3d_translation_coverage.py` measures
+reach over *binary* locations with per-cause attribution, a `--min-reach`
+threshold, and a detector control against the pristine build (0 false positives
+over all 211,458 locations). Baseline saved to
+`docs/evidence/coverage-v0.81-staged-2026-08-16.json`.
+
+**3. Worklist budget model fixed.** `mgs3d_dialogue_worklist.py` now takes
+movie/demo budgets from the encoder (`capacity_bytes`/`needed_bytes`) instead of
+the CSV `size` column. All **17** known class-B rows now correctly report a 1-byte
+deficit instead of "fits"; new `raw_budget` column gives translators the length
+their own text must hit, since `wrap_like_source` adds 1-2 bytes they never see.
+
+**4. GDB sample prepared, not run** — needs a human at the emulator.
+[`docs/gdb-anchor-sample-recipe-2026-08-16.md`](docs/gdb-anchor-sample-recipe-2026-08-16.md).
+`citra_gdb_mi_controller.py` gained an `anchor` command that reads both glyph-base
+formulas and the `추`/`션` glyph slots in one shot, using no breakpoints.
+Confirmed by scanning the tested CCI that its data was byte-correct, so the
+corruption is definitely the renderer.
+
+**5. Found, not fixed:** 42 accepted non-donor rows are actually French/Spanish
+mislabelled `language=en` — see the dry-run doc §5. Translator's call.
+
+**Known hotspot:** `mgs3d_codec_tool.py apply` calls `record.resources()` once per
+unit, and each call re-decrypts the record's whole string region. Fine at 8,478
+units, ~20 minutes at 201,482. Worth caching before propagation becomes routine.
+
+## v0.82 plan recorded (2026-08-16) — superseded above
 
 **Read [`docs/v0.82-plan-2026-08-16.md`](docs/v0.82-plan-2026-08-16.md).**
+Its fitting priority no longer holds; its set-difference accounting and the
+movie/demo budget-model defect do.
 
 Accounting for 586 → 301 applied → 302 remaining, by set difference: **284
 edited rows entered the build, 17 were edited but still fall short, 285 were
@@ -23,8 +194,9 @@ one-for-one. Record-level aggregates must not be used to plan this work.
 **Read [`docs/v0.81-staging-2026-08-16.md`](docs/v0.81-staging-2026-08-16.md).**
 Purpose: **final dialogue fitting**. No CCI built.
 
-The English still on screen was never untranslated -- it was translated text
-dropped for byte capacity. 301 of the 586 worklist rows were filled and applied
+~~The English still on screen was never untranslated -- it was translated text
+dropped for byte capacity.~~ **Wrong — corrected 2026-08-16, see the top of this
+file.** 301 of the 586 worklist rows were filled and applied
 (checker: PASS 301 / FAIL 0), giving:
 
 | | v0.80 | v0.81 |

@@ -1,0 +1,118 @@
+{
+  "format": "mgs3d-translation-coverage-v1",
+  "codec": "C:/Users/hhlee/AppData/Local/Temp/claude/D--dev-3dsmetal/39f0bb7b-d6c1-430c-b80f-f526411ecc43/scratchpad/codec-v082f.dat",
+  "master": "D:/dev/3dsmetal/translation/10_master/current/codec.csv",
+  "build_input": "translation/40_build_input/v0.82/codec-safe-translation.json",
+  "english_display_text_locations": 210642,
+  "korean_in_build": 199968,
+  "reach_percent": 94.9326,
+  "causes": {
+    "korean_in_build": 199968,
+    "duplicate_location_not_written": 409,
+    "master_has_no_korean": 10265,
+    "dropped_for_capacity": 0,
+    "not_accepted": 0,
+    "location_missing_from_binary": 0
+  },
+  "cause_percent": {
+    "korean_in_build": 94.9326,
+    "duplicate_location_not_written": 0.1942,
+    "master_has_no_korean": 4.8732,
+    "dropped_for_capacity": 0.0,
+    "not_accepted": 0.0,
+    "location_missing_from_binary": 0.0
+  },
+  "reference_false_positives": 0,
+  "worst_gcx_by_english_locations": [
+    {
+      "gcx": 13,
+      "english_left": 201,
+      "korean": 63,
+      "total": 264
+    },
+    {
+      "gcx": 2139,
+      "english_left": 144,
+      "korean": 1551,
+      "total": 1695
+    },
+    {
+      "gcx": 2138,
+      "english_left": 143,
+      "korean": 1535,
+      "total": 1678
+    },
+    {
+      "gcx": 444,
+      "english_left": 114,
+      "korean": 1084,
+      "total": 1198
+    },
+    {
+      "gcx": 443,
+      "english_left": 113,
+      "korean": 1067,
+      "total": 1180
+    },
+    {
+      "gcx": 777,
+      "english_left": 93,
+      "korean": 1337,
+      "total": 1430
+    },
+    {
+      "gcx": 767,
+      "english_left": 89,
+      "korean": 1348,
+      "total": 1437
+    },
+    {
+      "gcx": 768,
+      "english_left": 89,
+      "korean": 1348,
+      "total": 1437
+    },
+    {
+      "gcx": 769,
+      "english_left": 88,
+      "korean": 1343,
+      "total": 1431
+    },
+    {
+      "gcx": 770,
+      "english_left": 88,
+      "korean": 1343,
+      "total": 1431
+    },
+    {
+      "gcx": 771,
+      "english_left": 88,
+      "korean": 1343,
+      "total": 1431
+    },
+    {
+      "gcx": 772,
+      "english_left": 88,
+      "korean": 1343,
+      "total": 1431
+    },
+    {
+      "gcx": 779,
+      "english_left": 88,
+      "korean": 1338,
+      "total": 1426
+    },
+    {
+      "gcx": 766,
+      "english_left": 86,
+      "korean": 1327,
+      "total": 1413
+    },
+    {
+      "gcx": 773,
+      "english_left": 86,
+      "korean": 1341,
+      "total": 1427
+    }
+  ]
+}

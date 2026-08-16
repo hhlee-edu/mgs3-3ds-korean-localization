@@ -1,0 +1,26 @@
+#   obj       t2        par       | new    old    par    | b_new     b_old     b_par    
+--------------------------------------------------------------------------------------------
+1   00000000  08954bb4  08954bb0  | -      -      -      | ?         ?         ?        
+2   00000000  08a9fc9c  08a9fc98  | -      -      -      | ?         ?         ?        
+3   158b5810  08982744  08982740  | OK     OK     OK     | 08ae9374  089d8744  089d8744 
+4   158b5810  15a11b54  15a11b50  | OK     ZEROS  ZEROS  | 089d8744  15a67b54  15a67b54 
+5   158b5810  15a11b54  15a11b50  | OK     ZEROS  ZEROS  | 089d8744  15a67b54  15a67b54 
+6   158b5810  15a11b54  15a11b50  | OK     ZEROS  ZEROS  | 089d8744  15a67b54  15a67b54 
+7   158b5810  15a11b54  15a11b50  | OK     ZEROS  ZEROS  | 089d8744  15a67b54  15a67b54 
+8   158b5810  15a11b54  15a11b50  | OK     ZEROS  ZEROS  | 089d8744  15a67b54  15a67b54 
+9   158b5810  15a11b54  15a11b50  | OK     ZEROS  ZEROS  | 089d8744  15a67b54  15a67b54 
+10  158b5810  08982744  08982740  | OK     OK     OK     | 089d8744  089d8744  089d8744 
+11  158b5810  08982744  08982740  | WRONG  WRONG  WRONG  | 089d8744  089d8744  089d8744 
+12  158b5810  08a93374  08a93370  | WRONG  OK     OK     | 089d8744  08ae9374  08ae9374 
+13  158b5810  08a93374  08a93370  | WRONG  OK     OK     | 089d8744  08ae9374  08ae9374 
+14  158b5810  08a93374  08a93370  | WRONG  OK     OK     | 089d8744  08ae9374  08ae9374 
+15  158b5810  08a93374  08a93370  | WRONG  OK     OK     | 089d8744  08ae9374  08ae9374 
+
+verdict totals: {'new': {'-': 2, 'OK': 8, 'WRONG': 5}, 'old': {'-': 2, 'OK': 6, 'ZEROS': 6, 'WRONG': 1}, 'par': {'-': 2, 'OK': 6, 'ZEROS': 6, 'WRONG': 1}}
+
+=== first sample where the CURRENT anchor fails ===
+  obj=0x158b5810 t2=0x08982744 par=0x08982740
+  base_new = 0x089d8744 -> a1 00 52 bd 03 17 18 10 02 24 d9 19 02 08 10 10  WRONG
+  base_old = 0x089d8744 -> a1 00 52 bd 03 17 18 10 02 24 d9 19 02 08 10 10  WRONG
+  base_par = 0x089d8744 -> a1 00 52 bd 03 17 18 10 02 24 d9 19 02 08 10 10  WRONG
+  expected                0f ff ff f0 00 00 00 00 00 6f f9 00 02 90 06 80

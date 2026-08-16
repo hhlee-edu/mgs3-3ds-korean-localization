@@ -35,6 +35,15 @@ DEFAULT_CODEC = ROOT / "experiments/2026-08-13-clean-glyph-baseline/clean-tree/r
 DEFAULT_DOC = ROOT / "translation/40_build_input/global_page_v2/codec_natural_full_global_page.json"
 
 
+def repo_path(path: Path) -> str:
+    """Repo-relative when possible, absolute otherwise -- a scratch input outside
+    the repo must not lose the whole run at the report-writing step."""
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--codec", type=Path, default=DEFAULT_CODEC)
@@ -116,7 +125,7 @@ def main() -> int:
                             encoding="utf-8")
     args.out_excluded.write_text(json.dumps({
         "format": "mgs3d-codec-safe-exclusions-v1",
-        "source_translation": args.translation.relative_to(ROOT).as_posix(),
+        "source_translation": repo_path(args.translation),
         "units_in": len(doc["units"]),
         "units_kept": len(kept_units),
         "units_dropped": len(dropped),

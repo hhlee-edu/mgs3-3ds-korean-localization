@@ -15,6 +15,19 @@ GDB = r"C:\devkitPro\devkitARM\bin\arm-none-eabi-gdb.exe"
 CONTROL_PORT = 24700
 GLYPH_PAGE_TABLE = 0x00A46FD8
 PAGE0_HIT_BITMAP = 0x00916000
+# v0.80 moved the Korean glyph base off the shared font slot table[2] and onto
+# the stage text object's own page-2 snapshot. Both are read by `anchor` so a
+# single sample says which formula resolves and which does not.
+STAGE_TEXT_OBJECT = 0x008E1618      # single-writer global, written at 0x007801C4
+OBJ_PAGE2_SNAPSHOT = 0x4C           # [obj+0x4C], the engine's own page-2 pointer
+FONT_TABLE2 = 0x00A46FE0            # the pre-v0.80 anchor
+KOREAN_PAGE_DELTA = 0x56000
+# The proposed anchor: the GCX parser's own live page-2 pointer, which
+# 0x0010830C returns as *(0x00A472BC+0xC)+4. Written by the parser at 0x00108488
+# on every scenerio.gcx load, and referenced by only three literals in the whole
+# image -- so it is neither snapshot-stale nor stealable by the codec.
+PARSER_DESC = 0x00A472BC
+PARSER_DESC_PAGE2 = 0xC
 
 
 def send_control(command: str, timeout: float = 3.0) -> int:
@@ -132,6 +145,55 @@ def daemon(log_path: Path, trace_glyph_setter: bool = False, watch_addr: str | N
                         issue('-interpreter-exec console '
                               f'"x/64bx (*(unsigned int*)0x00A46FE0+0x56000+0x{offset:X})"')
                     issue(f'-interpreter-exec console "echo KOREAN_PAGE_END:{state}\\n"')
+                elif command.startswith("anchor "):
+                    # The v0.81 measurement: resolve BOTH glyph-base formulas at
+                    # the same instant and dump the first 64 bytes each lands on.
+                    # A correct base starts with the 호 glyph, i.e.
+                    # korean_page_full.bin[0:64]. All zeros means the old blank
+                    # symptom; anything else non-matching means the garbled one.
+                    # Read-only, and no breakpoints -- conditional breakpoints
+                    # crash this GDB/stub pair, so this deliberately avoids them.
+                    state = command[7:].strip()
+                    if not re.fullmatch(r"[A-Za-z0-9_.-]+", state):
+                        conn.sendall(b"invalid state label\n")
+                        continue
+                    stopped.clear()
+                    issue(f'-interpreter-exec console "echo ANCHOR_BEGIN:{state}\\n"')
+                    issue("-exec-interrupt")
+                    if not stopped.wait(timeout=5.0):
+                        conn.sendall(b"timed out waiting for guest stop\n")
+                        continue
+                    issue('-interpreter-exec console '
+                          f'"printf \\"obj=0x%08x\\\\n\\", *(unsigned int*)0x{STAGE_TEXT_OBJECT:08X}"')
+                    issue('-interpreter-exec console '
+                          f'"printf \\"objpage2=0x%08x\\\\n\\", '
+                          f'*(unsigned int*)(*(unsigned int*)0x{STAGE_TEXT_OBJECT:08X}+0x{OBJ_PAGE2_SNAPSHOT:X})"')
+                    issue('-interpreter-exec console '
+                          f'"printf \\"table2=0x%08x\\\\n\\", *(unsigned int*)0x{FONT_TABLE2:08X}"')
+                    issue('-interpreter-exec console '
+                          f'"printf \\"parserpage2=0x%08x\\\\n\\", '
+                          f'*(unsigned int*)(0x{PARSER_DESC:08X}+0x{PARSER_DESC_PAGE2:X})"')
+                    issue('-interpreter-exec console '
+                          f'"printf \\"base_new=0x%08x base_old=0x%08x base_parser=0x%08x\\\\n\\", '
+                          f'*(unsigned int*)(*(unsigned int*)0x{STAGE_TEXT_OBJECT:08X}+0x{OBJ_PAGE2_SNAPSHOT:X})+0x{KOREAN_PAGE_DELTA:X}, '
+                          f'*(unsigned int*)0x{FONT_TABLE2:08X}+0x{KOREAN_PAGE_DELTA:X}, '
+                          f'*(unsigned int*)(0x{PARSER_DESC:08X}+0x{PARSER_DESC_PAGE2:X})+4+0x{KOREAN_PAGE_DELTA:X}"')
+                    issue(f'-interpreter-exec console "echo ANCHOR_PARSER_PAGE\\n"')
+                    issue('-interpreter-exec console '
+                          f'"x/64bx (*(unsigned int*)(0x{PARSER_DESC:08X}+0x{PARSER_DESC_PAGE2:X})'
+                          f'+4+0x{KOREAN_PAGE_DELTA:X})"')
+                    issue('-interpreter-exec console '
+                          f'"x/64bx (*(unsigned int*)(*(unsigned int*)0x{STAGE_TEXT_OBJECT:08X}'
+                          f'+0x{OBJ_PAGE2_SNAPSHOT:X})+0x{KOREAN_PAGE_DELTA:X})"')
+                    issue('-interpreter-exec console '
+                          f'"x/64bx (*(unsigned int*)0x{FONT_TABLE2:08X}+0x{KOREAN_PAGE_DELTA:X})"')
+                    # 추 is global index 93, 션 is 223 -- the two reported glyphs
+                    for label, index in (("chu", 93), ("syeon", 223)):
+                        issue(f'-interpreter-exec console "echo ANCHOR_GLYPH_{label}\\n"')
+                        issue('-interpreter-exec console '
+                              f'"x/64bx (*(unsigned int*)(*(unsigned int*)0x{STAGE_TEXT_OBJECT:08X}'
+                              f'+0x{OBJ_PAGE2_SNAPSHOT:X})+0x{KOREAN_PAGE_DELTA:X}+{index * 64})"')
+                    issue(f'-interpreter-exec console "echo ANCHOR_END:{state}\\n"')
                 elif command.startswith("registration "):
                     state = command[13:].strip()
                     if not re.fullmatch(r"[A-Za-z0-9_.-]+", state):

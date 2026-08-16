@@ -1,0 +1,118 @@
+{
+  "format": "mgs3d-translation-coverage-v1",
+  "codec": "C:/Users/hhlee/AppData/Local/Temp/claude/D--dev-3dsmetal/39f0bb7b-d6c1-430c-b80f-f526411ecc43/scratchpad/codec-expanded.dat",
+  "master": "D:/dev/3dsmetal/translation/10_master/current/codec.csv",
+  "build_input": "C:/Users/hhlee/AppData/Local/Temp/claude/D--dev-3dsmetal/39f0bb7b-d6c1-430c-b80f-f526411ecc43/scratchpad/codec-expanded-safe.json",
+  "english_display_text_locations": 211458,
+  "korean_in_build": 200768,
+  "reach_percent": 94.9446,
+  "causes": {
+    "korean_in_build": 200768,
+    "duplicate_location_not_written": 409,
+    "master_has_no_korean": 10265,
+    "dropped_for_capacity": 0,
+    "not_accepted": 16,
+    "location_missing_from_binary": 0
+  },
+  "cause_percent": {
+    "korean_in_build": 94.9446,
+    "duplicate_location_not_written": 0.1934,
+    "master_has_no_korean": 4.8544,
+    "dropped_for_capacity": 0.0,
+    "not_accepted": 0.0076,
+    "location_missing_from_binary": 0.0
+  },
+  "reference_false_positives": 0,
+  "worst_gcx_by_english_locations": [
+    {
+      "gcx": 13,
+      "english_left": 201,
+      "korean": 63,
+      "total": 264
+    },
+    {
+      "gcx": 2139,
+      "english_left": 144,
+      "korean": 1559,
+      "total": 1703
+    },
+    {
+      "gcx": 2138,
+      "english_left": 143,
+      "korean": 1543,
+      "total": 1686
+    },
+    {
+      "gcx": 444,
+      "english_left": 114,
+      "korean": 1086,
+      "total": 1200
+    },
+    {
+      "gcx": 443,
+      "english_left": 113,
+      "korean": 1069,
+      "total": 1182
+    },
+    {
+      "gcx": 777,
+      "english_left": 94,
+      "korean": 1342,
+      "total": 1436
+    },
+    {
+      "gcx": 767,
+      "english_left": 90,
+      "korean": 1353,
+      "total": 1443
+    },
+    {
+      "gcx": 768,
+      "english_left": 90,
+      "korean": 1353,
+      "total": 1443
+    },
+    {
+      "gcx": 769,
+      "english_left": 89,
+      "korean": 1348,
+      "total": 1437
+    },
+    {
+      "gcx": 770,
+      "english_left": 89,
+      "korean": 1348,
+      "total": 1437
+    },
+    {
+      "gcx": 771,
+      "english_left": 89,
+      "korean": 1348,
+      "total": 1437
+    },
+    {
+      "gcx": 772,
+      "english_left": 89,
+      "korean": 1348,
+      "total": 1437
+    },
+    {
+      "gcx": 779,
+      "english_left": 89,
+      "korean": 1343,
+      "total": 1432
+    },
+    {
+      "gcx": 766,
+      "english_left": 87,
+      "korean": 1332,
+      "total": 1419
+    },
+    {
+      "gcx": 773,
+      "english_left": 87,
+      "korean": 1346,
+      "total": 1433
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "format": "mgs3d-translation-coverage-v1",
+  "codec": "C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/codec.dat",
+  "master": "D:/dev/3dsmetal/translation/10_master/current/codec.csv",
+  "build_input": "translation/40_build_input/v0.81/codec-safe-translation.json",
+  "english_display_text_locations": 211458,
+  "korean_in_build": 8009,
+  "reach_percent": 3.7875,
+  "causes": {
+    "korean_in_build": 8009,
+    "duplicate_location_not_written": 193138,
+    "master_has_no_korean": 10265,
+    "dropped_for_capacity": 30,
+    "not_accepted": 16,
+    "location_missing_from_binary": 0
+  },
+  "cause_percent": {
+    "korean_in_build": 3.7875,
+    "duplicate_location_not_written": 91.3363,
+    "master_has_no_korean": 4.8544,
+    "dropped_for_capacity": 0.0142,
+    "not_accepted": 0.0076,
+    "location_missing_from_binary": 0.0
+  },
+  "reference_false_positives": 0,
+  "worst_gcx_by_english_locations": [
+    {
+      "gcx": 1412,
+      "english_left": 1806,
+      "korean": 0,
+      "total": 1806
+    },
+    {
+      "gcx": 1408,
+      "english_left": 1788,
+      "korean": 0,
+      "total": 1788
+    },
+    {
+      "gcx": 1459,
+      "english_left": 1783,
+      "korean": 0,
+      "total": 1783
+    },
+    {
+      "gcx": 1454,
+      "english_left": 1781,
+      "korean": 0,
+      "total": 1781
+    },
+    {
+      "gcx": 1417,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1418,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1419,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1420,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1421,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1422,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1423,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1424,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1425,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1426,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    },
+    {
+      "gcx": 1427,
+      "english_left": 1778,
+      "korean": 0,
+      "total": 1778
+    }
+  ]
+}

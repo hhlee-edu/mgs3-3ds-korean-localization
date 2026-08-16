@@ -37,11 +37,13 @@ csv.field_size_limit(10 ** 8)
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 from mgs3d_codec_tool import parse_rendered  # noqa: E402
+import mgs3d_movie_tool  # noqa: E402
 
 MASTER = ROOT / "translation/10_master/current"
 BUILD = ROOT / "translation/40_build_input/v0.81"
 CHARMAP = ROOT / "translation/40_build_input/global_page_v2/character-map.json"
 OUT = ROOT / "translation/10_master/review"
+CLEAN_ROMFS = ROOT / "experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs"
 
 PARTNER = {
     "Snake": "스네이크", "Jack": "스네이크", "Boss": "더 보스",
@@ -160,6 +162,12 @@ def codec_rows(cmap):
             "gcx": g,
             "resource": r.get("resource"),
             "status": status,
+            # codec capacity is a whole-record gate, not a per-row slot, so the
+            # media-only budget columns stay blank rather than carrying a number
+            # that would invite the same "shorten to exactly budget" mistake.
+            "budget_source": "codec-record",
+            "wrap_overhead": "",
+            "raw_budget": "",
             "speaker": partner.get(g, ("", ""))[0],
             "speaker_evidence": partner.get(g, ("", ""))[1],
             "english": english,
@@ -176,8 +184,51 @@ def codec_rows(cmap):
     return out
 
 
+def media_capacity(media):
+    """Per-offset budget as the *encoder* computes it, not as the CSV `size` says.
+
+    Two independent errors came from using `size`. The budget is really
+    `len(original) - 4 - len(tail)`, and the used size is measured *after*
+    `wrap_like_source` re-inserts the source's line breaks, which costs bytes the
+    raw encoded length does not show. A row shortened to land exactly on `size`
+    was therefore still over -- the 17 rows v0.81 shortened and failed anyway
+    (docs/v0.82-plan-2026-08-16.md).
+
+    Returns {offset: (capacity_bytes, needed_bytes, deficit_bytes)}; empty when
+    the clean media file is unavailable, so callers fall back with a warning
+    rather than silently reverting to the wrong model.
+    """
+    source = CLEAN_ROMFS / f"{media}.dat"
+    translation = MASTER / f"{media}.csv"
+    if not source.exists():
+        return {}
+    _, records, _ = mgs3d_movie_tool.parse_records(source.read_bytes())
+    replacements = mgs3d_movie_tool.read_replacements(translation)
+    # The combined fixed+global map, exactly as the media build uses it. Passing
+    # None here silently reverts to the pre-global-page per-record font model,
+    # which reports every Hangul character as missing and every needed_bytes as
+    # None -- the failure mode this function exists to avoid.
+    static_map = mgs3d_movie_tool.load_static_character_map(CHARMAP)
+    out = {}
+    for record in records:
+        local = {s.offset: replacements[s.offset]
+                 for s in record.subtitles if s.offset in replacements}
+        if not local:
+            continue
+        for entry in mgs3d_movie_tool.fixed_capacity(record, local, static_map)["entries"]:
+            out[entry["offset"]] = (entry["capacity_bytes"],
+                                    entry["needed_bytes"],
+                                    entry["deficit_bytes"])
+    return out
+
+
 def media_rows(media, cmap):
     master = load_csv(MASTER / f"{media}.csv")
+    capacity = media_capacity(media)
+    if not capacity:
+        print(f"WARNING: no encoder capacity for {media}; "
+              f"falling back to the CSV size column, which under-reports by "
+              f"the line-wrap overhead", file=sys.stderr)
     safe = {(r.get("offset"), r.get("index")): r for r in load_csv(BUILD / f"{media}-safe.csv")}
     ordered = sorted(master, key=lambda r: int(r.get("offset") or 0))
     position = {(r.get("offset"), r.get("index")): i for i, r in enumerate(ordered)}
@@ -205,15 +256,30 @@ def media_rows(media, cmap):
         if s is not None and accepted(s):
             continue                       # made it into the build
         korean = (r.get("korean") or "").strip()
-        budget = int(r.get("size") or 0)
-        used, err = encoded_len(korean, cmap)
-        over = (used - budget) if used is not None else None
+        raw_used, err = encoded_len(korean, cmap)
+        measured = capacity.get(int(r.get("offset") or -1))
+        if measured is not None:
+            budget, used, over = measured
+            if used is None:                    # unencodable: no byte verdict
+                used, over = raw_used, None
+            budget_source = "encoder"
+        else:
+            budget = int(r.get("size") or 0)
+            used = raw_used
+            over = (used - budget) if used is not None else None
+            budget_source = "csv-size"
+        # What a rewrite must fit in its own raw encoded length: the wrap step
+        # adds bytes the translator never sees in the text they type.
+        overhead = (used - raw_used) if (used is not None and raw_used is not None) else None
         out.append({
             "media": media,
             "key": f"{media}@{r.get('offset')}",
             "gcx": "",
             "resource": r.get("index"),
             "status": "CAPACITY",
+            "budget_source": budget_source,
+            "wrap_overhead": overhead,
+            "raw_budget": (budget - overhead) if (budget is not None and overhead is not None) else None,
             "speaker": partner.get(str(r.get("record")), ("", ""))[0],
             "speaker_evidence": partner.get(str(r.get("record")), ("", ""))[1],
             "english": (r.get("preview") or r.get("raw_text") or "").strip(),
@@ -246,9 +312,16 @@ def main() -> int:
     rows = codec_rows(cmap) + media_rows("movie", cmap) + media_rows("demo", cmap)
     rows.sort(key=lambda r: (r["media"], -(r["bytes_over"] or 0)))
 
+    # An empty worklist means every accepted line now fits -- the goal state, not
+    # an error. Write the header alone so the file stays readable and diffable
+    # instead of indexing rows[0] and raising.
+    FIELDS = ["media", "key", "gcx", "resource", "status", "budget_source",
+              "wrap_overhead", "raw_budget", "speaker", "speaker_evidence",
+              "english", "korean", "korean_new", "bytes_budget", "bytes_used",
+              "bytes_over", "hangul_to_cut", "unusable_chars", "ctx_prev", "ctx_next"]
     path = args.out / "dialogue-worklist.csv"
     with path.open("w", newline="", encoding="utf-8-sig") as f:
-        w = csv.DictWriter(f, fieldnames=list(rows[0]))
+        w = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else FIELDS)
         w.writeheader()
         w.writerows(rows)
 

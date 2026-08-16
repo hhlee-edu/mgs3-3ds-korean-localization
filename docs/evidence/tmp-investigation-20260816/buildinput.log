@@ -1,0 +1,71 @@
+wrote 8478 accepted replacements to C:\Users\hhlee\AppData\Local\Temp\tmpbq7hlfo9\codec-current.json
+{
+  "format": "mgs3d-global-page-coverage-v1",
+  "status": "PASS",
+  "checks": {
+    "fixed_characters": true,
+    "global_characters": true,
+    "combined_characters_1120": true,
+    "character_sets_disjoint": true,
+    "fixed_tokens_unique": true,
+    "global_tokens_unique": true,
+    "token_sets_disjoint": true,
+    "global_tokens_valid": true,
+    "corpus_covered": true,
+    "round_trip": true,
+    "page_size_0xff00": true,
+    "fixed_hpks_present": true,
+    "all_authoring_text_encodes": true
+  },
+  "corpus_unique_hangul": 1101,
+  "corpus_hangul_occurrences": 173406,
+  "sources": [
+    {
+      "path": "translation/10_master/current/movie.csv",
+      "sha256": "6482326c95ee4c09e1313210f4fad6d0c8964808560d4108a6816c585db1adbb",
+      "unique_hangul": 564,
+      "hangul_occurrences": 9072,
+      "missing_count": 0,
+      "missing_characters": ""
+    },
+    {
+      "path": "translation/10_master/current/demo.csv",
+      "sha256": "646b9a1d6b1d446ffd52d3223e75f22b1995c7d38c1edd26b98c37b4ab253cdd",
+      "unique_hangul": 733,
+      "hangul_occurrences": 21968,
+      "missing_count": 0,
+      "missing_characters": ""
+    },
+    {
+      "path": "translation/40_build_input/global_page_v2/codec-from-current.json",
+      "sha256": "d174d73fd8acd65cc6aa58b6e3aa3953c25f552dca625dd7cd7e7201faf7e868",
+      "unique_hangul": 1075,
+      "hangul_occurrences": 142366,
+      "missing_count": 0,
+      "missing_characters": ""
+    }
+  ],
+  "encoding_preflight": [
+    {
+      "media": "movie",
+      "accepted_rows": 689,
+      "encoded_rows": 689,
+      "encoding_failures": [],
+      "rows_larger_than_original_slot": 134
+    },
+    {
+      "media": "demo",
+      "accepted_rows": 2228,
+      "encoded_rows": 2228,
+      "encoding_failures": [],
+      "rows_larger_than_original_slot": 467
+    },
+    {
+      "media": "codec",
+      "units": 8478,
+      "encoded_units": 8478,
+      "encoding_failures": [],
+      "note": "GCX layout/capacity is a separate build gate."
+    }
+  ]
+}

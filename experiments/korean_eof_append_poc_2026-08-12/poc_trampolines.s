@@ -34,15 +34,71 @@
 @ K itself is unchanged and still parser-relative (K gate: 169/169 stages).
 @ If the global is still NULL (early boot, before 0x007801B8 has run) the old
 @ table[2] path is used, so this can never be worse than the previous build.
+@ 2026-08-16: multi-candidate validating guard.
+@ 15 runtime samples (docs/anchor-runtime-verdict-2026-08-16.md,
+@ docs/evidence/anchor-samples-2026-08-16.txt) show that NEITHER anchor is
+@ correct on its own, and that they fail in disjoint situations:
+@   obj[0x4C]  correct throughout a codec conversation (samples 4-9, where
+@              table[2] reads as zeros), but it is a snapshot taken once at
+@              scene setup (0x007801CC) and never refreshed, so once the
+@              scenerio buffer is reallocated it points at reused memory
+@              (samples 12-15: base pinned at 0x089d8744 while the live buffer
+@              had moved to 0x08a93374). Non-zero wrong data -- garbled glyphs.
+@   table[2]   correct after such a reallocation, but the codec conversation
+@              screen repoints it at the codec.dat GCX's own glyph area, so it
+@              reads as zeros -- blank glyphs.
+@ The parser pointer *(0x00A472BC+0xC) was measured too and is NOT independent:
+@ par + 4 == table[2] in all 15 samples, so it fails wherever table[2] does.
+@
+@ Therefore: try each candidate in turn and only accept one that actually points
+@ at the Korean page. The page begins with the 호 glyph, whose bytes +0x0C..+0x0F
+@ are 0F FF FF F0; +0x00..+0x0B are all zero and so cannot distinguish a good
+@ pointer from a zeroed one, which is why the signature is taken at +0x0C.
+@ It is compared as four bytes rather than one word because each byte value is
+@ an encodable ARM immediate -- a 32-bit compare would need a third register to
+@ hold the constant, and the two call sites only have (r0, ip) and (r2, r3) free.
+@
+@ No cache: measured, it cannot help. Samples 10 and 11 have the *same* base
+@ address 0x089d8744, valid in 10 and invalid in 11 -- the address did not move,
+@ the memory under it was overwritten. A cache of the last validated address
+@ would hand back that same stale address. It would also need a writable word,
+@ and this cave is in .text (RX). If both candidates fail we fall through to
+@ table[2] unvalidated, which is exactly the pre-2026-08-15 behaviour, so this
+@ can never be worse than either previous build.
+@
+@ This changes only where the base comes from. The 0x84-0x87 range checks, the
+@ xx00 index compaction and the width/classify logic are untouched, so all 931
+@ global glyphs are handled identically -- there is no per-character path here.
+.macro KOREAN_VALIDATE reg, scratch
+    ldrb   \scratch, [\reg, #0x0C]
+    cmp    \scratch, #0x0F
+    ldrbeq \scratch, [\reg, #0x0D]
+    cmpeq  \scratch, #0xFF
+    ldrbeq \scratch, [\reg, #0x0E]
+    cmpeq  \scratch, #0xFF
+    ldrbeq \scratch, [\reg, #0x0F]
+    cmpeq  \scratch, #0xF0
+.endm
+
 .macro KOREAN_BASE reg, scratch
-    ldr \reg, korean_desc_literal
-    ldr \reg, [\reg]
-    cmp \reg, #0
-    ldrne \reg, [\reg, #0x4C]
-    ldreq \reg, korean_table2_literal
-    ldreq \reg, [\reg]
-    ldr \scratch, korean_delta_literal
-    add \reg, \reg, \scratch
+    @ candidate 1 -- the stage text object's own page-2 snapshot
+    ldr    \reg, korean_desc_literal
+    ldr    \reg, [\reg]
+    cmp    \reg, #0
+    beq    1f
+    ldr    \reg, [\reg, #0x4C]
+    cmp    \reg, #0
+    beq    1f
+    ldr    \scratch, korean_delta_literal
+    add    \reg, \reg, \scratch
+    KOREAN_VALIDATE \reg, \scratch
+    beq    2f
+1:  @ candidate 2 -- the shared font page slot, used unvalidated as the floor
+    ldr    \reg, korean_table2_literal
+    ldr    \reg, [\reg]
+    ldr    \scratch, korean_delta_literal
+    add    \reg, \reg, \scratch
+2:
 .endm
 
 .global korean_draw_1
