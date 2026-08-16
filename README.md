@@ -34,8 +34,8 @@ stable Japanese dialogue when every GCX record keeps its original layout.
 - [Toolkit workflow](MGS3D_KOREAN_TOOLKIT.md)
 
 Dated session records and topic docs formerly linked here directly now live in
-[`wiki/History/`](wiki/History/); `docs/WIKI.md` and `docs/INDEX.md` remain as
-superseded-but-preserved originals, each bannered to point at the current wiki.
+[`wiki/History/`](wiki/History/). Documents that quoted game dialogue were
+removed from the repository and its history; see the policy below.
 
 ## Install and diagnose
 
@@ -82,11 +82,11 @@ CLI behavior, and codec translation schema validation.
 
 No copyrighted game data is included or required in version control.
 
-## Version 0.88 status
+## Version 0.83 status
 
-Version 0.88 is a development checkpoint, not a finished translation release.
-**Version numbering stops here** — later work continues on this checkpoint
-rather than incrementing.
+Version 0.83 is a development checkpoint, not a finished translation release.
+**Version numbering stops here** — later codec work continues on this
+checkpoint instead of incrementing.
 
 Confirmed on hardware: the HPK padded-slot cursor-drift crash is fixed, the
 global Korean glyph page renders, and the codec ships Korean for the early
@@ -104,7 +104,7 @@ Known open items:
 Translation drafts, game data, DAT/CCI outputs, and other large generated
 artifacts remain outside the public repository.
 
-### 2026-08-16: the extractor was blind to 3DS-only strings
+### The extractor was blind to 3DS-only strings
 
 `strict_western()` accepted `0x80 0x7C` and rejected the whole resource on any
 other high byte. 3DS button icons are two-byte tokens — `( # { 7 } #)` is

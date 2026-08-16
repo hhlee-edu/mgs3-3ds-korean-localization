@@ -239,7 +239,7 @@ Korean page. That is the complete mechanical explanation of the reported
 "characters render blank" symptom, observed at the moment of failure.
 
 Corroborating natural experiment from the same session: the codec save prompt
-`게임을 저장하시겠습니까?` contains exactly one global-page character —
+the SAVE-confirmation UI string (quoted text removed) contains exactly one global-page character —
 `임` (`0x8422`) — and every other character is static (`게 811B`, `을 8105`,
 `저 8213`, `장 8136`, `하 8109`, `시 8123`, `겠 8216`, `습 8127`, `니 810C`,
 `까 820D`). The user reports **only `임` is invisible**: ten static controls
