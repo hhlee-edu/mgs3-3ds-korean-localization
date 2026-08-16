@@ -14,6 +14,12 @@ reference-site downloads are excluded by `.gitignore`.
 - preserve all 2,326 GCX positions for runtime-safe codec builds;
 - inspect and rebuild `movie.dat` and `demo.dat` subtitle/font records;
 - compare Korean and English reference scripts with game-side resources;
+- separate French/Spanish donor branches from English using a language ID built
+  from the corpus itself, not hand-written stopword lists
+  (`tools/mgs3d_codec_langid.py`);
+- preserve 3DS button-icon tokens through a translation by pouring the Korean
+  into the source resource's own control-code schema
+  (`tools/mgs3d_codec_icon_schema_fit.py`);
 - generate an offline translation review page;
 - build and verify a Citra-compatible mod directory;
 - inspect LA2/DARC and ARC/zlib archives.
@@ -76,12 +82,54 @@ CLI behavior, and codec translation schema validation.
 
 No copyrighted game data is included or required in version control.
 
-## Version 0.67 status
+## Version 0.88 status
 
-Version 0.67 is a development checkpoint, not a finished translation release.
-The HPK padded-slot cursor-drift crash is fixed and the fix is confirmed on
-hardware. The native opening-history Korean texture remains visibly corrupted
-because its BCLIM pixel layout is not yet modelled correctly. Codec direct-v2
-quality correction is still in progress, and movie/demo subtitles retain known
-omissions and review items. Translation drafts, game data, DAT/CCI outputs, and
-other large generated artifacts remain outside the public repository.
+Version 0.88 is a development checkpoint, not a finished translation release.
+**Version numbering stops here** — later work continues on this checkpoint
+rather than incrementing.
+
+Confirmed on hardware: the HPK padded-slot cursor-drift crash is fixed, the
+global Korean glyph page renders, and the codec ships Korean for the early
+briefing, survival, CQC, camouflage and Para-Medic conversations.
+
+Known open items:
+
+- the native opening-history Korean texture is still visibly corrupted, because
+  its BCLIM pixel layout is not modelled correctly yet;
+- 640 codec rows remain for human review, mostly because the speaker cannot be
+  proven — Shinsnote only covers 423 of its 4,070 lines with codec targets, and
+  that is the binding constraint, not the analysis;
+- `movie.dat` and `demo.dat` subtitles retain known omissions and review items.
+
+Translation drafts, game data, DAT/CCI outputs, and other large generated
+artifacts remain outside the public repository.
+
+### 2026-08-16: the extractor was blind to 3DS-only strings
+
+`strict_western()` accepted `0x80 0x7C` and rejected the whole resource on any
+other high byte. 3DS button icons are two-byte tokens — `( # { 7 } #)` is
+`80 23 A0 7B A3 1E 80 37 C0 7D 80 23` — so **every control-tutorial string that
+mentions a button was dropped before it could reach the master**, and no
+coverage report could see it: the same predicate built both the numerator and
+the denominator, so the two matched by construction and reported zero missing.
+
+Measuring the icon-token grammar over the whole corpus showed it is completely
+closed (`0xA0`→`0x7B` and `0xC0`→`0x7D` in 16,981/16,981 cases, `0xA3`→`0x1E` in
+16,815/16,815, `0x80` taking twelve distinct second bytes), so only that exact
+set was allowed. The parser change loses **no** previously accepted resource and
+exposes 13,569 positions across 316 strings.
+
+Coverage is now computed without self-reference: `ACTUAL_CODEC_ENGLISH` comes
+from the binary, `MASTER_KNOWN` from the master's own index, and
+`MASTER_MISSING` is the **set difference** — never a subtraction of totals.
+
+See [`docs/SESSION-2026-08-16.md`](docs/SESSION-2026-08-16.md) for the full day
+and [`docs/v0.88-icon-token-parser-fix-2026-08-16.md`](docs/v0.88-icon-token-parser-fix-2026-08-16.md)
+for the parser work.
+
+## Translation decision records
+
+`translation/` is gitignored, so the master CSVs never enter version control.
+The hand-adjudicated translation, register and terminology decisions — and the
+evidence behind each one — are preserved instead under
+[`docs/decisions/`](docs/decisions/), keyed by `(gcx, resource)`.

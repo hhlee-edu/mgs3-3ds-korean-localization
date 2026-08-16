@@ -1,0 +1,23 @@
+{
+  "format": "mgs3d-codec-speech-level-v3",
+  "shinsnote_anchor_lines": 331,
+  "lines_with_proven_speaker": 273,
+  "candidates": 549,
+  "by_detector": {
+    "flip": 535,
+    "anchored": 12,
+    "anchored+flip": 2
+  },
+  "by_confidence": {
+    "candidate": 533,
+    "confirmed": 14,
+    "strong": 2
+  },
+  "by_speaker": {
+    "(not proven)": 533,
+    "EVA": 14,
+    "ZERO": 1,
+    "SNAKE": 1
+  },
+  "zero_candidates": 1
+}

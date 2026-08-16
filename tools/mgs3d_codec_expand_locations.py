@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -42,6 +43,18 @@ from mgs3d_codec_tool import parse_codec  # noqa: E402
 DEFAULT_CODEC = ROOT / "experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs/codec.dat"
 DEFAULT_MASTER = ROOT / "translation/10_master/current/codec.csv"
 DEFAULT_DOC = ROOT / "translation/40_build_input/global_page_v2/codec_natural_full_global_page.json"
+
+
+def same_sentence(target: bytes, source: bytes) -> bool:
+    """True when two resource payloads carry the same line, ignoring letter case
+    and whitespace. Used only under --text-identity; an undecodable payload never
+    qualifies, so a Korean or binary payload can never pass this test."""
+    from mgs3d_english_korean_match import decode_western
+    a, b = decode_western(target), decode_western(source)
+    if not a or not b:
+        return False
+    norm = lambda s: re.sub(r"\s+", " ", s).strip().casefold()
+    return norm(a) == norm(b)
 
 
 def parse_locations(value: str) -> list[tuple[int, int]]:
@@ -65,6 +78,9 @@ def main() -> int:
     ap.add_argument("--translation", type=Path, default=DEFAULT_DOC)
     ap.add_argument("--out-doc", type=Path, required=True)
     ap.add_argument("--out-report", type=Path, required=True)
+    ap.add_argument("--text-identity", action="store_true",
+                    help="also propagate to a duplicate whose original bytes differ but "
+                         "whose decoded English is the same line (case/space insensitive)")
     args = ap.parse_args()
 
     doc = json.loads(args.translation.read_text(encoding="utf-8"))
@@ -116,10 +132,19 @@ def main() -> int:
                                 "reason": "out of range"})
                 continue
             if target != source:
-                reasons["original bytes differ from canonical"] += 1
-                skipped.append({"canonical": list(key), "location": list(location),
-                                "reason": "original bytes differ"})
-                continue
+                # Byte identity is the default guard. It is stricter than the
+                # question we actually care about: does this location hold the same
+                # sentence? 118 locations differ only in letter case ("Major!" vs
+                # "MAJOR!") and 217 more decode identically while their trailing
+                # control bytes differ. Those are the same line and were left in
+                # English by the strict guard. --text-identity accepts exactly that
+                # set, and still refuses a location whose decoded text differs.
+                if not (args.text_identity and same_sentence(target, source)):
+                    reasons["original bytes differ from canonical"] += 1
+                    skipped.append({"canonical": list(key), "location": list(location),
+                                    "reason": "original bytes differ"})
+                    continue
+                reasons["accepted on decoded-text identity"] += 1
             clone = dict(unit)
             clone["gcx"], clone["resource"] = location
             canonical[location] = clone

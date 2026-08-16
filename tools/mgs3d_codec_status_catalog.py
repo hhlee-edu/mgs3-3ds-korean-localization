@@ -44,6 +44,22 @@ def accepted(value: str) -> bool:
     return value.strip().casefold() in {"yes", "y", "1", "true", "on"}
 
 
+# 3DS button-icon tokens. The on-screen "( # { 7 } #)" is six two-byte tokens:
+#   80 23   '#'      80 7C   '|'      80 30-39  digit
+#   A0 7B   '{'      C0 7D   '}'      A3 1E     separator
+# Measured over the whole English codec.dat these lead bytes are completely closed:
+# A0 is followed by 7B in 16,981/16,981 cases, C0 by 7D in 16,981/16,981, A3 by 1E in
+# 16,815/16,815, and 0x80 takes only twelve distinct second bytes ('#', '|', '0'-'9').
+# Only that exact set is allowed, so a stray high byte still rejects the resource and
+# the Japanese/binary screening below is unchanged.
+ICON_SECOND = {
+    0x80: frozenset({0x23, 0x7C} | set(range(0x30, 0x3A))),
+    0xA0: frozenset({0x7B}),
+    0xC0: frozenset({0x7D}),
+    0xA3: frozenset({0x1E}),
+}
+
+
 def strict_western(raw: bytes) -> bool:
     """Reject Japanese/binary resources that decode_western only renders as gaps."""
     cursor = 0
@@ -54,7 +70,8 @@ def strict_western(raw: bytes) -> bool:
             if 0x41 <= value <= 0x5A or 0x61 <= value <= 0x7A:
                 letters += 1
             cursor += 1
-        elif value == 0x80 and cursor + 1 < len(raw) and raw[cursor + 1] == 0x7C:
+        elif (value in ICON_SECOND and cursor + 1 < len(raw)
+              and raw[cursor + 1] in ICON_SECOND[value]):
             cursor += 2
         elif value == 0x1F and cursor + 1 < len(raw):
             cursor += 2

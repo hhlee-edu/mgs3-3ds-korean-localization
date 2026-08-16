@@ -1,0 +1,35 @@
+{
+  "format": "mgs3d-codec-normalization-v1",
+  "by_category": {
+    "CONTROL_CODE_ERROR": {
+      "rows": 5285,
+      "positions": 148140
+    },
+    "SPEECH_LEVEL_ERROR": {
+      "rows": 549,
+      "positions": 11640
+    },
+    "MEANING_ERROR": {
+      "rows": 8,
+      "positions": 137
+    }
+  },
+  "english_remains": {
+    "KO_PRESENT_NOT_ACCEPTED": {
+      "strings": 51,
+      "positions": 1727
+    },
+    "MASTER_HAS_NO_KOREAN": {
+      "strings": 542,
+      "positions": 11336
+    },
+    "ACCEPTED_KO_BUT_EN_IN_BUILD": {
+      "strings": 21,
+      "positions": 339
+    },
+    "APPROVED_ENGLISH": {
+      "strings": 20,
+      "positions": 208
+    }
+  }
+}

@@ -1,0 +1,261 @@
+{
+ "applied": [
+  {
+   "gcx": "16",
+   "resource": "23",
+   "grade": "A",
+   "issue": "MISALIGNMENT+SPEECH",
+   "bytes": 50,
+   "min_slot": 82
+  },
+  {
+   "gcx": "20",
+   "resource": "15",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 48,
+   "min_slot": 72
+  },
+  {
+   "gcx": "20",
+   "resource": "17",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 31,
+   "min_slot": 34
+  },
+  {
+   "gcx": "22",
+   "resource": "14",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 45,
+   "min_slot": 69
+  },
+  {
+   "gcx": "22",
+   "resource": "18",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 55,
+   "min_slot": 74
+  },
+  {
+   "gcx": "23",
+   "resource": "14",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 31,
+   "min_slot": 42
+  },
+  {
+   "gcx": "23",
+   "resource": "15",
+   "grade": "A",
+   "issue": "SPEECH+MEANING",
+   "bytes": 51,
+   "min_slot": 82
+  },
+  {
+   "gcx": "23",
+   "resource": "16",
+   "grade": "B",
+   "issue": "MEANING",
+   "bytes": 54,
+   "min_slot": 62
+  },
+  {
+   "gcx": "23",
+   "resource": "17",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 68,
+   "min_slot": 93
+  },
+  {
+   "gcx": "23",
+   "resource": "18",
+   "grade": "B",
+   "issue": "MEANING",
+   "bytes": 38,
+   "min_slot": 51
+  },
+  {
+   "gcx": "24",
+   "resource": "14",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 36,
+   "min_slot": 57
+  },
+  {
+   "gcx": "25",
+   "resource": "15",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 87,
+   "min_slot": 118
+  },
+  {
+   "gcx": "25",
+   "resource": "19",
+   "grade": "A",
+   "issue": "SPEECH+STYLE",
+   "bytes": 39,
+   "min_slot": 59
+  },
+  {
+   "gcx": "25",
+   "resource": "21",
+   "grade": "A",
+   "issue": "MEANING+SPEECH",
+   "bytes": 59,
+   "min_slot": 109
+  },
+  {
+   "gcx": "28",
+   "resource": "34",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 35,
+   "min_slot": 41
+  },
+  {
+   "gcx": "28",
+   "resource": "35",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 51,
+   "min_slot": 71
+  },
+  {
+   "gcx": "26",
+   "resource": "15",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 41,
+   "min_slot": 72
+  },
+  {
+   "gcx": "27",
+   "resource": "19",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 66,
+   "min_slot": 110
+  },
+  {
+   "gcx": "243",
+   "resource": "663",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 76,
+   "min_slot": 104
+  },
+  {
+   "gcx": "243",
+   "resource": "666",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 49,
+   "min_slot": 69
+  },
+  {
+   "gcx": "243",
+   "resource": "675",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 71,
+   "min_slot": 98
+  },
+  {
+   "gcx": "243",
+   "resource": "676",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 57,
+   "min_slot": 99
+  },
+  {
+   "gcx": "243",
+   "resource": "681",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 45,
+   "min_slot": 86
+  },
+  {
+   "gcx": "243",
+   "resource": "688",
+   "grade": "A",
+   "issue": "TERM+MEANING",
+   "bytes": 70,
+   "min_slot": 103
+  },
+  {
+   "gcx": "1231",
+   "resource": "17",
+   "grade": "A",
+   "issue": "TERM+MEANING",
+   "bytes": 9,
+   "min_slot": 20
+  },
+  {
+   "gcx": "28",
+   "resource": "39",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 42,
+   "min_slot": 42
+  },
+  {
+   "gcx": "54",
+   "resource": "87",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 36,
+   "min_slot": 44
+  },
+  {
+   "gcx": "54",
+   "resource": "85",
+   "grade": "A",
+   "issue": "TERM",
+   "bytes": 42,
+   "min_slot": 42
+  },
+  {
+   "gcx": "28",
+   "resource": "46",
+   "grade": "A",
+   "issue": "MISALIGNMENT+SPEECH",
+   "bytes": 14,
+   "min_slot": 19
+  },
+  {
+   "gcx": "28",
+   "resource": "49",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 54,
+   "min_slot": 86
+  },
+  {
+   "gcx": "32",
+   "resource": "51",
+   "grade": "A",
+   "issue": "SPEECH",
+   "bytes": 65,
+   "min_slot": 109
+  }
+ ],
+ "held": [
+  {
+   "gcx": "22",
+   "resource": "17",
+   "grade": "B",
+   "issue": "SPEECH",
+   "reason": "no master row"
+  }
+ ]
+}

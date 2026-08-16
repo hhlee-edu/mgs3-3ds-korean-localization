@@ -1,0 +1,22 @@
+{
+  "format": "mgs3d-codec-control-code-classes-v1",
+  "by_class": {
+    "E. line-break count only (<0A>) -- not an error by itself": {
+      "rows": 4145,
+      "positions": 138490
+    },
+    "A. TERMINATOR MISSING  (<00> absent -- real defect)": {
+      "rows": 579,
+      "positions": 5010
+    },
+    "D. non-line control run differs (<1F..> colour/icon)": {
+      "rows": 880,
+      "positions": 12550
+    },
+    "B. terminator count differs": {
+      "rows": 18,
+      "positions": 135
+    }
+  },
+  "built_binary_missing_terminator": 0
+}

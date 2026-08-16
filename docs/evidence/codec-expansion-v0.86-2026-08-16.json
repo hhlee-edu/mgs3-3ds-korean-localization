@@ -1,0 +1,62 @@
+{
+  "format": "mgs3d-codec-location-expansion-v1",
+  "reference_codec": "experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs/codec.dat",
+  "master": "translation/10_master/current/codec.csv",
+  "source_translation": "translation/40_build_input/global_page_v2/codec_natural_full_global_page.json",
+  "units_in": 8845,
+  "units_added": 211371,
+  "units_out": 220216,
+  "master_rows_expanded": 7726,
+  "skipped_total": 4,
+  "skipped_by_reason": {
+    "accepted on decoded-text identity": 568,
+    "original bytes differ from canonical": 4
+  },
+  "skipped": [
+    {
+      "canonical": [
+        753,
+        12
+      ],
+      "location": [
+        2196,
+        14
+      ],
+      "reason": "original bytes differ"
+    },
+    {
+      "canonical": [
+        1757,
+        26
+      ],
+      "location": [
+        1759,
+        17
+      ],
+      "reason": "original bytes differ"
+    },
+    {
+      "canonical": [
+        1757,
+        26
+      ],
+      "location": [
+        1788,
+        43
+      ],
+      "reason": "original bytes differ"
+    },
+    {
+      "canonical": [
+        1757,
+        26
+      ],
+      "location": [
+        1789,
+        43
+      ],
+      "reason": "original bytes differ"
+    }
+  ],
+  "skipped_truncated": false
+}
