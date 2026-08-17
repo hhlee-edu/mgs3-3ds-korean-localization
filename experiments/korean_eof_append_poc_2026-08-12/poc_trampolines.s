@@ -32,8 +32,6 @@
 @ Measured live during a failing codec conversation: obj[0x4C]=0x08982744 !=
 @ table[2]=0x15A278DC, and obj[0x4C]+K matched korean_page_full.bin 64/64.
 @ K itself is unchanged and still parser-relative (K gate: 169/169 stages).
-@ If the global is still NULL (early boot, before 0x007801B8 has run) the old
-@ table[2] path is used, so this can never be worse than the previous build.
 @ 2026-08-16: multi-candidate validating guard.
 @ 15 runtime samples (docs/anchor-runtime-verdict-2026-08-16.md,
 @ docs/evidence/anchor-samples-2026-08-16.txt) show that NEITHER anchor is
@@ -62,13 +60,69 @@
 @ address 0x089d8744, valid in 10 and invalid in 11 -- the address did not move,
 @ the memory under it was overwritten. A cache of the last validated address
 @ would hand back that same stale address. It would also need a writable word,
-@ and this cave is in .text (RX). If both candidates fail we fall through to
-@ table[2] unvalidated, which is exactly the pre-2026-08-15 behaviour, so this
-@ can never be worse than either previous build.
+@ and this cave is in .text (RX).
+@
+@ ---------------------------------------------------------------------------
+@ 2026-08-17: NON-DEREFERENCING RANGE GUARD -- fixes a hardware Data Abort.
+@
+@ The 2026-08-16 guard above validated a candidate by READING it, and its only
+@ admission test before that read was "!= 0".  A stale snapshot that holds
+@ non-pointer garbage therefore faulted inside the guard itself, so the guard
+@ could never reject the very case it existed to handle.
+@
+@ Luma dump crash_dump_00000003.dmp, real hardware, movie playback + R input
+@ (docs/evidence/2026-08-17-v082-renderer-data-abort/):
+@     obj[0x4C] = 0x2A68DFA8   -> passes "!= 0"
+@     + K       = 0x2A6E3FA8
+@     LDRB [base+0x0C] @ 0x0087FA08 (korean_draw_2+0x80) -> translation fault
+@     DFSR 0x05, FAR 0x2A6E3FB4, r3 held K (0x00056000), r9 held token 0x8428.
+@
+@ Fix: every pointer is now range-tested with arithmetic ONLY -- no load -- and
+@ is dereferenced solely after it lands inside a window where valid values have
+@ actually been observed.  Windows, from the 15-sample evidence file:
+@     obj                0x158B5810                                  (linear heap)
+@     obj[0x4C]          0x08982744, 0x08A93374                      (app heap)
+@     table[2]           0x08954BB4, 0x08A9FC9C, 0x08982744,
+@                        0x08A93374, 0x15A11B54
+@     valid page bases   0x089D8744, 0x08AE9374                      (app heap)
+@ so:
+@   KOREAN_OBJ_LO/SPAN   [0x08000000, 0x1C000000)  application heap through
+@                        linear heap -- the object itself is linear-heap
+@                        allocated, the crash value 0x2A68DFA8 is outside.
+@   KOREAN_PAGE_LO/SPAN  [0x08000000, 0x0C000000)  the application heap alone.
+@                        EVERY page base ever observed to be correct is in it.
+@                        The one linear-heap base ever seen (0x15A67B54, codec
+@                        samples 4-9) was measured as ZEROS, i.e. already known
+@                        invalid, so excluding it loses nothing and removes a
+@                        dereference.
+@ NULL folds into each test for free: 0 - LO wraps to a huge unsigned value and
+@ fails the unsigned CMP, so no separate "cmp #0" is needed.
+@
+@ The unvalidated table[2] fallback is GONE.  When neither candidate proves
+@ itself the trampoline now draws a blank instead of dereferencing an address it
+@ could not vet: the base becomes korean_blank_glyph (128 zero bytes assembled
+@ into this cave, therefore in mapped RX .text) and the glyph index is forced to
+@ 0, so the retail blitter reads 64 bytes of zeros.  Nothing on any path can now
+@ dereference an address that has not passed a range test.
+@ Blank rather than garbled is also the strictly better failure mode: the width
+@ trampolines still return 0x10, so a rejected glyph occupies its correct
+@ advance and the line layout is unchanged.
+@
+@ korean_width_1/2, korean_pre_draw and korean_layout_classify are unchanged and
+@ need no guard: they compute widths and classifications from the engine's own
+@ tables and never dereference a glyph-page pointer (verified by disassembling
+@ their continuations at 0x001843A4, 0x00184484, 0x0015E5A8 and 0x00183A08).
+@ ---------------------------------------------------------------------------
 @
 @ This changes only where the base comes from. The 0x84-0x87 range checks, the
 @ xx00 index compaction and the width/classify logic are untouched, so all 931
 @ global glyphs are handled identically -- there is no per-character path here.
+
+.equ KOREAN_OBJ_LO,    0x08000000
+.equ KOREAN_OBJ_SPAN,  0x14000000
+.equ KOREAN_PAGE_LO,   0x08000000
+.equ KOREAN_PAGE_SPAN, 0x04000000
+
 .macro KOREAN_VALIDATE reg, scratch
     ldrb   \scratch, [\reg, #0x0C]
     cmp    \scratch, #0x0F
@@ -80,25 +134,41 @@
     cmpeq  \scratch, #0xF0
 .endm
 
+@ KOREAN_BASE reg, scratch
+@   in : r1 = compacted glyph index (both call sites)
+@   out: \reg = a glyph-page base that is either signature-validated or the
+@        in-cave blank page, and in the blank case r1 = 0.
+@   Clobbers \reg, \scratch and -- only on the blank path -- r1.
+@   No instruction dereferences a pointer that has not passed a range test.
 .macro KOREAN_BASE reg, scratch
-    @ candidate 1 -- the stage text object's own page-2 snapshot
+    @ ---- candidate 1: the stage text object's own page-2 snapshot ----
     ldr    \reg, korean_desc_literal
-    ldr    \reg, [\reg]
-    cmp    \reg, #0
-    beq    1f
-    ldr    \reg, [\reg, #0x4C]
-    cmp    \reg, #0
-    beq    1f
+    ldr    \reg, [\reg]                    @ obj; the literal target is .data
+    sub    \scratch, \reg, #KOREAN_OBJ_LO  @ obj sanity, no load (NULL folds in)
+    cmp    \scratch, #KOREAN_OBJ_SPAN
+    bhs    1f
+    ldr    \reg, [\reg, #0x4C]             @ safe: obj proved in-window
     ldr    \scratch, korean_delta_literal
     add    \reg, \reg, \scratch
-    KOREAN_VALIDATE \reg, \scratch
-    beq    2f
-1:  @ candidate 2 -- the shared font page slot, used unvalidated as the floor
-    ldr    \reg, korean_table2_literal
-    ldr    \reg, [\reg]
+    sub    \scratch, \reg, #KOREAN_PAGE_LO @ base sanity, no load (NULL folds in)
+    cmp    \scratch, #KOREAN_PAGE_SPAN
+    bhs    1f
+    KOREAN_VALIDATE \reg, \scratch         @ safe: base proved in-window
+    beq    3f
+    @ ---- candidate 2: the shared font page slot, now validated too ----
+1:  ldr    \reg, korean_table2_literal
+    ldr    \reg, [\reg]                    @ table[2]; the literal target is .data
     ldr    \scratch, korean_delta_literal
     add    \reg, \reg, \scratch
-2:
+    sub    \scratch, \reg, #KOREAN_PAGE_LO
+    cmp    \scratch, #KOREAN_PAGE_SPAN
+    bhs    2f
+    KOREAN_VALIDATE \reg, \scratch         @ safe: base proved in-window
+    beq    3f
+    @ ---- neither candidate proved itself: blank, never dereference ----
+2:  ldr    \reg, korean_blank_literal
+    mov    r1, #0                          @ index 0 -> the 64 bytes read are zero
+3:
 .endm
 
 .global korean_draw_1
@@ -285,3 +355,13 @@ korean_table2_literal:
     .word 0x00A46FE0
 korean_delta_literal:
     .word 0x00056000
+korean_blank_literal:
+    .word korean_blank_glyph
+
+@ 128 zero bytes, assembled into the cave so they live in mapped RX .text.
+@ Used as the glyph base when no candidate can be vetted; with the index forced
+@ to 0 the retail blitter reads a 64-byte all-zero glyph, i.e. draws nothing.
+@ 128 rather than 64 so any over-read by the blitter still lands on zeros.
+.align 2
+korean_blank_glyph:
+    .space 128, 0

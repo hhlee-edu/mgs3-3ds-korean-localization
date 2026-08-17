@@ -1,0 +1,208 @@
+file            : docs/evidence/2026-08-17-v082-renderer-data-abort/hardware-crash-00000003.dmp
+format version  : 3.1
+processor       : ARM11  core 0
+exception type  : 3 (data abort)
+total size      : 1380 (file 1380)
+sections        : regs=92 code=96 stack=1136 extra=16
+
+== registers ==
+  r0       = 0x0000003a  <- UNMAPPED / not a standard 3DS userland region
+  r1       = 0x00000027  <- UNMAPPED / not a standard 3DS userland region
+  r2       = 0x2a6e3fa8  <- UNMAPPED / not a standard 3DS userland region
+  r3       = 0x00056000  <- UNMAPPED / not a standard 3DS userland region
+  r4       = 0x00000000  <- UNMAPPED / not a standard 3DS userland region
+  r5       = 0x087d6b08  <- APPLICATION heap (svcControlMemory)
+  r6       = 0x00000008  <- UNMAPPED / not a standard 3DS userland region
+  r7       = 0x0000003a  <- UNMAPPED / not a standard 3DS userland region
+  r8       = 0x087d6f7c  <- APPLICATION heap (svcControlMemory)
+  r9       = 0x00008428  <- UNMAPPED / not a standard 3DS userland region
+  r10      = 0x00000010  <- UNMAPPED / not a standard 3DS userland region
+  r11      = 0x0000812e  <- UNMAPPED / not a standard 3DS userland region
+  r12      = 0x0015ebd8  <- process code/data (.text/.rodata/.data/.bss)
+  sp       = 0x00919b90  <- process code/data (.text/.rodata/.data/.bss)
+  lr       = 0x087d7599  <- APPLICATION heap (svcControlMemory)
+  pc       = 0x0087fa08  <- process code/data (.text/.rodata/.data/.bss)
+  cpsr     = 0x28000010
+  dfsr     = 0x00000005
+  ifsr     = 0x00001006
+  far      = 0x2a6e3fb4  <- UNMAPPED / not a standard 3DS userland region
+  fpexc    = 0x40000700
+  fpinst   = 0xeeb40a48
+  fpinst2  = 0xeeb40a48
+
+cpsr 0x28000010: mode=User state=ARM flags=--C-Q IRQ=on FIQ=on
+dfsr : 0x00000005 status=0x05 (translation fault, section) domain=0 read
+ifsr : 0x00001006 status=0x06 (access flag fault, page) domain=0 read
+far  : 0x2a6e3fb4  <- UNMAPPED / not a standard 3DS userland region
+lr   : 0x087d7599 (Thumb target 0x087d7598)
+
+== FAR correlation (which register is the faulting base?) ==
+  far = r2 + 0xc   (r2 = 0x2a6e3fa8)
+
+== code dump (96 bytes, assumed [0x0087f9ac .. 0x0087fa08] ending AT pc) ==
+  0x0087f9ac: e35300a0
+  0x0087f9b0: 3a000022
+  0x0087f9b4: e35300a3
+  0x0087f9b8: 8a000020
+  0x0087f9bc: e20930ff
+  0x0087f9c0: e3530000
+  0x0087f9c4: 0a00001d
+  0x0087f9c8: e2491a0a
+  0x0087f9cc: e2411001
+  0x0087f9d0: ea000001
+  0x0087f9d4: e2491b21
+  0x0087f9d8: e2411001
+  0x0087f9dc: e1a03421
+  0x0087f9e0: e0411003
+  0x0087f9e4: e59f2178
+  0x0087f9e8: e5922000
+  0x0087f9ec: e3520000
+  0x0087f9f0: 0a00000d
+  0x0087f9f4: e592204c
+  0x0087f9f8: e3520000
+  0x0087f9fc: 0a00000a
+  0x0087fa00: e59f3164
+  0x0087fa04: e0822003
+  0x0087fa08: e5d2300c  <== PC (faulting instruction)
+
+== stack dump (1136 bytes from sp=0x00919b90) ==
+   showing words that look like code/heap pointers, plus a raw window
+   -- candidate return addresses / pointers --
+   [sp+0x0000] 0x00919b90 = 0x00fec004  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0008] 0x00919b98 = 0x00ff8000  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x000c] 0x00919b9c = 0x08a1654e  APPLICATION heap (svcControlMemory)
+   [sp+0x0010] 0x00919ba0 = 0x087d6b08  APPLICATION heap (svcControlMemory)
+   [sp+0x0014] 0x00919ba4 = 0x009085dc  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x002c] 0x00919bbc = 0x00184324  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0034] 0x00919bc4 = 0x00ffe000  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x004c] 0x00919bdc = 0x00ffe000  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0050] 0x00919be0 = 0x00ffe000  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0054] 0x00919be4 = 0x00ffe000  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0058] 0x00919be8 = 0x00ffe000  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x005c] 0x00919bec = 0x08a1654e  APPLICATION heap (svcControlMemory)
+   [sp+0x0070] 0x00919c00 = 0x087d6b08  APPLICATION heap (svcControlMemory)
+   [sp+0x0088] 0x00919c18 = 0x3d800000  linear heap (new mapping)
+   [sp+0x008c] 0x00919c1c = 0x3f800000  linear heap (new mapping)
+   [sp+0x0098] 0x00919c28 = 0x3d800000  linear heap (new mapping)
+   [sp+0x009c] 0x00919c2c = 0x3f800000  linear heap (new mapping)
+   [sp+0x00a8] 0x00919c38 = 0x3d800000  linear heap (new mapping)
+   [sp+0x00ac] 0x00919c3c = 0x00919cb8  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x00b0] 0x00919c40 = 0x08a16544  APPLICATION heap (svcControlMemory)
+   [sp+0x00b4] 0x00919c44 = 0x00919cb8  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x00cc] 0x00919c5c = 0x087d6b08  APPLICATION heap (svcControlMemory)
+   [sp+0x00d0] 0x00919c60 = 0x009e3964  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x00d4] 0x00919c64 = 0x004d2784  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x00dc] 0x00919c6c = 0x08a16544  APPLICATION heap (svcControlMemory)
+   [sp+0x00ec] 0x00919c7c = 0x087d6ab0  APPLICATION heap (svcControlMemory)
+   [sp+0x00f0] 0x00919c80 = 0x08a16544  APPLICATION heap (svcControlMemory)
+   [sp+0x00f8] 0x00919c88 = 0x009082d4  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x00fc] 0x00919c8c = 0x009085dc  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x010c] 0x00919c9c = 0x00398378  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0110] 0x00919ca0 = 0x085d61f0  APPLICATION heap (svcControlMemory)
+   [sp+0x0114] 0x00919ca4 = 0x087d6b08  APPLICATION heap (svcControlMemory)
+   [sp+0x0118] 0x00919ca8 = 0x08a16544  APPLICATION heap (svcControlMemory)
+   [sp+0x0128] 0x00919cb8 = 0x087d6b08  APPLICATION heap (svcControlMemory)
+   [sp+0x02e8] 0x00919e78 = 0x085d61f0  APPLICATION heap (svcControlMemory)
+   [sp+0x02ec] 0x00919e7c = 0x08a1654c  APPLICATION heap (svcControlMemory)
+   [sp+0x02f4] 0x00919e84 = 0x08a163d0  APPLICATION heap (svcControlMemory)
+   [sp+0x02fc] 0x00919e8c = 0x008bd440  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0304] 0x00919e94 = 0x006233e8  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0308] 0x00919e98 = 0x08a162d0  APPLICATION heap (svcControlMemory)
+   [sp+0x030c] 0x00919e9c = 0x008fcb90  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0314] 0x00919ea4 = 0x0077e74c  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x031c] 0x00919eac = 0x006f2f20  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0320] 0x00919eb0 = 0x00a54f80  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x032c] 0x00919ebc = 0x00a54ef0  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0334] 0x00919ec4 = 0x001010cc  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0338] 0x00919ec8 = 0x00915eac  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x033c] 0x00919ecc = 0x00915eb0  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0354] 0x00919ee4 = 0x00100458  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x035c] 0x00919eec = 0x00919f00  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0364] 0x00919ef4 = 0x00114b8c  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0370] 0x00919f00 = 0x00114a34  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0374] 0x00919f04 = 0x00114a28  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0378] 0x00919f08 = 0x0011145c  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x037c] 0x00919f0c = 0x00919f18  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0380] 0x00919f10 = 0x00919f20  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0388] 0x00919f18 = 0x00100384  process code/data (.text/.rodata/.data/.bss)
+   [sp+0x0390] 0x00919f20 = 0x33303076  linear heap (new mapping)
+   [sp+0x03b8] 0x00919f48 = 0x00110001  process code/data (.text/.rodata/.data/.bss) (Thumb)
+   [sp+0x03c4] 0x00919f54 = 0x00289718  process code/data (.text/.rodata/.data/.bss)
+
+   -- raw stack --
+   0x00919b90: 00fec004 000000c0 00ff8000 08a1654e
+   0x00919ba0: 087d6b08 009085dc 00000008 00000010
+   0x00919bb0: 00008020 00000010 0000812e 00184324
+   0x00919bc0: 00000000 00ffe000 0000003a 00000000
+   0x00919bd0: 00000000 00000008 00008428 00ffe000
+   0x00919be0: 00ffe000 00ffe000 00ffe000 08a1654e
+   0x00919bf0: 00008428 00000000 00008428 00008428
+   0x00919c00: 087d6b08 00000000 00000000 0000812e
+   0x00919c10: 00000000 00000000 3d800000 3f800000
+   0x00919c20: 00000000 000000c0 3d800000 3f800000
+   0x00919c30: 000000d8 00000000 3d800000 00919cb8
+   0x00919c40: 08a16544 00919cb8 00000000 00000000
+   0x00919c50: 00000180 00000000 00000036 087d6b08
+   0x00919c60: 009e3964 004d2784 00000000 08a16544
+   0x00919c70: 00000000 00000000 00000000 087d6ab0
+   0x00919c80: 08a16544 00000000 009082d4 009085dc
+   0x00919c90: ff000000 00000000 00000000 00398378
+   0x00919ca0: 085d61f0 087d6b08 08a16544 00000000
+   0x00919cb0: 00000000 00000000 087d6b08 00000000
+   0x00919cc0: 00000000 00000000 00000000 00000000
+   0x00919cd0: 00000000 00000000 00000000 00000000
+   0x00919ce0: 00000000 00000000 00000000 00000000
+   0x00919cf0: 00000000 00000000 00000000 00000000
+   0x00919d00: 00000000 00000000 00000000 00000000
+   0x00919d10: 00000000 00000000 00000000 00000000
+   0x00919d20: 00000000 00000000 00000000 00000000
+   0x00919d30: 00000000 00000000 00000000 00000000
+   0x00919d40: 00000000 00000000 00000000 00000000
+   0x00919d50: 00000000 00000000 00000000 00000000
+   0x00919d60: 00000000 00000000 00000000 00000000
+   0x00919d70: 00000000 00000000 00000000 00000000
+   0x00919d80: 00000000 00000000 00000000 00000000
+   0x00919d90: 00000000 00000000 00000000 00000000
+   0x00919da0: 00000000 00000000 00000000 00000000
+   0x00919db0: 00000000 00000000 00000000 00000000
+   0x00919dc0: 00000000 00000000 00000000 00000000
+   0x00919dd0: 00000000 00000000 00000000 00000000
+   0x00919de0: 00000000 00000000 00000000 00000000
+   0x00919df0: 00000000 00000000 00000000 00000000
+   0x00919e00: 00000000 00000000 00000000 00000000
+   0x00919e10: 00000000 00000000 00000000 00000000
+   0x00919e20: 00000000 00000000 00000000 00000000
+   0x00919e30: 00000000 00000000 00000000 00000000
+   0x00919e40: 00000000 00000000 00000000 00000000
+   0x00919e50: 00000000 00000000 00000000 00000000
+   0x00919e60: 00000000 00000000 00000000 00000000
+   0x00919e70: 00000000 00000000 085d61f0 08a1654c
+   0x00919e80: ffffffff 08a163d0 0000191e 008bd440
+   0x00919e90: 00000000 006233e8 08a162d0 008fcb90
+   0x00919ea0: 00000002 0077e74c ff000000 006f2f20
+   0x00919eb0: 00a54f80 00000001 0000000c 00a54ef0
+   0x00919ec0: 0000000c 001010cc 00915eac 00915eb0
+   0x00919ed0: 00000000 00000000 00000000 00000000
+   0x00919ee0: 00000000 00100458 00000001 00919f00
+   0x00919ef0: 00000000 00114b8c 00000000 00000000
+   0x00919f00: 00114a34 00114a28 0011145c 00919f18
+   0x00919f10: 00919f20 00000000 00100384 00000000
+   0x00919f20: 33303076 00000061 00000000 00000000
+   0x00919f30: 0000011e 00000000 00000000 00000000
+   0x00919f40: 00000000 00000000 00110001 00000000
+   0x00919f50: 00000000 00289718 00000000 00000005
+   0x00919f60: 00000000 00000000 00000000 00000000
+   0x00919f70: 00000000 00000000 00000000 00000000
+   0x00919f80: 00000000 00000000 00000000 00000000
+   0x00919f90: 00000000 00000000 00000000 00000000
+   0x00919fa0: 00000000 00000000 00000000 00000000
+   0x00919fb0: 00000000 00000000 00000000 00000000
+   0x00919fc0: 00000000 00000000 00000000 00000000
+   0x00919fd0: 00000000 00000000 00000000 00000000
+   0x00919fe0: 00000000 00000000 00000000 00000000
+   0x00919ff0: 00000000 00000000 00000000 00000000
+
+== additional data (16 bytes) ==
+  ascii tag : 'MGS-SE3D'
+  raw       : 4d47532d53453344001e080000000400
+  (Luma layout: process name 'MGS-SE3D', pid/tid-lo 0x00081e00, tail 0x00040000)

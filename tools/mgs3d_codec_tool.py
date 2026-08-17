@@ -205,6 +205,15 @@ class GcxRecord:
         return cls(codec[start:stored_end], start), stored_end
 
     def resources(self) -> list[Resource]:
+        # Memoised: `crypt()` is a pure-Python per-byte loop (~7 MB/s), and `apply`
+        # calls this once per translated unit. With duplicate propagation that is
+        # 224,655 units over 2,277 records = 59.6 GB of re-decryption, ~140 minutes.
+        # `self.raw` is never reassigned after __init__ and `replace_resources()`
+        # returns new bytes rather than mutating the record, so the decrypted view
+        # cannot go stale. Caching it makes the same build ~1 minute.
+        cached = getattr(self, "_resources_cache", None)
+        if cached is not None:
+            return cached
         count_bytes = self.string_resources_offset - self.resource_table_offset
         if count_bytes % 4:
             raise CodecError("unaligned GCX resource table")
@@ -228,6 +237,7 @@ class GcxRecord:
             if offset > end or end > len(plain):
                 raise CodecError(f"invalid GCX resource offsets at index {index}")
             result.append(Resource(word, plain[offset:end]))
+        self._resources_cache = result
         return result
 
     def replace_resources(

@@ -162,11 +162,19 @@ def main() -> int:
     args.out_doc.write_text(json.dumps(out_doc, ensure_ascii=False, indent=2) + "\n",
                             encoding="utf-8")
 
+    def rel(path: Path) -> str:
+        # A caller-supplied path may be relative, or outside ROOT; either made
+        # relative_to() raise and lose the whole report after the doc was written.
+        try:
+            return path.resolve().relative_to(ROOT).as_posix()
+        except ValueError:
+            return path.as_posix()
+
     report = {
         "format": "mgs3d-codec-location-expansion-v1",
-        "reference_codec": args.codec.relative_to(ROOT).as_posix(),
-        "master": args.master.relative_to(ROOT).as_posix(),
-        "source_translation": args.translation.relative_to(ROOT).as_posix(),
+        "reference_codec": rel(args.codec),
+        "master": rel(args.master),
+        "source_translation": rel(args.translation),
         "units_in": len(doc["units"]),
         "units_added": len(added),
         "units_out": len(out_doc["units"]),

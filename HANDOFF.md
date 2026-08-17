@@ -1,6 +1,117 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
-## NEXT — v0.83: dialogue fitting COMPLETE; repack a CCI and test (2026-08-16)
+## NEXT — codec 실기 QA Round 5 완료, 재스테이징 (2026-08-17)
+
+**[`docs/codec-qa-round5-2026-08-17.md`](docs/codec-qa-round5-2026-08-17.md) 를 읽어라.**
+
+실기 3건의 원인이 **서로 달랐고**, 공통 원인은 **검증 방법 자체**였다.
+codec은 canonical location만 검사했고(22,818행 불일치 0 — 그래서 늘 PASS였다),
+결함은 **중복 location에만** 있었다. movie는 아예 재빌드되지 않았다.
+
+1. **초반 배낭 튜토리얼 1행** — `PARTIAL_APPLICATION`. `20:17`만 한국어, `52:34`·`53:47`은 영어.
+   `langid`가 아이템명 토큰 1개(도너 분기도 아이템명은 영어)만 보고 donor 판정 → 도너 재분류 →
+   전파 제외. v0.69부터 `pending`으로 남아 있던 항목이며 이번에 종결.
+2. **강하 직전 무전 1행** — codec에 없다. `movie.dat` rec 1/ent 11 라인이고 master는 이미
+   고쳐져 있었다. **movie.dat이 재빌드되지 않았을 뿐**
+   (`BUILD_NOT_APPLIED`). 같은 라운드 사용자 수정 3건 전부 미반영이었다. demo는 0건.
+3. **Godzilla** — `MISALIGNMENT 0`. `SPEECH_LEVEL_ERROR 13` + `MEANING_ERROR 5`.
+   화자는 English 문답 + 스페인어 도너 순서로 확정(Para-Medic 20 / Snake 11), 16행 수정.
+
+**새 게이트: `tools/mgs3d_codec_partial_application.py`** — 모든 location을 검사한다.
+**224 → 212행**, 남은 212는 전부 의도적 제외(FR/ES 도너 206 + 언어 중립 6).
+
+파이프라인 버그 3건 수정: `make-translation`의 `csv.field_size_limit`(이게 막히면
+**master를 고쳐도 빌드에 도달하지 않는다**), `expand_locations`의 상대경로 리포트 유실,
+`resources()` 미캐시(59.6 GB 재복호화 → **140분이 15초로**).
+
+전 게이트 PASS: size delta +0, KO→EN 회귀 0, 신규 glyph 0, 손실 0, capacity drop 0,
+coverage 95.10%, HPK exit 0, 앵커 A 3/3 · C 16/16.
+
+스테이징: `codec.dat` `8348377c…`, `movie.dat` `a9f9ab9c…`
+(이전 파일 `Romforge\archive\pre-round5-20260817\`). `demo.dat`·`code.bin`·`exheader.bin`
+변경 없음. **CCI 미생성.**
+
+## NEXT — renderer range guard CONFIRMED FIXED on hardware (2026-08-17)
+
+**The movie + R-button Data Abort is gone**, confirmed by the user on a real 3DS
+with the range-guard build (`code.bin` `b9514ec5…`, `exheader.bin` `2bca5dcb…`).
+The non-dereferencing range guard is hardware-validated, not just statically
+verified. Remaining on that build: run the Citra regression list (codec
+외/워/백/업/팀, demo/movie 억/추/션, mixed lines, boot→title) to confirm nothing
+else moved.
+
+### C-stick / Circle Pad Pro — solved by a save, not by code
+
+**Read [`docs/cstick-save-distribution-2026-08-17.md`](docs/cstick-save-distribution-2026-08-17.md).**
+The user found `builds/MGS3D_C_stick_SAVESCITRA.rar` — community saves (RT37,
+2021) made on a real 2DS with CPP already activated, which sidestep the Citra
+Extrapad freeze entirely. Verified here: all four parse as MGS3D saves, all four
+pass the checksum, all sit at `v001a`/`r_sna01`, and **`Normal` and
+`Normal (alt)` are byte-identical** — ship three, not four.
+
+Save format cracked along the way: `save[0x00] = u32 LE CRC32(save[4:])`,
+confirmed on six independent saves. `tools/mgs3d_save_tool.py` does
+`show`/`diff`/`fix-crc` and reports CPP state. CPP activation rewrites the
+primary button table at `0x40..0xBF` and populates `0xC0..0xF7`, which is **all
+zero when CPP is off** — the cleanest state indicator.
+
+Before shipping: one Citra smoke test with our CCI, a decision on attribution
+(the saves are RT37's work), and a Korean note carrying RT37's warning forward —
+**never toggle the 확장 슬라이드 패드 option in an emulator**, with or without
+these saves.
+
+## Renderer range guard — build and verification detail (2026-08-17)
+
+**Read [`docs/renderer-range-guard-2026-08-17.md`](docs/renderer-range-guard-2026-08-17.md).**
+
+**v0.83 confirmation is on hold.** A hardware Luma dump root-caused a Data Abort
+**inside the v0.82 renderer guard**: it admitted a candidate pointer on `!= 0`
+alone and then *read* it to check the page signature, so a stale snapshot holding
+garbage (`obj[0x4C] = 0x2A68DFA8`) faulted in the guard itself — the guard could
+never reject the case it existed to handle. Full decode, with the code dump
+matched uniquely to the v0.82 binary:
+[`docs/evidence/2026-08-17-v082-renderer-data-abort/`](docs/evidence/2026-08-17-v082-renderer-data-abort/README.md).
+New parser: `tools/parse_luma_crash_dump.py`.
+
+Fixed and staged: every pointer is now range-tested with **arithmetic only, no
+load**, and dereferenced only inside a window where valid values were actually
+observed (object `[0x08000000,0x1C000000)`, page base `[0x08000000,0x0C000000)`).
+The unvalidated `table[2]` fallback is **gone**; when neither candidate proves
+itself the glyph draws **blank** from 128 zero bytes inside the cave, with the
+index forced to 0. No cache, per the measured evidence. Width/classify need no
+guard — they never dereference a glyph-page pointer (verified by disassembly).
+
+All static gates PASS: 0 unexpected changed regions, 6/6 branches on target,
+exheader `.text` +944 exactly, blank zone 128 B of zeros, HPK gate exit 0,
+169/169 stages resident **and 169/169 carrying the guard signature**, plus an
+instruction-by-instruction guard-before-load proof on both call sites and a
+replay showing the recorded crash value now skips the faulting read.
+
+Staged: `code.bin` `b9514ec5…`, `exheader.bin` `2bca5dcb…`; previous pair
+archived to `Romforge\archive\pre-range-guard-20260817\`. Only those two files
+changed — `codec.dat` (v0.88 `6bdec076…`), `movie.dat`, `demo.dat`,
+`scenerio.gcx`, `cache.hpk` untouched. **CCI not built.**
+
+**Citra/Azahar is the verification gate** (2026-08-17 instruction — hardware
+installation is not required for this; a real-3DS run is reserved for genuine
+hardware-side defects and final release validation). Test order: codec
+외/워/백/업/팀 · demo/movie 억/추/션 · **movie + repeated R input** (the crash
+repro, stage `v003a`) · mixed lines and boot→title. A blank glyph is now an
+expected safe outcome; the failure condition is a Data Abort or a layout shift.
+
+**SOLVED — the Circle Pad option freeze is Citra's, not ours.**
+[`docs/citra-extrapad-applet-freeze-2026-08-17.md`](docs/citra-extrapad-applet-freeze-2026-08-17.md).
+Today's 105 MB Citra session log ends in a tight infinite loop: the game requests
+library applet **1032 = 0x408 = `Extrapad`** (확장 슬라이드 패드) when the option
+is toggled, Citra answers `Could not create applet 1032` **193,580 times** from
+t=50.82 to t=70.50, and the game spins waiting for an applet that never starts.
+**Zero guest exceptions in the entire session** — Citra stayed alive, so it is a
+guest hang from an emulator gap, not a crash. It is reachable from stock retail
+code we have never patched, so a pristine CCI would freeze identically. **No
+`code.bin` change can fix it — do not read it as a regression, and do not open
+that option while testing.**
+
+## v0.83: dialogue fitting COMPLETE; repack a CCI and test (2026-08-16)
 
 **Read [`docs/v0.83-fitting-complete-2026-08-16.md`](docs/v0.83-fitting-complete-2026-08-16.md).**
 

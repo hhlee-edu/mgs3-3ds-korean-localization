@@ -16,6 +16,12 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+# The codec master legitimately carries very large cells -- `locations` lists every
+# duplicate position of a string, and one `raw_text` reaches 551,512 characters.
+# Python's 131,072-char default makes csv.reader raise on those rows, which
+# silently blocked `make-translation` from ever seeing the edited master.
+csv.field_size_limit(10 ** 9)
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mgs3d_codec_tool import TOKEN, decode_mgs_preview, parse_codec, render_bytes  # noqa: E402
 

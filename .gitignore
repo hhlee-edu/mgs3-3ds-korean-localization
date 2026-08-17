@@ -82,6 +82,18 @@ Thumbs.db
 *_ps2_*
 *ps2_korean*
 
+# Pattern rules, so a new evidence dump cannot slip through by being dated later.
+# These artefacts are per-line dumps of the script by construction: they carry the
+# `english` and `korean` field of every row they report on.
+/docs/evidence/**/partial-application-*
+/docs/evidence/**/*-block.csv
+/docs/evidence/**/*-dialogue-*.csv
+/docs/evidence/**/*-worklist-*.csv
+/docs/evidence/**/codec-round*-proposed-*
+# Keep the aggregate reports that carry only counts and addresses:
+!/docs/evidence/**/coverage-*.json
+!/docs/evidence/**/round5-gate.json
+
 # evidence files that embed game script
 /docs/evidence/codec-accepted-but-english-2026-08-16.json
 /docs/evidence/codec-census-iconaware-2026-08-16.json
