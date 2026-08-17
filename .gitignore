@@ -10,6 +10,7 @@
 /builds/
 /logs/
 /archive/
+/handoff/
 /vendor/
 
 # Emulator runtime and user state
@@ -90,6 +91,9 @@ Thumbs.db
 /docs/evidence/**/*-dialogue-*.csv
 /docs/evidence/**/*-worklist-*.csv
 /docs/evidence/**/codec-round*-proposed-*
+# Per-row rewrite tables (find/replace pairs): these ARE the script by construction.
+/docs/evidence/**/reg_*
+/docs/evidence/**/fix_*
 # Keep the aggregate reports that carry only counts and addresses:
 !/docs/evidence/**/coverage-*.json
 !/docs/evidence/**/round5-gate.json

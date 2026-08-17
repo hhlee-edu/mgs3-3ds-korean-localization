@@ -1,5 +1,37 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
+## NEXT — 화자 말투(register) 1,333행 교정, master·빌드·스테이징 반영 (2026-08-18)
+
+**[`docs/codec-speaker-register-apply-2026-08-18.md`](docs/codec-speaker-register-apply-2026-08-18.md) 를 읽어라.**
+
+외부 대본으로 화자가 확정된 행만 대상으로 말투를 고쳤다. Para-Medic·EVA 존댓말,
+Zero·Sigint·Snake·The Boss 반말. **MISMATCH 1,335 → 적용 1,333, HUMAN 2.**
+(Para-Medic 329 / Sigint 319 / Zero 298 / EVA 149 / Snake 135 / The Boss 103,
+존댓말→반말 855 · 반말→존댓말 478.)
+
+**먼저 분류기가 두 번 틀렸다.** `ㅂ니다`는 자모라 합성 한글(`겁니다`)과 절대
+매칭되지 않아 죽은 패턴이었고, 그렇다고 `니다`/`니까`로 바꾸면 `아니다`와
+연결어미 `-으니까`를 삼킨다. **앞 음절의 종성이 ㅂ인지** 검사하는 것이 정답이다
+(`(ord(c)-0xAC00)%28==17`). 대상 행이 1,285 → 1,342 → **1,335**로 움직였고,
+이미 써 둔 수정안 15건은 **원래 올바른 존댓말 행**이어서 취소했다.
+
+**canonical만 검증하면 또 놓친다.** 행의 `locations` 전부에 새 문자열을 넣고
+레코드를 다시 조립하자 **16개 레코드가 추가로 byte-fit 실패**했다 — canonical에는
+여유가 있고 중복 위치에 없는 occurrence 5~87짜리 문자열들이다. 전부 문장을 줄여
+해소했다. 최종적으로 31,509 location 중 31,506이 canonical과 바이트 동일,
+나머지 3은 v0.89에서도 제외돼 있던 프랑스어 도너 위치다.
+
+전 게이트 PASS: size delta +0, record/block_start/size/resource drift 0,
+KO→EN 회귀 0, 신규 glyph 0, control token drift 0, 앵커 A 3/3 · C 16/16,
+PARTIAL_APPLICATION 212 → 212(전부 FR/ES 도너).
+
+스테이징: `codec.dat` **`b29807f8…`** (이전 `8348377c…`는
+`Romforge\archive\pre-register-20260818\`). `movie.dat`·`demo.dat`·`code.bin`·
+`exheader.bin` 변경 없음. **CCI 미생성.** Citra 확인은 아직이다.
+
+기존 `codec-final-revision-proposals.csv` 511행 중 71행이 겹쳤고 **69행은 기존
+의미/용어 수정 위에 말투 수정을 병합**(충돌 0). **나머지 440행은 미적용**이다.
+
 ## NEXT — codec 실기 QA Round 5 완료, 재스테이징 (2026-08-17)
 
 **[`docs/codec-qa-round5-2026-08-17.md`](docs/codec-qa-round5-2026-08-17.md) 를 읽어라.**
