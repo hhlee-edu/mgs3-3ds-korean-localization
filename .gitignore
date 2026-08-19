@@ -94,6 +94,21 @@ Thumbs.db
 # Per-row rewrite tables (find/replace pairs): these ARE the script by construction.
 /docs/evidence/**/reg_*
 /docs/evidence/**/fix_*
+# Inverted rule (2026-08-20): an evidence CSV is a per-row script dump unless
+# proven otherwise. Name-based patterns kept letting new dumps through --
+# stage-translation-working.csv, stage-text-unique.csv and 45 others reached a
+# pushed commit because none of them matched *-worklist-*. Ignore every evidence
+# CSV and allow-list the ones that carry only counts, hashes or addresses.
+/docs/evidence/**/*.csv
+!/docs/evidence/2026-08-15-fontpage0-probe/pristine-page-token-use.csv
+!/docs/evidence/**/stage-glossary-candidates.csv
+!/docs/evidence/**/stage-staging-sha.csv
+# Same reasoning for JSON dumps that key on raw_hex or carry translated text.
+/docs/evidence/**/*expanded*.json
+/docs/evidence/**/*dryrun*.json
+/docs/evidence/**/stage-branch-map.json
+/docs/evidence/**/*proposed-translation*.json
+
 # Keep the aggregate reports that carry only counts and addresses:
 !/docs/evidence/**/coverage-*.json
 !/docs/evidence/**/round5-gate.json
