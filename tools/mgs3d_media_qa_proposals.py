@@ -54,7 +54,7 @@ def load_verdicts():
 
 
 def tighten(text: str) -> str:
-    """Remove the space the Shinsnote-sourced lines carry before punctuation."""
+    """Remove the space the script reference-sourced lines carry before punctuation."""
     out = PUNCT_SPACE.sub("", text)
     out = OPEN_QUOTE.sub(r"\1", out)
     out = CLOSE_QUOTE.sub(r"\1", out)
@@ -141,7 +141,7 @@ def main() -> int:
             tightened = tighten(current)
             if tightened != current:
                 verdict, proposal = "FIX", tightened
-                reason = "space before punctuation, inherited from the Shinsnote table"
+                reason = "space before punctuation, inherited from the script reference table"
         elif "MT_LITERAL" in flags:
             verdict, reason = "REVIEW", (
                 "literal-translation marker; read in context and left alone. Most are "

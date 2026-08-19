@@ -36,7 +36,7 @@ python mgs3_matcher.py stats
 이미 파싱해 둔 한글 대사 JSON이 있으면 인터넷 접속 없이 함께 구축할 수 있습니다.
 
 ```bash
-python mgs3_matcher.py build --english-file gamefaqs_mgs3.html --korean-json shinsnote_mgs3_script.json
+python mgs3_matcher.py build --english-file gamefaqs_mgs3.html --korean-json script_ref_mgs3_script.json
 ```
 
 한글 자료만 먼저 구축하려면 다음 명령을 사용합니다.
@@ -94,7 +94,7 @@ python mgs3_matcher.py search 백팩 --source korean --part 1 --context 8
 ## 자료 출처
 
 - 영문: GameFAQs, *Metal Gear Solid 3: Snake Eater – Game Script* by CHamlin
-- 한글 참고: 신즈노트의 *메탈기어솔리드3매뉴얼-한글대사* 1~20편
+- 한글 참고: 대사집의 *메탈기어솔리드3매뉴얼-한글대사* 1~20편
 
 각 자료는 번역 후보 확인용으로만 사용하고, 결과 CSV에는 필요한 대응 문장과
 출처 메모만 남기는 것을 권장합니다.

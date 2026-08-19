@@ -94,7 +94,7 @@ NO_SOURCE = {
         'speaks plain to Snake throughout this record.'),
     ('demo', '116', '0'): (
         '어떻게?',
-        'RECOVERED, not authored: shinsnote p13 seq2534 스네이크 "어떻게?" directly after '
+        'RECOVERED, not authored: the script reference p13 seq2534 스네이크 "어떻게?" directly after '
         'EVA\'s "그로 변장하면 될 거예요" (= r115 e36). MHamlin script confirms '
         '"Snake: How do I do that?" in the same slot.'),
     ('demo', '296', '0'): (
@@ -107,7 +107,7 @@ NO_SOURCE = {
 EXTRA = {
     ('demo', '159', '29'): (
         '소코로프!',
-        'English is "Sokolov!" but master held "소령 ." (= Major). shinsnote p14 seq2901 '
+        'English is "Sokolov!" but master held "소령 ." (= Major). the script reference p14 seq2901 '
         '스네이크 "소코로프!" sits exactly here, between 2900 소코로프 "됐어. 난." and '
         '2902. Proper-noun error, recovered from the transcript.'),
 }

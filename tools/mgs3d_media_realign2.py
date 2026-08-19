@@ -2,7 +2,7 @@
 """movie/demo re-alignment, second attempt: anchor by monotone backbone, then DP.
 
 The first attempt (`mgs3d_media_realign.py`) failed its own gate 0/107. Cause:
-it built each record's Shinsnote window from *every* master line whose Korean
+it built each record's the script reference window from *every* master line whose Korean
 matched the script -- including the mis-placed ones, whose Korean points at the
 wrong part of the script. The window was poisoned by the very defect it was
 meant to repair.
@@ -10,9 +10,9 @@ meant to repair.
 This version never trusts a single anchor. It:
 
   1. takes every master line whose normalised Korean has a **unique** position in
-     the Shinsnote script -- a candidate anchor;
+     the script reference script -- a candidate anchor;
   2. orders those candidates by (media, record, entry) and keeps only the
-     **longest increasing subsequence** of their Shinsnote positions. A
+     **longest increasing subsequence** of their the script reference positions. A
      mis-placed line points somewhere else in the script and therefore breaks
      monotonicity, so it falls off the backbone on its own;
   3. interpolates the backbone to estimate a script position for every entry,
@@ -54,7 +54,7 @@ csv.field_size_limit(10 ** 9)
 
 ROOT = Path(__file__).resolve().parent.parent
 MASTERS = ROOT / "translation/10_master/current"
-SHINSNOTE = ROOT / "translation/20_matching/shinsnote/shinsnote_mgs3_script.csv"
+SCRIPT_REF = ROOT / "translation/20_matching/script_ref/script_ref_mgs3_script.csv"
 VERDICTS = ROOT / "output/media-register-qa/media-offset-verdicts.csv"
 
 WORD = re.compile(r"[0-9A-Za-z가-힣]+")
@@ -173,7 +173,7 @@ def main() -> int:
     args.evidence.mkdir(parents=True, exist_ok=True)
 
     script = []
-    with io.open(SHINSNOTE, encoding="utf-8-sig", newline="") as handle:
+    with io.open(SCRIPT_REF, encoding="utf-8-sig", newline="") as handle:
         for row in csv.DictReader(handle):
             text = re.sub(r"\s+", " ", (row.get("text") or "")).strip()
             if not text or not HANGUL.search(text):
@@ -290,7 +290,7 @@ def main() -> int:
         writer.writerows(results)
 
     summary = {
-        "shinsnote_lines": len(script),
+        "script_ref_lines": len(script),
         "master_lines": len(results),
         "unique_position_candidates": len(candidates),
         "backbone_anchors": len(backbone),

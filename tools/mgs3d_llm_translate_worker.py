@@ -29,10 +29,10 @@ def build_prompt(row: dict) -> str:
         lines.append("[앞뒤 문맥 (PS2 원문, 참고용)]")
         for c in row["context"]:
             lines.append(f"  {c['speaker']}: {c['text']}")
-    if row.get("shinsnote_context"):
-        lines.append("[같은 장면의 신스노트 참고 대사 — 용어/고유명사 참고용, "
+    if row.get("script_ref_context"):
+        lines.append("[같은 장면의 대사집 참고 대사 — 용어/고유명사 참고용, "
                      "이 줄들을 그대로 베끼지 마세요]")
-        for s in row["shinsnote_context"]:
+        for s in row["script_ref_context"]:
             lines.append(f"  {s['speaker']}: {s['text']}")
     lines.append(f"[PS2 참고 대사 — 어투 참고용, 번역 대상 아님] {row['ref_en']}")
     lines.append(f"[번역 대상 — 이 줄만 한국어로 번역] {row['source_en']}")

@@ -66,12 +66,11 @@ Thumbs.db
 /tools/mgs3d_apply_direct_translation.py
 /tools/mgs3d_merge_direct_codec_master.py
 /tools/mgs3d_normalize_korean_terms.py
-/tools/mgs3d_shinsnote_style_candidates.py
 
 # ---------------------------------------------------------------------------
-# Game text is copyrighted. Konami's script (English or Japanese), the PS2
-# Korean localization, and Shinsnote's transcription of it must never be
-# committed -- not as data, not as evidence, not quoted inside documentation.
+# Game text is copyrighted. Konami's script in any language, and any
+# third-party transcription of it, must never be committed -- not as data,
+# not as evidence, not quoted inside documentation.
 # Only tools, byte-level format notes, and counts belong in this repository.
 # ---------------------------------------------------------------------------
 /docs/decisions/
@@ -79,7 +78,6 @@ Thumbs.db
 /docs/SESSION-*.md
 /docs/ps2*
 /docs/**/ps2*
-*shinsnote*
 *_ps2_*
 *ps2_korean*
 
@@ -94,6 +92,14 @@ Thumbs.db
 # Per-row rewrite tables (find/replace pairs): these ARE the script by construction.
 /docs/evidence/**/reg_*
 /docs/evidence/**/fix_*
+# The 2026-08-13 cleanup inventory is a dump of every local path, so it names
+# the reference material 25,396 times. Regenerable; keep the write-up, not the dump.
+/docs/cleanup-2026-08-13/inventory.*
+/docs/cleanup-2026-08-13/move_log.csv
+/docs/cleanup-2026-08-13/still_unknown.json
+/docs/cleanup-2026-08-13/id_keyed_decisions.json
+/docs/cleanup-2026-08-13/content_decisions.json
+
 # Inverted rule (2026-08-20): an evidence CSV is a per-row script dump unless
 # proven otherwise. Name-based patterns kept letting new dumps through --
 # stage-translation-working.csv, stage-text-unique.csv and 45 others reached a

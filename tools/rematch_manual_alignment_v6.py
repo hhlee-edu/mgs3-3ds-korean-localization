@@ -58,7 +58,7 @@ def main() -> int:
         raise ValueError("dataset_key mismatch")
 
     row_by_id = {row["id"]: row for row in rows}
-    overrides = {int(key): value for key, value in state["ps2_korean_overrides"].items()}
+    overrides = {int(key): value for key, value in state["script_ref_overrides"].items()}
     promoted = []
     for relation in state["relations"]:
         if relation.get("decision") != "match":
@@ -133,7 +133,7 @@ def main() -> int:
                 "left_ids": [row["id"]],
                 "right_sequences": [seq],
                 "ps2_english_bundle": [script[seq]["english"]],
-                "ps2_korean_bundle": [overrides.get(seq, script[seq].get("korean", ""))],
+                "script_ref_bundle": [overrides.get(seq, script[seq].get("korean", ""))],
                 "note": "two-sided corrected anchors; globally unique exact English rematch",
                 "created_at": now,
                 "override_baseline": False,

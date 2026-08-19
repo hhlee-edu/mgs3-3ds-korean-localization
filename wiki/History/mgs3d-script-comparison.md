@@ -1,7 +1,7 @@
 # MGS3 Korean script extraction and comparison
 
-The 20 Shinsnote pages (`/219` through `/238`) are saved under
-`analysis/shinsnote_mgs3`. The extraction keeps source page and paragraph order
+The 20 the script reference pages (`/219` through `/238`) are saved under
+`analysis/script_ref_mgs3`. The extraction keeps source page and paragraph order
 but does not include images.
 
 Current extraction statistics:
@@ -13,8 +13,8 @@ Current extraction statistics:
 
 Generated files:
 
-- `analysis/shinsnote_mgs3_script.json`: structured source data
-- `analysis/shinsnote_mgs3_script.csv`: spreadsheet-friendly source data
+- `analysis/script_ref_mgs3_script.json`: structured source data
+- `analysis/script_ref_mgs3_script.csv`: spreadsheet-friendly source data
 - `analysis/mgs3d_game_candidates.json`: GCX/resource candidates
 - `analysis/mgs3d_script_comparison.csv`: loose side-by-side suggestions
 - `analysis/gamefaqs_mgs3_english.json`: extracted English dialogue

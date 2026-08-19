@@ -14,7 +14,7 @@ from tkinter import messagebox, ttk
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ANALYSIS = ROOT / "analysis" / "ps2_korean"
+ANALYSIS = ROOT / "analysis" / "script_ref"
 REVIEW = ANALYSIS / "codec-untranslated-review.csv"
 SELECTION = ANALYSIS / "codec-priority-output"
 FILES = ANALYSIS / "codec-priority-files"

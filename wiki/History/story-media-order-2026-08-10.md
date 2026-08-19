@@ -470,7 +470,7 @@ Pakistan opening boundary and the immediately following `v020_020_m010`
 movie are promoted. The two colliding opening demo names remain separate call
 rows but share one explicitly labelled unresolved p010/p011 dialogue boundary.
 The verified English/Korean opening text comes from the English transcript and
-the reviewed PS2 Korean dialogue data. This produces three call rows with a
+the reviewed Korean reference dialogue data. This produces three call rows with a
 dialogue start and leaves 224 for manual/resource-boundary review. The latter
 are written separately to
 `analysis/story_media_order/story_media_order_manual_review.csv`; aggregate

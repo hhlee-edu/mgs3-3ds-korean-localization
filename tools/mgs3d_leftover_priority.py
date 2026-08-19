@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reprioritize the PS2대응없음 leftover translator worklist by realistic
+"""Reprioritize the 대사집 대응 없음 leftover translator worklist by realistic
 build headroom instead of raw unique-vocabulary count.
 
 Splits leftover rows into three buckets using per-GCX figures from a

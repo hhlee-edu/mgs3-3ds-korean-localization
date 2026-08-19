@@ -2,7 +2,7 @@
 """MGS3 broken Japanese dialogue matching helper.
 
 The program builds a local searchable corpus from an English GameFAQs script
-and the Korean Shinsnote pages, cleans control codes from extracted Japanese
+and the Korean script-reference pages, cleans control codes from extracted Japanese
 records, and creates a review CSV. Translation and final semantic matching are
 left to the reviewer/LLM because the three languages cannot be matched safely
 with plain string similarity.
@@ -26,7 +26,9 @@ DEFAULT_ENGLISH_URL = (
     "https://gamefaqs.gamespot.com/ps2/914828-metal-gear-solid-3-snake-eater/"
     "faqs/34684"
 )
-DEFAULT_KOREAN_URLS = [f"https://www.shinsnote.com/{n}" for n in range(219, 239)]
+# The Korean script-reference pages are not named here; pass --korean-json
+# with a locally parsed file instead.
+DEFAULT_KOREAN_URLS = []
 CONTROL_CODE_RE = re.compile(r"<[^>]*>")
 RECORD_RE = re.compile(r"(?ms)^\s*(\d+)\s*:\s*(.*?)(?=^\s*\d+\s*:|\Z)")
 SPACE_RE = re.compile(r"[ \t\u00a0]+")
@@ -540,7 +542,7 @@ def make_parser() -> argparse.ArgumentParser:
     build.add_argument("--db", default="mgs3_sources.sqlite3")
     build.add_argument("--english-url", default=DEFAULT_ENGLISH_URL)
     build.add_argument("--english-file", help="브라우저에서 저장한 GameFAQs HTML/TXT")
-    build.add_argument("--korean-json", help="로컬 Shinsnote 파싱 JSON")
+    build.add_argument("--korean-json", help="로컬 대사집 파싱 JSON")
     build.add_argument("--skip-english", action="store_true")
     build.add_argument("--skip-korean", action="store_true")
     build.set_defaults(func=build_command)

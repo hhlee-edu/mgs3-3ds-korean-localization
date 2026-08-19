@@ -89,7 +89,7 @@ SHA-256 3BD843008721C8018054B041FD6DBDBA617C5DE99751D62E192F4082EE7E6504
 
 **As of 2026-08-13 the binary itself no longer exists anywhere on disk** (11
 CCIs across the whole machine were hashed; none match). It is fully
-reproducible from `archive/old-data/ps2_korean_archive_2026-08-07/staging_tom_codec_original_media/`
+reproducible from `archive/old-data/script_ref_archive_2026-08-07/staging_tom_codec_original_media/`
 — all five recorded input hashes (`codec.dat`, `movie.dat`, `demo.dat`,
 `stage/r_sna01/resident.hpk`, `stage/r_sna02/resident.hpk`) verify there
 byte-exact against `analysis/REPACK_VERSION_INDEX.md (kept at its original path -- not part of the move, still describes CCI-to-input mapping)`. See

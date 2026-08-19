@@ -23,7 +23,7 @@ wiki/
 ├─ Conventions.md          the durable management rules (section 3 below)
 ├─ Build-System.md         RomForge flow, staging, manifests, naming
 ├─ Translation.md          the SOURCE→MASTER→SHORTENED→BUILD_INPUT lineage
-├─ Matching.md             3-way alignment, Shinsnote colour classification
+├─ Matching.md             3-way alignment, the script reference colour classification
 ├─ Glyph-System.md         resident page, token map, capacity budgets
 ├─ GCX-Format.md           codec.dat / scenerio.gcx container + procedure tables
 ├─ DAT-Formats.md          movie.dat / demo.dat records and the scene container
@@ -123,13 +123,13 @@ Extracted from existing documents; IDs assigned now so they can be cited.
 |---|---|---|---|
 | DEC-001 | Drop signature-based page2 discovery for the parser formula | signature scan missed 78 of 169 stages | ACTIVE |
 | DEC-002 | Korean page delivered by EOF append | resident 192/192 B live-verified | ACTIVE |
-| DEC-003 | Port the PS2 official Korean text; do not author a new translation | project goal | ACTIVE |
+| DEC-003 | Port the reference Korean text; do not author a new translation | project goal | ACTIVE |
 | DEC-004 | Never spend effort on FR/ES/DE/IT donor text | only EN/KO matter; donor text is capacity, not content | ACTIVE |
 | DEC-005 | Abandon the Japanese source-reassembly pipeline | superseded by the English→Korean pivot | REJECTED |
 | DEC-006 | Fund all growth from the structural unit's own slack | scene/GCX boundaries cannot move | ACTIVE |
 | DEC-007 | Use `--fixed-layout-reclaim`, not `--size-neutral-reclaim`, for movie/demo | verified zero offset drift | ACTIVE |
 | DEC-008 | Quarantine fixed-radius batch matching | GCX adjacency does not imply conversation | REJECTED |
-| DEC-009 | Shinsnote is the movie/demo Korean source of record | PS2 movie subtitles are hardsubbed | ACTIVE |
+| DEC-009 | the script reference is the movie/demo Korean source of record | PS2 movie subtitles are hardsubbed | ACTIVE |
 | DEC-010 | Text authoring is the human translator's job, not bulk AI | user instruction | ACTIVE |
 
 ## 5. Deliberate deviations from the requested layout
@@ -141,7 +141,7 @@ Extracted from existing documents; IDs assigned now so they can be cited.
   `originals/{romfs,exefs,hashes}` only, which covers the 3DS side. The PS2 ISO
   extract (3.1 GB) and PS2 stage extract (1.8 GB, 20,620 files) are also
   originals and need their own homes.
-- **`translation/00_source/shinsnote/`** rather than a top-level Shinsnote
+- **`translation/00_source/script_ref/`** rather than a top-level the script reference
   folder, so the immutable-source rule (R2/R3) covers it.
 - **`experiments/` keeps run names that already carry dates** (e.g.
   `global_korean_glyph_poc_2026-08-12`) rather than being renamed to

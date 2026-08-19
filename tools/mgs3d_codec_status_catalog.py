@@ -169,7 +169,7 @@ def main() -> int:
                     status = "외국어분기"
                     blocker = "영어런타임검토제외"
                 else:
-                    status = "PS2대응없음"
+                    status = "대사집 대응 없음"
                     blocker = "직접번역필요"
             counts[status] = counts.get(status, 0) + 1
             korean = (sel or cand or {}).get("text", "")

@@ -35,7 +35,7 @@ def active_relation_map(state: dict) -> tuple[dict[str, dict], dict[str, list[st
     return selected, {key: value for key, value in seen.items() if len(value) > 1}
 
 
-def ps2_korean(script_row: dict, overrides: dict[str, str]) -> str:
+def script_ref(script_row: dict, overrides: dict[str, str]) -> str:
     key = str(script_row.get("index"))
     if key in overrides:
         return str(overrides[key] or "")
@@ -50,7 +50,7 @@ def target_rows(html: dict, state: dict, *, all_untranslated: bool = False) -> t
     script = {int(row["index"]): row for row in html["SCRIPT"]}
     relations, duplicates = active_relation_map(state)
     existing = state.get("translation_overrides", {})
-    ps2_overrides = state.get("ps2_korean_overrides", {})
+    ps2_overrides = state.get("script_ref_overrides", {})
     output = []
     candidates = ((row["id"], relations.get(row["id"], {})) for row in rows) if all_untranslated else relations.items()
     for row_id, relation in candidates:
@@ -72,7 +72,7 @@ def target_rows(html: dict, state: dict, *, all_untranslated: bool = False) -> t
             "speaker": "",
             "source_en": row["english"],
             "ref_en": " / ".join(item.get("english", "") for item in right),
-            "ref_ko": " / ".join(filter(None, (ps2_korean(item, ps2_overrides)
+            "ref_ko": " / ".join(filter(None, (script_ref(item, ps2_overrides)
                                                    for item in right))),
             "context": [{"speaker": "", "text": item.get("english", "")}
                         for item in neighbors],
@@ -94,7 +94,7 @@ def command_prepare(args: argparse.Namespace) -> None:
     document = {
         "format": "mgs3d-review-v10-translation-batch-v1",
         "system_prompt": (
-            "Metal Gear Solid 3 자막을 자연스러운 한국어로 번역한다. PS2 한국어 참고문이 "
+            "Metal Gear Solid 3 자막을 자연스러운 한국어로 번역한다. 대사집 참고문이 "
             "있으면 고유명사와 말투를 따르되, source_en 한 줄에 해당하는 내용만 출력한다. "
             "설명, 따옴표, 접두어 없이 번역문만 출력하고 앞뒤 자막과 말투를 연결한다. "
             "영문 정보를 생략하거나 임의로 추가하지 않는다."

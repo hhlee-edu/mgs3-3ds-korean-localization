@@ -16,7 +16,7 @@ from mgs3d_codec_precise_relocate import build  # noqa: E402
 from mgs3d_codec_tool import parse_codec  # noqa: E402
 
 SOURCE = Path("C:/Users/hhlee/Desktop/Romforge/backups/codec_2026-08-08_120556_pre-growth-experiment.dat")
-OUT_DIR = Path("experiments/ps2_korean/full_build/rebuild_2026-08-08")
+OUT_DIR = Path("experiments/script_ref/full_build/rebuild_2026-08-08")
 
 DELTAS = [0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800]
 

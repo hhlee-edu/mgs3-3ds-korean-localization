@@ -87,7 +87,7 @@ def main():
                     unchanged.append(key)
                 r['korean'] = wanted[key]
                 r['accept'] = 'yes'
-                r['translation_source'] = 'shinsnote-recovery-2026-08-19'
+                r['translation_source'] = 'the script reference-recovery-2026-08-19'
                 applied += 1
         if applied != len(wanted):
             raise SystemExit('%s: expected %d rows, matched %d' % (media, len(wanted), applied))

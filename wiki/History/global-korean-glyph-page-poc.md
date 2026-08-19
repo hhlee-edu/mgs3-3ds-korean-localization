@@ -10,7 +10,7 @@
 
 ## 분석 대상과 재현성
 
-- decompressed code image: `analysis/ps2_korean/full_build/rebuild_2026-08-08/code_en_decompressed_verified.bin`
+- decompressed code image: `analysis/script_ref/full_build/rebuild_2026-08-08/code_en_decompressed_verified.bin`
 - size: 8,478,720B
 - SHA-256: `10c7d3496a864b340a312593dfe2c44edcf99c42c7829683930d150de1a13df7`
 - text VA/file mapping: VA `0x00100000`, file offset `0`, size `0x77F8C4`

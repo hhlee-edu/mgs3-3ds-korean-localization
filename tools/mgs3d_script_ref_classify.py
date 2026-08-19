@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Reclassify the Shinsnote MGS3 script by dialogue-box background color.
+"""Reclassify the script reference MGS3 script by dialogue-box background color.
 
-Consumes the fine-grained ``shinsnote_mgs3_full.json`` scrape (one segment
+Consumes the fine-grained ``script_ref_mgs3_full.json`` scrape (one segment
 per styled <span>, color-tagged codec/movie_demo/unknown) and reconstructs
 paragraph-level dialogue lines the same way ``mgs3d_script_compare.py
 extract-site`` does, but additionally tags each line with the game target
@@ -132,7 +132,7 @@ def command_classify(args: argparse.Namespace) -> None:
         all_segments.extend(extract_page(page["articleHtml"], int(page["part"])))
     dialogues = [item for item in all_segments if item["kind"] == "dialogue"]
     out_document = {
-        "format": "shinsnote-mgs3-script-classified-v1",
+        "format": "script_ref-mgs3-script-classified-v1",
         "source": document.get("metadata", {}).get("sourcePage", ""),
         "segment_count": len(all_segments),
         "dialogue_count": len(dialogues),
@@ -156,7 +156,7 @@ def command_classify(args: argparse.Namespace) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("full_scrape", type=Path, help="shinsnote_mgs3_full.json")
+    parser.add_argument("full_scrape", type=Path, help="script_ref_mgs3_full.json")
     parser.add_argument("output_json", type=Path)
     parser.add_argument("output_csv", type=Path)
     parser.set_defaults(function=command_classify)

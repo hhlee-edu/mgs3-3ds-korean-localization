@@ -8,7 +8,7 @@ assembles, per row, everything the translator will need:
   context       the neighbouring resources in the same GCX
   speaker       from the MHamlin English game script, when the line is in it
   recovery      an existing accepted Korean for the same English elsewhere in
-                master, and any Shinsnote line that matches
+                master, and any the script reference line that matches
   budget        the resource's own byte capacity and the GCX glyph-slot headroom
   grouping      rows that share an English string translate once
 
@@ -49,7 +49,7 @@ COLS = ['group_id', 'gcx', 'resource', 'english', 'draft_state', 'korean_draft',
         'occurrences', 'capacity_bytes', 'gcx_record_headroom', 'candidate_needed_bytes',
         'capacity_risk', 'missing_glyphs', 'glyph_risk', 'speaker', 'speaker_source',
         'prev_english', 'next_english', 'master_recovery_korean',
-        'master_recovery_basis', 'shinsnote_candidate', 'recovery_confidence', 'notes']
+        'master_recovery_basis', 'script_ref_candidate', 'recovery_confidence', 'notes']
 
 # Hangul reaches codec through the resident global page, not through per-GCX
 # font slots, so the glyph question is whether a character is in this map.
@@ -123,7 +123,7 @@ def main():
             headroom[r['gcx']] = v
     records = parse_codec(io.open(CODEC, 'rb').read())
     speakers = load_script_speakers()
-    shin = ctx.load_shinsnote()
+    shin = ctx.load_script_ref()
 
     # glyph headroom per GCX, assuming every target resource in it is replaced
     per_gcx = collections.defaultdict(set)
@@ -200,7 +200,7 @@ def main():
             'speaker_source': 'MHamlin English game script' if speakers.get(k) else '',
             'prev_english': prev_en, 'next_english': next_en,
             'master_recovery_korean': rec_ko, 'master_recovery_basis': rec_basis,
-            'shinsnote_candidate': sn,
+            'script_ref_candidate': sn,
             'recovery_confidence': conf,
             'notes': row_master.get('note') or '',
         })

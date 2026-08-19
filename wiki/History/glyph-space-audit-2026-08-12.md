@@ -128,11 +128,11 @@ in the same local scope.
 
 ```powershell
 python tools/mgs3d_glyph_space_audit.py `
-  --static-allocation analysis/ps2_korean/_archive_2026-08-07/review5-combo-position-files/sna01-allocation-report.json `
+  --static-allocation analysis/script_ref/_archive_2026-08-07/review5-combo-position-files/sna01-allocation-report.json `
   --resident C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/stage/r_sna01/resident.hpk `
-  --resident-proof analysis/ps2_korean/_archive_2026-08-07/review5-combo-position-files/sna01-allocation-report.json `
+  --resident-proof analysis/script_ref/_archive_2026-08-07/review5-combo-position-files/sna01-allocation-report.json `
   --resident C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/stage/r_sna02/resident.hpk `
-  --resident-proof analysis/ps2_korean/_archive_2026-08-07/review5-combo-position-files/sna02-allocation-report.json `
+  --resident-proof analysis/script_ref/_archive_2026-08-07/review5-combo-position-files/sna02-allocation-report.json `
   --movie C:/Users/hhlee/Desktop/Romforge/output/unpacked_en_original_smoke_backup/partition0/romfs/movie.dat `
   --live-movie C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/movie.dat `
   --movie-translation analysis/story_media_order/romforge_apply_v1/v645_full_rebuild/movie_full_apply.csv `
@@ -141,7 +141,7 @@ python tools/mgs3d_glyph_space_audit.py `
   --demo-translation analysis/story_media_order/romforge_apply_v1/v645_full_rebuild/demo_full_apply.csv `
   --codec C:/Users/hhlee/Desktop/Romforge/output/unpacked_en_original_smoke_backup/partition0/romfs/codec.dat `
   --live-codec C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/codec.dat `
-  --codec-translation analysis/ps2_korean/full_build/rebuild_2026-08-08/selected_translation.json `
+  --codec-translation analysis/script_ref/full_build/rebuild_2026-08-08/selected_translation.json `
   --output analysis/glyph_space_audit/current
 ```
 

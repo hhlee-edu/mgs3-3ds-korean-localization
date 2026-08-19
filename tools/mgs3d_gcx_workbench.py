@@ -38,13 +38,13 @@ TOOLS_DIR = Path(__file__).resolve().parent
 DEFAULT_REVIEW = REPO_ROOT / "translation/10_master/current/codec.csv"
 DEFAULT_WORKLIST = REPO_ROOT / "translation/30_shortened/translator_worklist_4994.csv"
 DEFAULT_BASELINE_CODEC = (
-    REPO_ROOT / "archive/old-data/ps2_korean/romforge_codec.dat.before-ps2none-donor-build-2026-08-05.bak"
+    REPO_ROOT / "archive/old-data/script_ref/romforge_codec.dat.before-ps2none-donor-build-2026-08-05.bak"
 )
-DEFAULT_PROTECT_REVIEW = REPO_ROOT / "analysis/ps2_korean/codec_ps2none_protect_review.csv"
-DEFAULT_PRODUCTION_REPORT = REPO_ROOT / "analysis/ps2_korean/full_build/select_report_r2.json"
-DEFAULT_SCRATCH_DIR = REPO_ROOT / "analysis/ps2_korean/full_build/_scratch"
+DEFAULT_PROTECT_REVIEW = REPO_ROOT / "analysis/script_ref/codec_ps2none_protect_review.csv"
+DEFAULT_PRODUCTION_REPORT = REPO_ROOT / "analysis/script_ref/full_build/select_report_r2.json"
+DEFAULT_SCRATCH_DIR = REPO_ROOT / "analysis/script_ref/full_build/_scratch"
 
-STATUS_PS2NONE = "PS2대응없음"
+STATUS_PS2NONE = "대사집 대응 없음"
 
 
 def run(args: list[str]) -> None:

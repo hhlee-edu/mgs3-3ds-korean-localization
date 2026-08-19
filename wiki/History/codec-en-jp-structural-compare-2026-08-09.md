@@ -53,7 +53,7 @@ GCX (2,237/2,326), for a combined 9.5MB of glyph bitmap data.
 
 ## 2-3. Full GCX-by-GCX comparison, top-50 rankings
 
-Full comparison: `analysis/ps2_korean/full_build/en_jp_compare/compare.json`
+Full comparison: `analysis/script_ref/full_build/en_jp_compare/compare.json`
 (and `.csv`, header exactly per spec:
 `gcx,en_offset,jp_offset,en_record_size,jp_record_size,record_size_delta,en_resource_count,jp_resource_count,en_font_slots,jp_font_slots,font_slot_delta,en_font_bytes,jp_font_bytes,font_bytes_delta,en_string_blob_size,jp_string_blob_size,string_blob_delta,en_font_data_offset,jp_font_data_offset,en_proc_offset,jp_proc_offset,en_script_resource_count,jp_script_resource_count,en_display_resource_count,jp_display_resource_count`).
 

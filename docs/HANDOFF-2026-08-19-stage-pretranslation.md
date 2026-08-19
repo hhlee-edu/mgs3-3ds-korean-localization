@@ -11,7 +11,7 @@
 
 - EN-visible unique rows: 1,571
 - EN occurrences: 149,592
-- READY rows: 3 (the already-established PS2 official rows)
+- READY rows: 3 (the already-established reference rows)
 - New translation rows: 1,568
 - Branch conflicts: 0
 - OTHER: 652 -> 323
@@ -21,7 +21,7 @@
   - `MUSIC_TITLE`: 61
   - `STATUS_MESSAGE`: 1
 - Existing exact translation candidates: 1 (`SAVE` from codec: `저장<00>`); no fuzzy candidates were emitted.
-- Shinsnote text search found 202 exact English-string hits, but they were not promoted to translation candidates because an unambiguous paired English-to-Korean record was not established; no inferred Korean was added.
+- the script reference text search found 202 exact English-string hits, but they were not promoted to translation candidates because an unambiguous paired English-to-Korean record was not established; no inferred Korean was added.
 - Glossary candidates: 664 repeated terms, with no newly invented Korean.
 
 ## Duplicate/group analysis
@@ -66,16 +66,16 @@
 ## 결과
 
 - 대상 **13행** (ENEMY_BARK 12 + NPC_DIALOGUE 1) — **전부 완료**
-- **신규 번역 10** / **PS2 공식 재사용 3** (`있다!!` `누구냐!` `말해!` — 손대지 않음)
+- **신규 번역 10** / **대사집 재사용 3** (`있다!!` `누구냐!` `말해!` — 손대지 않음)
 - **신규 글리프 0** · capacity 실패 **0** · HUMAN **0**
 - dry-run apply: **635 EN 리소스 / 89 스테이지 / 오류 0** (기존 3행일 때 525)
 - final gate: **PASS** — 169/169 파싱, changed 635, errors 0, FR/ES 무변경, 제어토큰 보존
 
 | EN | KO | 바이트 | 출처 |
 |---|---|---|---|
-| I see him!! | 있다!! | 7/12 | PS2 공식 |
-| Who's that! | 누구냐! | 8/12 | PS2 공식 |
-| Speak! | 말해! | 6/7 | PS2 공식 |
+| I see him!! | 있다!! | 7/12 | 대사집 |
+| Who's that! | 누구냐! | 8/12 | 대사집 |
+| Speak! | 말해! | 6/7 | 대사집 |
 | Answer me! | 대답해! | 8/11 | 신규 |
 | Who's there! | 거기 누구냐! | 13/13 | 신규 |
 | Who the...!! | 뭐야...!! | 10/13 | 신규 |
@@ -87,7 +87,7 @@
 | Huuuuhya! | 우와아! | 8/10 | 신규 |
 | You Were Lucky. We'll Meet Again! | 운이 좋았군. 다음에 또 보자! | 29/35 | 신규 |
 
-`Answer me!`는 PS2에 `대<L229>하라!`가 있지만 **L229가 UNRESOLVED**라 복구로 주장하지
+`Answer me!`는 대사집에 `대<L229>하라!`가 있지만 **L229가 UNRESOLVED**라 복구로 주장하지
 않고 새로 썼다.
 
 ## 두 가지 정정 — 다음 세션이 반드시 알아야 할 것
@@ -134,7 +134,7 @@ gate changed 724 vs apply 635. **각 리소스를 원래 길이로 NUL 패딩**�
 요구하므로 주의할 것.
 
 안전 재사용 27개 그룹(70행 → 43유닛 절감)과 문맥검토 2개 그룹, `SAVE` 재사용 후보는
-아직 손대지 않았다. Shinsnote exact 202건은 여전히 authority가 아니다.
+아직 손대지 않았다. the script reference exact 202건은 여전히 authority가 아니다.
 
 master/staging 미적용, commit/push 없음 — 별도 승인 대기.
 

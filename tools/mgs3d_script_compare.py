@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract the Shinsnote MGS3 script and make a loose codec.dat comparison CSV."""
+"""Extract the script reference MGS3 script and make a loose codec.dat comparison CSV."""
 
 from __future__ import annotations
 
@@ -126,8 +126,8 @@ def command_extract(args: argparse.Namespace) -> None:
         pages.extend(extract_page(matches[0], page))
     dialogues = [item for item in pages if item["kind"] == "dialogue"]
     document = {
-        "format": "shinsnote-mgs3-script-v1",
-        "source": "https://www.shinsnote.com/219 through /238",
+        "format": "script_ref-mgs3-script-v1",
+        "source": "(reference site) through /238",
         "segment_count": len(pages),
         "dialogue_count": len(dialogues),
         "segments": pages,

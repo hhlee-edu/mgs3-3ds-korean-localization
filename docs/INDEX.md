@@ -52,7 +52,7 @@ superseded, not that the underlying observation was deleted.
 
 - 2026-08-01: [session handoff](../wiki/History/session-handoff-2026-08-01.md),
   [work resume](../wiki/History/work-resume-2026-08-01.md)
-- 2026-08-02: [PS2 Korean port](../wiki/History/ps2-korean-port-2026-08-02.md),
+- 2026-08-02: [Korean port](../wiki/History/ps2-korean-port-2026-08-02.md),
   [English/Korean pivot smoke](../wiki/History/english-korean-pivot-smoke-2026-08-02.md)
 - 2026-08-03: [PS2 port handoff](../wiki/History/ps2-port-handoff-2026-08-03.md),
   [Citra runtime smoke](../wiki/History/citra-runtime-smoke-2026-08-03.md)

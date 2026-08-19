@@ -56,7 +56,7 @@ By status (after the §3.1 auto-resolution pass): ORIGINAL 21,634 ·
 EXPERIMENT 3,935 · GENERATED 3,518 · **UNKNOWN 748** (was 947) · ARCHIVE 727 ·
 CURRENT 276 · MASTER 28 · SHORTENED 18 · OBSOLETE 12 · BUILD_INPUT 7.
 
-The 21,556 "ORIGINALS" count is dominated by `analysis/ps2_korean/stages/`
+The 21,556 "ORIGINALS" count is dominated by `analysis/script_ref/stages/`
 (20,620 small PS2 stage-extract files, 1.81 GB).
 
 ---
@@ -93,13 +93,13 @@ cart dumps (4 GB each) at `metagear3d\`.
 4,083,195,904  …_Repack______.cci          <- the build HANDOFF says to test next
 3,248,480,256  …\rejected_oversize\…_Repack__OVERSIZE_REJECTED.cci
 4,294,967,296  analysis/global_korean_glyph_poc_2026-08-12/MGS3D_A0XX_GANADA_POC_v1_failed.cci
-3,248,410,624  analysis/ps2_korean/_archive_2026-08-07/MGS3D_PS2KO_165_FIXED_FALLBACK_v3.cci
-3,248,410,624  analysis/ps2_korean/_archive_2026-08-07/MGS3D_PS2KO_191_FIXED_TEST_Repack.cci
+3,248,410,624  analysis/script_ref/_archive_2026-08-07/MGS3D_PS2KO_165_FIXED_FALLBACK_v3.cci
+3,248,410,624  analysis/script_ref/_archive_2026-08-07/MGS3D_PS2KO_191_FIXED_TEST_Repack.cci
 ```
 
 **Conclusion: the golden CCI binary no longer exists — but it is fully
 reproducible.** `REPACK_VERSION_INDEX.md` records the golden's input directory as
-`ps2_korean/staging_tom_codec_original_media/`, and all five documented input
+`script_ref/staging_tom_codec_original_media/`, and all five documented input
 hashes verify there **5/5, byte-exact**:
 
 | input | recorded SHA-256 | status |
@@ -110,7 +110,7 @@ hashes verify there **5/5, byte-exact**:
 | `stage/r_sna01/resident.hpk` | `6D751F2A…7B77` | ✅ MATCH |
 | `stage/r_sna02/resident.hpk` | `BB72B8FA…9496` | ✅ MATCH |
 
-Path: `analysis/ps2_korean/_archive_2026-08-07/staging_tom_codec_original_media/`.
+Path: `analysis/script_ref/_archive_2026-08-07/staging_tom_codec_original_media/`.
 Repacking that directory reconstructs the boot-verified golden build. The two
 same-size 2026-08-03 archived CCIs are *different* builds from the same day, not
 the golden.
@@ -119,7 +119,7 @@ the golden.
 identity currently lives only in a recorded hash plus an archived input folder.
 Rename builds before the next repack writes 7 underscores.
 
-### 2.2 PS2 Korean ISO — RESOLVED, deletion is intentional
+### 2.2 Korean reference ISO — RESOLVED, deletion is intentional
 
 `메탈 기어 솔리드 3_한글.iso` (4,565,270,528 B) is not on disk; it sits in
 `D:\$RECYCLE.BIN\…\$REV4BU2.iso`. **User confirmed 2026-08-13 that deleting the
@@ -129,7 +129,7 @@ This is safe because **everything extracted from it survives**, all five PS2
 containers, read-only where it matters:
 
 ```text
-analysis/ps2_korean/MGS/
+analysis/script_ref/MGS/
   CODEC.DAT     41,724,368     <- the source of official Korean codec text
   DEMO.DAT   1,504,960,512  (r--)
   MOVIE.DAT    525,156,352  (r--)
@@ -226,12 +226,12 @@ inventory).
 
 | Role | File |
 |---|---|
-| MASTER | `analysis/ps2_korean/codec-3ds-INTEGRATED-review.csv` — 11,076,065 B, sha `a836d562…` |
+| MASTER | `analysis/script_ref/codec-3ds-INTEGRATED-review.csv` — 11,076,065 B, sha `a836d562…` |
 | MASTER (manual backlog) | `…/codec-3ds-INTERGRATED-review.csv_trans/1999final.csv`, `trans1999.csv` |
 | ARCHIVE | 4 dated `codec-3ds-INTEGRATED-review.csv.*bak` snapshots |
-| SOURCE | `analysis/shinsnote_mgs3/page_*.html`, `신스노트 대사집/shinsnote_mgs3_full.json` |
+| SOURCE | `analysis/script_ref_mgs3/page_*.html`, `대사집 대사집/script_ref_mgs3_full.json` |
 | SOURCE | `analysis/gamefaqs_mgs3_english.*` (PS2 English pivot anchor) |
-| BUILD_INPUT | `analysis/ps2_korean/full_build/translator_worklist_*.csv` |
+| BUILD_INPUT | `analysis/script_ref/full_build/translator_worklist_*.csv` |
 
 **Resolved by hashing:** the `codec-3ds-INTEGRATED-review.csv` sitting inside the
 `_trans/` folder is byte-identical to `…before-1999-merge-2026-08-05.bak`
@@ -276,7 +276,7 @@ Two resolutions in pass 5 rest on direct quotes rather than inference:
   confirm.
 
 **Deliberately not resolved — still needs your eyes (114 files, mostly under
-`analysis/ps2_korean/`):**
+`analysis/script_ref/`):**
 
 The biggest unresolved cluster by size is the `codec_selected_static_media*.json`
 / `codec_translation_static_media*.json` / `early-priority-selection*/` family
@@ -290,7 +290,7 @@ output), and roughly 90 small (<0.7 MB) diagnostic/capacity files. Full list:
 `unknown-list.md`.
 
 **Note on filenames:** 57 paths contain Hangul, and several use CP949-era encoding
-(`신스노트 대사집/`, `화면 캡처 …png`). Any move must preserve the exact bytes; a
+(`대사집 대사집/`, `화면 캡처 …png`). Any move must preserve the exact bytes; a
 careless rename will mangle them.
 
 ---
@@ -313,7 +313,7 @@ workbench. Only one true version-collision family exists
 to adopt.
 
 29 experiment runs are grouped in `experiment-runs.md`; the largest are
-`ps2_korean/full_build` (26.6 GB), `story_media_order/romforge_apply_v1`
+`script_ref/full_build` (26.6 GB), `story_media_order/romforge_apply_v1`
 (11.6 GB) and `global_korean_glyph_poc_2026-08-12` (12.3 GB across two subdirs).
 
 ---

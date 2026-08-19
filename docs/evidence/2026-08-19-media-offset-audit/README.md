@@ -60,15 +60,15 @@ en_seq  ko_seq   delta
 
 | 후보 | 해석 성공 |
 |---|---|
-| `shinsnote/shinsnote_mgs3_script.csv` (4,071행) | 30 / 366 |
-| `shinsnote/shinsnote_mgs3_classified.csv` (4,070행) | 30 / 366 |
-| `shinsnote/shinsnote_mgs3_movie_demo_only.json` (2,625 segment) | 0 / 366 |
+| `the script reference/script_ref_mgs3_script.csv` (4,071행) | 30 / 366 |
+| `the script reference/script_ref_mgs3_classified.csv` (4,070행) | 30 / 366 |
+| `the script reference/script_ref_mgs3_movie_demo_only.json` (2,625 segment) | 0 / 366 |
 
 비교표(`*_korean_comparison_review.csv`)에서 한국어를 역검색하는 경로도 시도했다
 (`media-offset-audit.csv`). 한국어가 그 표에 남아 있는 행이 적어 **HUMAN 274**로 끝났고,
 자동 remap은 1행뿐이었다.
 
-**결론: 기존 산출물만으로는 remap이 불가능하다.** 올바른 한국어는 Shinsnote 대본을
+**결론: 기존 산출물만으로는 remap이 불가능하다.** 올바른 한국어는 대사집 대본을
 영어 DAT 순서에 맞춰 **다시 정렬**해야 나온다. 그때는 `exact-unique-korean` 이 아니라
 **단조 시퀀스 정렬**을 써야 한다 — 같은 실패를 반복하지 않으려면 이것이 조건이다.
 
@@ -86,7 +86,7 @@ en_seq  ko_seq   delta
 
 ## 5. 더 쓸모 있는 triage 단서
 
-확정된 오배치 95행은 **거의 전부 문장부호 앞 공백**(`몰라 .`)을 달고 있다 — Shinsnote 표의
+확정된 오배치 95행은 **거의 전부 문장부호 앞 공백**(`몰라 .`)을 달고 있다 — the script reference 표의
 표기 습관이 그대로 남은 행이다. 반대로 UNREVIEWED 312행은 그 공백이 **없는** 행들이고,
 표본에서 정상률이 높았다. 즉 **어느 시점에 정규화를 거친 행은 재검토·재작성됐을 가능성이
 있다.** 다음 세션의 가설로 삼고 검증할 것.
@@ -111,7 +111,7 @@ demo r41 e10   That arm still hurt?                               ->  목숨은 
    에서 `verdict=UNREVIEWED`, `media/record/entry` 오름차순 → **첫 행 `demo r5 e5`**.
    `screen_off_backbone=True` 130행을 먼저 보되 **정밀도가 낮다는 것을 전제로** 읽을 것.
 2. §5의 가설(정규화된 행 = 재작성된 행) 검증.
-3. remap은 Shinsnote 대본 **재정렬**이 선행돼야 한다. 단조 시퀀스 정렬 필수.
+3. remap은 대사집 대본 **재정렬**이 선행돼야 한다. 단조 시퀀스 정렬 필수.
 4. 말투 FIX 91건은 **여전히 보류** — 오배치 정리 전에는 적용하지 않는다.
 
 ## 8. 산출물 / 재현

@@ -23,7 +23,7 @@ sys.path.insert(0, str(HERE))
 from mgs3d_codec_tool import parse_codec  # noqa: E402
 from mgs3d_movie_tool import parse_records  # noqa: E402
 
-DEFAULT_CODE = ROOT / "experiments/ps2_korean/full_build/rebuild_2026-08-08/code_en_decompressed_verified.bin"
+DEFAULT_CODE = ROOT / "experiments/script_ref/full_build/rebuild_2026-08-08/code_en_decompressed_verified.bin"
 DEFAULT_MOVIE = ROOT / "experiments/shared_glyph_optimized_build_2026-08-12/movie_live_base.dat"
 DEFAULT_DEMO = ROOT / "experiments/scene_fixed_natural_2026-08-12/demo_live_safe_base.dat"
 DEFAULT_CODEC = ROOT / "experiments/full_korean_apply_2026-08-12/codec_official_plus_3ds.dat"

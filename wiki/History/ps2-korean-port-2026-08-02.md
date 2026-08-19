@@ -1,8 +1,8 @@
-# PS2 official-Korean to MGS3D port investigation
+# reference-Korean to MGS3D port investigation
 
 ## Confirmed format facts
 
-- The PS2 Korean `MGS/CODEC.DAT` uses the same sequential GCX container family
+- The Korean reference `MGS/CODEC.DAT` uses the same sequential GCX container family
   parsed by `mgs3d_codec_tool.py`.
 - It contains 2,355 GCX records and 203,214 resources.
 - Every font section is structurally valid.  The local glyph format is 24x24,
@@ -16,7 +16,7 @@
 
 Authoritative report:
 
-`analysis/ps2_korean/codec_font_report.json`
+`analysis/script_ref/codec_font_report.json`
 
 ## Record correspondence
 
@@ -60,8 +60,8 @@ GCX 15 is changed; every other record comes from the prior runtime-stable
 candidate.
 
 - rejected probe SHA-256: `BBE782A4E25BD9DD1684BD8E893D918FCF1416DFC532AF8DBA2B9FE7A854FB2F`
-- candidate: `analysis/ps2_korean/codec_ps2_jpshell_gcx16_probe_on_stable.dat`
-- rollback: `analysis/ps2_korean/codec_before_ps2_official_port.dat`
+- candidate: `analysis/script_ref/codec_ps2_jpshell_gcx16_probe_on_stable.dat`
+- rollback: `analysis/script_ref/codec_before_ps2_official_port.dat`
 
 The emulator exited immediately before the first radio conversation.  A
 follow-up probe containing the untouched corresponding 3DS Japanese GCX and no
@@ -81,8 +81,8 @@ Conservative mining against 21,082 confirmed physical codec rows expands the
 shared table to 65 mappings with no duplicate Unicode assignments.  The
 remaining mappings stay unresolved rather than being guessed.
 
-- seed: `analysis/ps2_korean/korean_token_map_seed.json`
-- mined: `analysis/ps2_korean/korean_token_map_mined_combined.json`
+- seed: `analysis/script_ref/korean_token_map_seed.json`
+- mined: `analysis/script_ref/korean_token_map_mined_combined.json`
 
 Capacity measurements after treating the shared page as global:
 
@@ -93,7 +93,7 @@ Capacity measurements after treating the shared page as global:
   focused editing.
 
 The production direction is therefore to preserve every English-edition GCX
-procedure, resource index, and language branch; decode PS2 Korean tokens to
+procedure, resource index, and language branch; decode Korean reference tokens to
 Unicode; then encode the result using the already runtime-tested 3DS local
 glyph mechanism.  Static-page patching remains an optional further capacity
 optimization, not a prerequisite for the 94.2% fitting subset.
@@ -102,14 +102,14 @@ optimization, not a prerequisite for the 94.2% fitting subset.
 
 ```powershell
 python tools/mgs3_ps2_codec_report.py `
-  analysis/ps2_korean/MGS/CODEC.DAT `
-  analysis/ps2_korean/codec_font_report.json
+  analysis/script_ref/MGS/CODEC.DAT `
+  analysis/script_ref/codec_font_report.json
 
-python tools/mgs3_ps2_korean_port.py `
-  analysis/ps2_korean/MGS/CODEC.DAT `
-  analysis/ps2_korean/codec_before_ps2_official_port.dat `
-  analysis/ps2_korean/codec_ps2_jpshell_gcx16_probe_on_stable.dat `
-  analysis/ps2_korean/codec_ps2_jpshell_gcx16_probe_on_stable.json `
+python tools/mgs3_script_ref_port.py `
+  analysis/script_ref/MGS/CODEC.DAT `
+  analysis/script_ref/codec_before_ps2_official_port.dat `
+  analysis/script_ref/codec_ps2_jpshell_gcx16_probe_on_stable.dat `
+  analysis/script_ref/codec_ps2_jpshell_gcx16_probe_on_stable.json `
   --reference-codec `
   C:\Users\hhlee\Desktop\Romforge\output\unpacked_metagear_jpn\partition0\romfs\codec.dat `
   --ps2-gcx 16 `
@@ -156,16 +156,16 @@ line wrapping were normal.
 
 Validated artifacts:
 
-- `analysis/ps2_korean/codec_ps2_static_first_radio_4copy.dat`
+- `analysis/script_ref/codec_ps2_static_first_radio_4copy.dat`
   (`ACF23134EBA9DBADFC56CA5A7D1857C431D23365DC6D3A5A9586157CEDB4CB5B`)
-- `analysis/ps2_korean/resident_r_sna01_static_korean.hpk`
+- `analysis/script_ref/resident_r_sna01_static_korean.hpk`
   (`8BE80AC7372A03797660290A13C75F38014C5E84C648F1E367046397FC68BC65`)
-- `analysis/ps2_korean/resident_r_sna02_static_korean.hpk`
+- `analysis/script_ref/resident_r_sna02_static_korean.hpk`
   (`8EAA073DD38CCA65CDE0BD789CCD4945F33AB8007938C1D40D37AED15F36D162`)
 - tested CCI: `MGS SNAKE EATER 3D_Repack____.cci`
 
 The three pre-test staged files are backed up under
-`analysis/ps2_korean/staging_backup_*`.  The validated candidates remain staged
+`analysis/script_ref/staging_backup_*`.  The validated candidates remain staged
 in RomForge.  Production expansion should allocate the 165 static `81/82`
 slots by corpus frequency, then use record-local `8Cxx` only for uncommon
 characters while preserving every GCX and HPK boundary.

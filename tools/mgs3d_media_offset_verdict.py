@@ -36,7 +36,7 @@ csv.field_size_limit(10 ** 9)
 ROOT = Path(__file__).resolve().parent.parent
 MASTERS = ROOT / "translation/10_master/current"
 VERDICTS = ROOT / "docs/evidence/2026-08-19-media-qa/verdicts.py"
-# Every line carrying the Shinsnote table's space-before-punctuation was read in
+# Every line carrying the script reference table's space-before-punctuation was read in
 # its record's context on 2026-08-19; that set is what "reviewed" means below.
 PUNCT_SPACE = re.compile(r"[ \t]+(?=[.!?,…])")
 
@@ -130,7 +130,7 @@ def main() -> int:
         "remap_resolved": 0,
         "remap_blocked_reason":
             "the aligner's `korean_sequence` indexes an intermediate Korean list that "
-            "was not preserved; it resolves against neither shinsnote_mgs3_script.csv "
+            "was not preserved; it resolves against neither script_ref_mgs3_script.csv "
             "(30/366) nor the classified/movie-demo subsets (0/366), so the correct "
             "Korean cannot be read off an index",
         "next_session_start": {

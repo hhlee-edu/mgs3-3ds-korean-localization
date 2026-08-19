@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Classify the stage/scenerio.gcx English worklist and pull the dialogue set.
 
-READ-ONLY. Reads the 2026-08-19 stage scan output plus the PS2 Korean catalog
-and the Shinsnote transcript; writes only into
+READ-ONLY. Reads the 2026-08-19 stage scan output plus the Korean reference catalog
+and the script reference transcript; writes only into
 docs/evidence/2026-08-19-stage-recovery/.
 
 Classification is deliberately conservative. Every rule below is a lexical or
@@ -148,7 +148,7 @@ def main():
             'bytes': w['bytes'],
             'current_status': 'UNTRANSLATED',
             'ps2_candidate': '',
-            'shinsnote_candidate': '',
+            'script_ref_candidate': '',
             'source_authority': '',
             'match_confidence': 'UNRESOLVED',
             'speaker': '',

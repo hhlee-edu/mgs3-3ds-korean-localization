@@ -5,7 +5,7 @@ for translation via a local Ollama (Qwen) API — same worker as the
 movie/demo pipeline (`mgs3d_llm_translate_worker.py`).
 
 Unlike movie/demo, these lines have no PS2/GameFAQs reference line by
-definition (`PS2대응없음` means there was never a PS2 match) and no scene
+definition (`대사집 대응 없음` means there was never a PS2 match) and no scene
 structure, so the prompt is simpler: just the display text and a speaker
 placeholder. No byte/glyph budget is enforced at this stage — get a
 natural, complete Korean draft first; fitting it into each GCX's actual
@@ -23,7 +23,7 @@ capacity regardless) and not worth spending translation effort on.
 Usage:
     python3 mgs3d_codec_llm_translate.py \\
         --review translation/10_master/codec-3ds-INTEGRATED-review.csv \\
-        --prepare-only experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_llm_batch.json
+        --prepare-only experiments/script_ref/full_build/rebuild_2026-08-08/codec_llm_batch.json
 """
 
 from __future__ import annotations

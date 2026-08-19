@@ -14,9 +14,9 @@
 
 ## 1. `korean_sequence`는 전역 인덱스가 아니라 **page 내 인덱스**였다
 
-지난 세션에 `korean_sequence`를 `shinsnote_mgs3_script.csv`의 전역 행 번호로 해석해
+지난 세션에 `korean_sequence`를 `script_ref_mgs3_script.csv`의 전역 행 번호로 해석해
 30/366밖에 안 맞았다. 그게 오해였다. 값의 범위가 **0~266**이고 distinct도 266인데,
-Shinsnote 대본은 4,071행이다. **`page` 열과 짝을 이루는 페이지 내 번호**다.
+the script reference 대본은 4,071행이다. **`page` 열과 짝을 이루는 페이지 내 번호**다.
 
 `en_{demo,movie}_korean_matches.csv`는 `page`를 **버리고** `korean_sequence`만
 남겼기 때문에 해석이 불가능했던 것이다. `page`를 보존한 파일이 있다:
@@ -24,7 +24,7 @@ Shinsnote 대본은 4,071행이다. **`page` 열과 짝을 이루는 페이지 �
 `analysis/mgs3_korean_english_alignment.csv` (3,031행)
 — 열: `confidence, page, korean_sequence, korean_speaker, korean, english_sequence, english_line, english_speaker, english`
 
-**`(page, korean_sequence)` → `shinsnote_mgs3_script.csv`의 `(page, sequence)`:
+**`(page, korean_sequence)` → `script_ref_mgs3_script.csv`의 `(page, sequence)`:
 2,958 hit / 73 miss = 97.6%.** 한국어 대본 순서는 복원됐다.
 
 ## 2. 그런데 기존 정렬은 전부 오배치의 원천이다
@@ -60,21 +60,21 @@ MISPLACED(offset) 95행
 
 | 축 | 자료 | 상태 |
 |---|---|---|
-| 한국어(순서 보존) | `translation/20_matching/shinsnote/shinsnote_mgs3_script.csv` 4,071행, `(page, sequence, kind, speaker, text)` | **화자까지 있다** |
+| 한국어(순서 보존) | `translation/20_matching/script_ref/script_ref_mgs3_script.csv` 4,071행, `(page, sequence, kind, speaker, text)` | **화자까지 있다** |
 | 영어(순서 = 게임 순서) | master `current/{movie,demo}.csv`의 `preview`, `(record, entry)` | **DAT와 2,917/2,917 일치 검증됨** |
 | 연결 다리 | `english_sequence` → DAT 키 342개(61개는 다중) | 앵커로만 사용 |
 
-`shinsnote_mgs3_script.csv`의 `speaker` 열은 덤이 아니다 — movie/demo에 없던
+`script_ref_mgs3_script.csv`의 `speaker` 열은 덤이 아니다 — movie/demo에 없던
 **화자 정보**이므로, 재정렬이 성공하면 codec처럼 확정 화자 기반 말투 검수가 가능해진다.
 
 ## 4. 다음 실제 교정 절차 (미실행, 설계만)
 
 1. **새 단조 정렬을 만든다.** `exact-unique-korean` 금지. 축은
-   Shinsnote `(page, sequence)` 오름차순 × DAT `(record, entry)` 오름차순.
+   the script reference `(page, sequence)` 오름차순 × DAT `(record, entry)` 오름차순.
    monotone DP: 두 축 모두 전진만 허용, 건너뛰기에 gap 패널티.
 2. **점수는 문자열 유사도만 쓰지 않는다.** 필수 신호:
    - 고유명사/숫자 일치(소코로프, 샤고호드, 20분, 500lb …) — 언어 무관 앵커
-   - Shinsnote `speaker` ↔ 대사 흐름의 화자 교대 패턴
+   - the script reference `speaker` ↔ 대사 흐름의 화자 교대 패턴
    - 길이 비 (한국어/영어)
 3. **confidence 기준** — 아래를 만족할 때만 자동 REMAP:
    - DP 경로 위에 있고(단조 위반 0),
@@ -95,13 +95,13 @@ MISPLACED(offset) 95행
 ## 6. 재현 명령
 
 ```
-# (page, korean_sequence) -> Shinsnote 해석률
+# (page, korean_sequence) -> the script reference 해석률
 python - <<'EOF'
 import csv,io,re,unicodedata
 K=re.compile(r"[0-9A-Za-z가-힣]+")
 n=lambda s:"".join(K.findall(unicodedata.normalize("NFKC",s or "")))
 sh={(r["page"],r["sequence"]):r for r in csv.DictReader(io.open(
-    "translation/20_matching/shinsnote/shinsnote_mgs3_script.csv",encoding="utf-8-sig",newline=""))}
+    "translation/20_matching/script_ref/script_ref_mgs3_script.csv",encoding="utf-8-sig",newline=""))}
 al=list(csv.DictReader(io.open("analysis/mgs3_korean_english_alignment.csv",encoding="utf-8-sig",newline="")))
 hit=sum(1 for r in al if (r["page"],r["korean_sequence"]) in sh
         and n(sh[(r["page"],r["korean_sequence"])]["text"])[:16]==n(r["korean"])[:16])
@@ -120,7 +120,7 @@ EOF
 
 | 항목 | 값 |
 |---|---:|
-| Shinsnote 한국어 행(한글 포함) | 3,932 |
+| the script reference 한국어 행(한글 포함) | 3,932 |
 | master 영어 행 | 2,917 |
 | DP MATCHED | 1,444 |
 | **NO_WINDOW**(윈도 앵커 실패) | **1,461** |
@@ -144,7 +144,7 @@ demo r31 e34 Apparently she's Sokolov's woman.
 ## 실패 원인 (다음 시도에서 고칠 것)
 
 1. **윈도 앵커를 한국어 문자열 완전일치로 잡은 것이 치명적이었다.** master 한국어는
-   이후 정규화·축약을 거쳐 Shinsnote 원문과 더는 같지 않다. 그래서 절반(1,461행)이
+   이후 정규화·축약을 거쳐 대사집 원문과 더는 같지 않다. 그래서 절반(1,461행)이
    `NO_WINDOW`로 빠졌고, 윈도가 잡힌 레코드도 엉뚱한 구간을 잡았다.
    → **한국어 텍스트로 앵커를 잡지 마라.** `english_sequence`로 잡아야 한다
    (DAT 키에 대응하는 값 342개가 이미 있다).
@@ -162,7 +162,7 @@ demo r31 e34 Apparently she's Sokolov's woman.
 1. `english_sequence` → DAT `(record, entry)` 대응 342개를 **앵커로만** 써서
    각 레코드의 스토리 위치를 확정하고, 그 순서가 (record, entry) 순서와 일치하는지
    **먼저 검증**한다. 불일치하면 DP 이전에 그것부터 해결.
-2. Shinsnote 윈도는 그 스토리 위치에서 잡는다(한국어 텍스트 매칭 사용 금지).
+2. the script reference 윈도는 그 스토리 위치에서 잡는다(한국어 텍스트 매칭 사용 금지).
 3. 앵커 1개 이상 있는 구간만 DP를 돌리고, 나머지는 HUMAN.
 4. 게이트는 그대로 — **확정 KEEP 107행 107/107 재현**. 통과 못 하면 제안 폐기.
 
@@ -204,11 +204,11 @@ demo r31 e34 Apparently she's Sokolov's woman.
 ## 근본 원인 (측정값)
 
 ```
-master 한국어 2,917행 중 Shinsnote 대본에서 위치가 유니크하게 잡히는 행:  213 ~ 225 (7.4%)
+master 한국어 2,917행 중 대사집 대본에서 위치가 유니크하게 잡히는 행:  213 ~ 225 (7.4%)
   (movie/demo 전용 서브셋 2,554행으로 좁혀도 213으로 거의 그대로)
 ```
 
-**master 한국어의 92.5%는 이후 정규화·축약·재번역을 거쳐 Shinsnote 원문과 더 이상
+**master 한국어의 92.5%는 이후 정규화·축약·재번역을 거쳐 대사집 원문과 더 이상
 같지 않다.** 그래서
 
 - 단조 정렬을 고정할 **앵커 밀도가 근본적으로 부족하고**,
@@ -216,7 +216,7 @@ master 한국어 2,917행 중 Shinsnote 대본에서 위치가 유니크하게 �
 
 이것이 1차·2차가 모두 게이트에서 걸린 이유다. 파라미터 조정으로 넘길 문제가 아니다.
 
-참고로 `shinsnote_mgs3_classified.csv`의 `target` 열도 신뢰할 수 없다 —
+참고로 `script_ref_mgs3_classified.csv`의 `target` 열도 신뢰할 수 없다 —
 4,070행 중 `unknown` 2,284, `movie_demo` 1,363, `codec` 423.
 
 ## 결정

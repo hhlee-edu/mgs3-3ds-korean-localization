@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Batch-translate movie.dat/demo.dat cards with no Shinsnote match via a
+"""Batch-translate movie.dat/demo.dat cards with no the script reference match via a
 local Ollama (Qwen) API, using the same scene/context data the scene-match
 review tool already computes.
 
-Only cards whose aligned GameFAQs (PS2) script line has no Shinsnote
-Korean are sent for translation — cards that already have a Shinsnote
+Only cards whose aligned GameFAQs (PS2) script line has no the script reference
+Korean are sent for translation — cards that already have a the script reference
 match are left alone (handled separately as "matched" rows, not this
 script's job). Each request includes full context: the 3DS card's own
 English text, the PS2/GameFAQs reference line for the same position,
@@ -37,7 +37,7 @@ SYSTEM_PROMPT = """당신은 메탈기어 솔리드 3(스네이크 이터)를 3D
 규칙:
 - 번역 대상은 오직 [번역 대상] 표시가 붙은 한 줄뿐입니다. [PS2 참고 대사]는 \
 어투/문맥 참고용으로만 쓰고 그 줄 자체를 번역하지 마세요.
-- [같은 장면의 신스노트 참고 대사]가 있다면, 그 안의 인명/지명/조직명/기술 \
+- [같은 장면의 대사집 참고 대사]가 있다면, 그 안의 인명/지명/조직명/기술 \
 용어의 기존 한글 표기를 최대한 그대로 재사용하세요 (예: 소코로프, 가가린, \
 보스토크 로켓). 그 줄들 자체를 번역 결과로 베끼지는 마세요 — 다른 내용의 \
 대사입니다.
@@ -58,11 +58,11 @@ def build_prompt(card: dict, context: list[dict]) -> str:
         lines.append("[앞뒤 문맥 (PS2 원문, 참고용)]")
         for c in context:
             lines.append(f"  {c['speaker']}: {c['text']}")
-    shinsnote_context = card.get("shinsnote_context") or []
-    if shinsnote_context:
-        lines.append("[같은 장면의 신스노트 참고 대사 — 용어/고유명사 참고용, "
+    script_ref_context = card.get("script_ref_context") or []
+    if script_ref_context:
+        lines.append("[같은 장면의 대사집 참고 대사 — 용어/고유명사 참고용, "
                      "이 줄들을 그대로 베끼지 마세요]")
-        for s in shinsnote_context:
+        for s in script_ref_context:
             lines.append(f"  {s['speaker']}: {s['text']}")
     lines.append(f"[PS2 참고 대사 — 어투 참고용, 번역 대상 아님] {card['ref_en']}")
     lines.append(f"[번역 대상 — 이 줄만 한국어로 번역] {card['source_en']}")
@@ -85,7 +85,7 @@ def load_bilingual_by_line(bilingual: Path) -> dict[int, list[dict]]:
     return by_line
 
 
-def nearby_shinsnote_context(idx: int, by_line: dict[int, list[dict]],
+def nearby_script_ref_context(idx: int, by_line: dict[int, list[dict]],
                              window: int = 10, limit: int = 4) -> list[dict]:
     rank = {"high": 0, "medium": 1, "low": 2}
     candidates = []
@@ -139,7 +139,7 @@ def load_batch(gamefaqs: Path, bilingual: Path, dat: Path, kind: str,
             idx = anchor + pos
             line = by_index.get(idx)
             if not line or line["korean"]:
-                continue  # already has a Shinsnote match; not this script's job
+                continue  # already has a the script reference match; not this script's job
             if card.get("hasExisting"):
                 continue  # already has embedded glyphs; don't overwrite blindly
             context = [by_index[j] for j in range(idx - 2, idx + 3)
@@ -156,7 +156,7 @@ def load_batch(gamefaqs: Path, bilingual: Path, dat: Path, kind: str,
                 "ref_en": line["text"],
                 "char_budget": max(1, card["capacity"] // 2),
                 "context": context,
-                "shinsnote_context": nearby_shinsnote_context(idx, by_line),
+                "script_ref_context": nearby_script_ref_context(idx, by_line),
                 "target_ko": "",
             })
     return rows
@@ -194,7 +194,7 @@ def main() -> int:
 
     if args.limit:
         rows = rows[:args.limit]
-    print(f"{len(rows)} cards need translation (no Shinsnote match, no existing glyphs)")
+    print(f"{len(rows)} cards need translation (no the script reference match, no existing glyphs)")
 
     if args.dry_run:
         for row in rows[:3]:
@@ -210,7 +210,7 @@ def main() -> int:
             "speaker": row["speaker"], "source_en": row["source_en"], "ref_en": row["ref_en"],
             "char_budget": row["char_budget"],
             "context": [{"speaker": c["speaker"], "text": c["text"]} for c in row["context"]],
-            "shinsnote_context": row["shinsnote_context"],
+            "script_ref_context": row["script_ref_context"],
         } for row in rows]
         args.prepare_only.parent.mkdir(parents=True, exist_ok=True)
         args.prepare_only.write_text(

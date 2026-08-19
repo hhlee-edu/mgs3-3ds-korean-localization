@@ -104,22 +104,22 @@
 1,571행을 codec/movie/demo master의 한국어와 정규화 매칭했다. **일치 8건, 전부 오탐**이다
 (`NO`↔`아니`, `SAVE`↔`저장` 같은 codec 대사와의 우연한 문자열 일치). **실질 0건.**
 
-### 5.2 PS2 한국어판: 있다. 단 해독이 4%밖에 안 돼 있다
+### 5.2 대사집: 있다. 단 해독이 4%밖에 안 돼 있다
 
 PS2 STAGE.DAT은 이미 추출돼 있고(`originals/ps2_stages/`, 156개 스테이지) 카탈로그도
 이미 만들어져 있다:
 
 | 파일 | 내용 |
 |---|---|
-| `analysis/ps2_korean/stage_text_catalog.csv` | 90,216행 / 106 스테이지 / 유니크 디코드 3,101 |
-| `analysis/ps2_korean/stage_text_unique.csv` | 1,548행 (stage-specific 유니크) |
-| `analysis/ps2_korean/stage_text_unique_ocr80.csv` | 같은 1,548행, 로컬 글리프 OCR 적용본 |
+| `analysis/script_ref/stage_text_catalog.csv` | 90,216행 / 106 스테이지 / 유니크 디코드 3,101 |
+| `analysis/script_ref/stage_text_unique.csv` | 1,548행 (stage-specific 유니크) |
+| `analysis/script_ref/stage_text_unique_ocr80.csv` | 같은 1,548행, 로컬 글리프 OCR 적용본 |
 
 **PS2 유니크 1,548 대 3DS 영어권 유니크 1,571** — 같은 코퍼스로 보기에 충분히 가깝다.
 
 문제는 해독률이다. OCR 적용본에서도 **1,548행 중 완전 해독은 58행뿐**이고 미해결 토큰이
 **8,148개** 남아 있다(`<L0xx>` 로컬 커스텀 글리프, `<S81xx>` 미상 static). codec 때
-쓴 토큰맵+로컬 글리프 OCR 파이프라인(`mgs3_ps2_korean_token_map.py`,
+쓴 토큰맵+로컬 글리프 OCR 파이프라인(`mgs3_script_ref_token_map.py`,
 `mgs3_ps2_local_glyph_export.py`, `mgs3_ps2_local_glyph_ocr.mjs`)이 그대로 있으니
 방법은 있지만, **stage용으로는 끝까지 돌린 적이 없다.**
 
@@ -140,7 +140,7 @@ codec과 같은 donor reclaim이 그대로 적용된다. 실측 바이트:
 
 1. PS2 stage 로컬 글리프 OCR을 끝까지 돌려 `stage_text_unique`의 해독률을 올린다.
    (codec 파이프라인 재사용. 58/1,548 → 목표는 codec 수준.)
-2. 해독된 PS2 한국어 ↔ 3DS 영어 1,571행 매칭. codec/movie/demo에서 쓴 3-way 정렬을
+2. 해독된 대사집 ↔ 3DS 영어 1,571행 매칭. codec/movie/demo에서 쓴 3-way 정렬을
    그대로 쓴다.
 3. 매칭 실패분만 신규 번역 큐로. 우선순위는 location 수(= 화면 노출 빈도).
 4. `scenerio.gcx` 문자열 치환 + 용량 게이트. **codec의 교훈 두 개를 처음부터 적용한다:**

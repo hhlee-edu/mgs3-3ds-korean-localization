@@ -19,14 +19,14 @@ is the narrative record of what happened this session, in order.
 - Match result: movie 27→**235**/689 cards got a Korean candidate, demo
   372→**935**/2,250 — because `align-dat` anchors on shared
   names/numbers + same-record context, not literal string equality.
-- Outputs: `analysis/ps2_korean/full_build/_scratch/3way/`.
+- Outputs: `analysis/script_ref/full_build/_scratch/3way/`.
 
-## 2. Shinsnote color classification (WIKI 4.10)
+## 2. the script reference color classification (WIKI 4.10)
 
-User provided a finer scrape (`신스노트 대사집/shinsnote_mgs3_full.json`,
+User provided a finer scrape (`대사집 대사집/script_ref_mgs3_full.json`,
 20 pages, ~9,700 span-level segments) that preserves the original blog's
 box background color — gray = cutscene ("movie_demo"), green = radio
-("codec"). Wrote `tools/mgs3d_shinsnote_classify.py` to reconstruct
+("codec"). Wrote `tools/mgs3d_script_ref_classify.py` to reconstruct
 paragraph-level dialogue (reusing `mgs3d_script_compare.extract_page`'s
 heading/blockquote logic) and tag each line by nearest reference color
 (Euclidean distance — an early version's per-channel tolerance was too
@@ -39,9 +39,9 @@ matched candidates were actually codec-colored (radio) lines matched into
 movie/demo cards by mistake** (movie 22/235, demo 88/935) — anchor
 matching false positives, invisible without this color signal.
 
-**Fix applied and re-run**: rebuilt the GameFAQs↔Shinsnote bilingual
+**Fix applied and re-run**: rebuilt the GameFAQs↔the script reference bilingual
 alignment restricted to non-codec-colored lines only
-(`analysis/shinsnote_mgs3_movie_demo_only.json` → `align-bilingual` →
+(`analysis/script_ref_mgs3_movie_demo_only.json` → `align-bilingual` →
 `merge-dat-korean` again), producing v2 results:
 - movie 236/689, demo 949/2,250 matched — same or better coverage
 - color-mismatch dropped from 110 rows to 2 harmless edge cases (same
@@ -57,7 +57,7 @@ Outputs: `movie_korean_comparison_v2.csv` /
   covering everything from color-flagged mismatches to blank/no-candidate
   cards. **This is the primary open task** — human review, not yet done
   beyond the exploratory work in this session.
-- Reference corpus for filling blanks: `analysis/shinsnote_mgs3_classified.csv`.
+- Reference corpus for filling blanks: `analysis/script_ref_mgs3_classified.csv`.
 
 ## 3. codec.dat donor-reclaim rebuild — deployed to live
 
@@ -474,10 +474,10 @@ the two glyph-slot-maxed GCX need handled separately (they need a
 different fix entirely, e.g. genuinely shortening those specific GCX's
 vocabulary, not more space).
 
-## 4.10 LLM-assisted translation for movie/demo cards with no Shinsnote match
+## 4.10 LLM-assisted translation for movie/demo cards with no the script reference match
 
 §2's review backlog (2,403 rows) includes a large chunk of movie/demo
-cards that have **no Shinsnote candidate at all** (blank, not just
+cards that have **no the script reference candidate at all** (blank, not just
 color-mismatched) — those can never be filled by better matching, only
 by an actual new translation. Built a small pipeline to draft candidates
 for exactly those rows using a local LLM, reusing this session's other
@@ -489,7 +489,7 @@ pre-sized to fit:
   scene, per-card byte capacity, and whether it already has embedded
   glyphs.
 - `tools/mgs3d_llm_translate.py` — walks every movie/demo card via the
-  above, skips anything that already has a Shinsnote match or existing
+  above, skips anything that already has a the script reference match or existing
   glyphs, and for the rest builds a prompt (speaker, PS2 GameFAQs
   reference line, 3DS placeholder English, ±2 neighboring lines for tone,
   and the card's actual remaining char budget) for a local Ollama model.
@@ -503,7 +503,7 @@ pre-sized to fit:
   `http://192.168.1.206:11434` over LAN (confirmed reachable and the
   model present via `/api/tags`).
 
-**Batches prepared** (`analysis/ps2_korean/full_build/rebuild_2026-08-08/`):
+**Batches prepared** (`analysis/script_ref/full_build/rebuild_2026-08-08/`):
 `movie_llm_batch.json` (319 rows), `demo_llm_batch.json` (1,048 rows).
 
 **Test run**: ran `mgs3d_llm_translate.py` directly against the movie
@@ -675,7 +675,7 @@ could be built.
   rule (repack bundles the whole folder). Should be moved out before the
   next CCI pack.
 - All experiment build scripts and output `.dat` files are under
-  `analysis/ps2_korean/full_build/rebuild_2026-08-08/` (gitignored, local
+  `analysis/script_ref/full_build/rebuild_2026-08-08/` (gitignored, local
   only).
 - **§4.11's codec.dat growth experiments**: live `codec.dat` was restored
   to the safe donor-reclaim build (SHA-256 `19FF34D1...`, backed up at

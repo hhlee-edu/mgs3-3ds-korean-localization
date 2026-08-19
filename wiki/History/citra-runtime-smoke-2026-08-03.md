@@ -4,8 +4,8 @@
 
 - Citra Nightly 2104 (`HEAD-0ff3440`)
 - 격리 portable 환경: `analysis/citra_smoke_runtime/`
-- 주력 CCI: `analysis/ps2_korean/MGS3D_PS2KO_191_FIXED_TEST_Repack.cci`
-- 대조 CCI: `analysis/ps2_korean/MGS3D_PS2KO_165_FIXED_FALLBACK_v3.cci`
+- 주력 CCI: `analysis/script_ref/MGS3D_PS2KO_191_FIXED_TEST_Repack.cci`
+- 대조 CCI: `analysis/script_ref/MGS3D_PS2KO_165_FIXED_FALLBACK_v3.cci`
 
 기존 AppData 설정과 세이브는 사용하거나 변경하지 않았다. 실행 환경에는 별도의
 `user/` 디렉터리를 두었다.

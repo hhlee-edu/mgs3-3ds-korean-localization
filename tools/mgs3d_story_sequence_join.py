@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Promote PS2 Korean matches only when English sequence context agrees."""
+"""Promote Korean reference matches only when English sequence context agrees."""
 
 from __future__ import annotations
 

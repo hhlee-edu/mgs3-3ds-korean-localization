@@ -27,7 +27,7 @@ flagship lines ("파키스탄 상공, 고도 3만 피트." / "곧 소련 영공�
 접근합니다.") plus 3 more from record 288, then English for the rest.
 
 Final build, deployed to RomForge live staging (backed up first):
-`analysis/ps2_korean/full_build/rebuild_2026-08-08/demo_opening_fixed5_final.dat`
+`analysis/script_ref/full_build/rebuild_2026-08-08/demo_opening_fixed5_final.dat`
 (SHA-256 `50026766AA0308C2289D4CA668F4D4975FBCE5626E611431FCCEEECDA38938AF`).
 Independently verified: 0 subtitle offset/capacity drift across all 333
 records, all 130 scene starts byte-identical, file size unchanged, 5 lines
@@ -74,7 +74,7 @@ constant search, Thumb+ARM MOVW/MOVT reconstructed-immediate search, and
 high-entropy GCX51-55 values. Verdict: `targeted static scan inconclusive`,
 recorded per the pre-agreed exit condition — did not expand into deeper
 static analysis. Full report:
-`analysis/ps2_korean/full_build/rebuild_2026-08-08/gcx_ref_scan_report.json`.
+`analysis/script_ref/full_build/rebuild_2026-08-08/gcx_ref_scan_report.json`.
 
 ## 4. Dynamic debugging saga — the real story of tonight
 
@@ -532,7 +532,7 @@ stores four script arguments at fields `+0x3C8..+0x3D4`; GCX53 is the second
 argument. Capturing the decoder's live source pointer found the original value
 at guest `0x08A99722`, bytes `7B 45 00 02`. A unique plaintext search found the
 same bytes at file offset `0x14409` of
-`analysis/ps2_korean/stages/select/7f010000_87a1c0.01`. Thus the pin is script
+`analysis/script_ref/stages/select/7f010000_87a1c0.01`. Thus the pin is script
 data, not `code.bin`. The corresponding 3DS source is associated with the
 select-stage scenario resource, which is stored packed/encrypted; a safe 3DS
 repacker/patch location has not yet been produced.

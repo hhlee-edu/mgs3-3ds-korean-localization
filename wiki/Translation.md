@@ -1,17 +1,17 @@
 # Translation
 
-**Goal:** port the PS2 official Korean release's text and font onto the 3DS
+**Goal:** port the reference Korean release's text and font onto the 3DS
 release (*Metal Gear Solid: Snake Eater 3D*) — not author a new translation.
-The English↔Korean pivot (GameFAQs English + Shinsnote fan-script Korean,
+The English↔Korean pivot (GameFAQs English + the script reference fan-script Korean,
 aligned) is diagnostic matching material, not treated as a finished PS2 port —
 **except movie/demo**, where PS2 subtitles are hardsubbed and no extractable
-official text exists, making Shinsnote the *only* practical Korean source for
+official text exists, making the script reference the *only* practical Korean source for
 those two containers ([DEC-009](Decisions.md)).
 
 ## The lineage
 
 ```
-SOURCE  (PS2 CODEC.DAT, Shinsnote, GameFAQs English)
+SOURCE  (PS2 CODEC.DAT, the script reference, GameFAQs English)
    │
 MATCHING  (PS2 ↔ 3DS alignment, 3-way alignment — see Matching.md)
    │
@@ -78,7 +78,7 @@ decompose it the same day:
 |---|---|---|
 | `translation_sources/natural_full_pre_compaction/` | **MASTER** — "축약 전 자연번역 authority" | `translation/10_master/bundle_natural_full/` |
 | `translation_sources/applied_compact/` | **SHORTENED** — explicitly not a quality baseline | `translation/30_shortened/bundle_applied_compact/` |
-| `translation_sources/shinsnote_reference/` | SOURCE | `translation/00_source/shinsnote/bundle_reference/` |
+| `translation_sources/script_ref_reference/` | SOURCE | `translation/00_source/script_ref/bundle_reference/` |
 | `translation_sources/codec_3ds_original/` | SOURCE (pre-translation 3DS English) | `translation/00_source/codec_3ds_english/` |
 | `translation_sources/3ds_only_dialogue/` | MASTER subset, no PS2 counterpart | `translation/10_master/3ds_only/` |
 | root-level `translation_sources/*.json`/`*.csv` | superseded, old-bundle compatibility only | `translation/90_archive/pre_bundle_compat/` |
@@ -89,7 +89,7 @@ decompose it the same day:
 
 `translation/10_master/codec-3ds-INTEGRATED-review.csv` (`korean` column) is the
 **live** codec master the build pipeline actually reads — 7,339
-`PS2대응없음` (no-PS2-counterpart) candidates, of which 2,035/7,339 are currently
+`대사집 대응 없음` (no-PS2-counterpart) candidates, of which 2,035/7,339 are currently
 selected into the production build (86/2,326 GCX changed, 1,207 resources +
 54 padding-only, 8,070 new glyphs). Manual backlog for the unmatched remainder:
 
@@ -112,7 +112,7 @@ human job.
 
 ## In-progress material
 
-`analysis/ps2_korean/codec_selected_static_media*.json`,
+`analysis/script_ref/codec_selected_static_media*.json`,
 `codec_translation_static_media*.json`, `early-priority-selection*/` (~9 files,
 3.3–23 MB, still under `analysis/` — **deliberately not physically moved**) —
 confirmed 2026-08-13 to be **active in-progress translation work**,

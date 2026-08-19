@@ -11,7 +11,7 @@ Full grouping (29 candidate `experiments/<run>/` directories, by size):
 
 | Run | What it is | Status |
 |---|---|---|
-| `experiments/ps2_korean/full_build/rebuild_2026-08-08/` (24.8 GB) | Movie/demo scene-budget rebuild candidates from the 2026-08-08 grow investigation | see [DAT Formats](DAT-Formats.md) |
+| `experiments/script_ref/full_build/rebuild_2026-08-08/` (24.8 GB) | Movie/demo scene-budget rebuild candidates from the 2026-08-08 grow investigation | see [DAT Formats](DAT-Formats.md) |
 | `experiments/global_korean_glyph_poc_2026-08-12/` (12.3 GB) | Global Korean glyph track POCs — includes the successful 3-glyph renderer isolation and the rejected separate-asset-loader attempt | see [Glyph System](Glyph-System.md) |
 | `experiments/story_media_order/` (11.7 GB) | Movie/demo playback-order extraction and relocation apply attempts | see [DAT Formats](DAT-Formats.md) |
 | `experiments/scene_fixed_natural_2026-08-12/` (3.9 GB) | Scene-boundary-safe demo builds | see [DAT Formats](DAT-Formats.md) |

@@ -8,7 +8,7 @@
 
 우선순위는 다음과 같다.
 
-1. PS2 공식 한글 문장을 직접 사용한다.
+1. 대사집 한글 문장을 직접 사용한다.
 2. 3DS 원본 파일 크기와 모든 내부 레코드 경계를 보존한다.
 3. PS2 글리프를 3DS 16×16 2-bpp 형식으로 변환하거나 검증된 3DS 정적
    한글 페이지에 매핑한다.
@@ -17,21 +17,21 @@
 
 ## 2. 혼동하면 안 되는 두 파이프라인
 
-### 2.1 PS2 공식 이식 파이프라인 — 최종 목표
+### 2.1 대사집 이식 파이프라인 — 최종 목표
 
 주요 도구:
 
-- `tools/mgs3_ps2_korean_port.py`
-- `tools/mgs3_ps2_korean_token_map.py`
-- `tools/mgs3_ps2_korean_token_mine.py`
-- `tools/mgs3_ps2_korean_paragraph_mine.py`
+- `tools/mgs3_script_ref_port.py`
+- `tools/mgs3_script_ref_token_map.py`
+- `tools/mgs3_script_ref_token_mine.py`
+- `tools/mgs3_script_ref_paragraph_mine.py`
 - `tools/mgs3_ps2_static_first_radio.py`
 - `tools/mgs3d_hpk_static_korean.py`
 - `tools/mgs3_ps2_tom_bitmap_port.py`
 
 PS2 `CODEC.DAT`의 24×24, 2-bpp, 144바이트 로컬 글리프를 3DS의
 16×16, 2-bpp, 64바이트 글리프로 변환한다. 3DS procedure/resource shell과
-PS2 공식 텍스트/글꼴을 결합하는 방식과 PS2 레코드 전체를 가져오는 방식이
+대사집 텍스트/글꼴을 결합하는 방식과 PS2 레코드 전체를 가져오는 방식이
 구현되어 있다.
 
 codec용 공용 정적 글꼴은 다음 HPK에서 런타임 확인됐다.
@@ -42,7 +42,7 @@ codec용 공용 정적 글꼴은 다음 HPK에서 런타임 확인됐다.
 - 정적 페이지: `81xx`, `82xx`, `83xx`
 - 사용 가능한 `81/82` 정적 슬롯: 165개
 
-첫 PS2 공식 라디오 문단은 codec 크기와 HPK 크기를 유지한 채 실기/런타임
+첫 대사집 라디오 문단은 codec 크기와 HPK 크기를 유지한 채 실기/런타임
 검증을 통과했다. bulk 후보는 자주 쓰는 165개 글자를 정적 페이지에 두고
 나머지만 record-local 글리프로 처리한다.
 
@@ -54,7 +54,7 @@ codec용 공용 정적 글꼴은 다음 HPK에서 런타임 확인됐다.
 - `analysis/english_bulk_candidate/movie_translation.csv`
 
 이 경로는 3DS 영문 자막과 검토된 한국어를 연결하고 맑은 고딕 글리프를
-각 movie/demo 레코드의 로컬 page-3 글꼴에 새로 삽입한다. PS2 공식 글꼴과
+각 movie/demo 레코드의 로컬 page-3 글꼴에 새로 삽입한다. 대사집 글꼴과
 토큰을 직접 사용하지 않는다.
 
 현재 size-neutral 결과:
@@ -72,7 +72,7 @@ codec과 movie/demo는 글꼴 저장 및 참조 방식이 다르다.
 ### codec
 
 - GCX별 로컬 글꼴과 HPK 공용 정적 글꼴을 함께 사용할 수 있다.
-- PS2 공식 텍스트/글꼴 변환 도구가 존재한다.
+- 대사집 텍스트/글꼴 변환 도구가 존재한다.
 - 정적 `81/82` 165슬롯을 corpus 빈도순으로 배치하는 bulk 후보가 있다.
 - 첫 공식 라디오 문단은 레코드와 파일 크기를 보존한 상태로 검증됐다.
 
@@ -87,7 +87,7 @@ codec과 movie/demo는 글꼴 저장 및 참조 방식이 다르다.
 - 따라서 codec에서 해결된 공용 글리프 방식은 movie/demo에 자동 적용되지
   않는다.
 
-다음 핵심 개발 과제는 PS2 공식 movie/demo 문장을 3DS 레코드에 직접
+다음 핵심 개발 과제는 대사집 movie/demo 문장을 3DS 레코드에 직접
 대응시키고, 해당 렌더러에서 사용할 수 있는 기존 글꼴 슬롯/토큰을 확인해
 고정 크기로 재조립하는 것이다.
 
@@ -191,7 +191,7 @@ GDB 스텁이 켜져 있으면 게임이 부팅 직후 멈춘 것처럼 보인�
 1. 골든 CCI와 PS2 원본 ISO를 보존하고 해시를 다시 확인한다.
 2. PS2 쪽 movie/demo 공식 한글 데이터가 어느 컨테이너/레코드에 있는지
    추출 목록을 만든다.
-3. 3DS movie/demo의 type-1 영문 엔트리와 PS2 공식 한글을 장면·순서·문장
+3. 3DS movie/demo의 type-1 영문 엔트리와 대사집 한글을 장면·순서·문장
    기준으로 대응시킨다. 영문 피벗 매칭 자료는 위치 힌트로만 사용한다.
 4. movie/demo 렌더러가 codec HPK 정적 `81/82` 글꼴을 참조할 수 있는지
    GDB로 확인한다.
@@ -206,10 +206,10 @@ GDB 스텁이 켜져 있으면 게임이 부팅 직후 멈춘 것처럼 보인�
 ## 8. 보존 자료
 
 - PS2 ISO: `메탈 기어 솔리드 3_한글.iso` (미추적, 삭제 금지)
-- PS2 추출: `analysis/ps2_korean/MGS/`
+- PS2 추출: `analysis/script_ref/MGS/`
 - codec 상세 조사: `docs/ps2-korean-port-2026-08-02.md`
-- 골든 기록: `analysis/ps2_korean/golden_real3ds_2026-08-02/`
-- 실패/복구 기록: `analysis/ps2_korean/FULL_DEMO_MOVIE40_TEST.md`
+- 골든 기록: `analysis/script_ref/golden_real3ds_2026-08-02/`
+- 실패/복구 기록: `analysis/script_ref/FULL_DEMO_MOVIE40_TEST.md`
 - TOM 도구: `tools/mgs3_ps2_tom_bitmap_port.py`
 
 로컬 SQLite DB, vendored Capstone, ISO 및 `analysis/`의 대형 산출물은 Git에
@@ -223,7 +223,7 @@ GDB 스텁이 켜져 있으면 게임이 부팅 직후 멈춘 것처럼 보인�
 `--list`, `--all`을 추가했다.
 
 각 스테이지의 `7f000002_180720.02`는 MGS3 GCX이며 기존 `GcxRecord`로
-156/156개가 모두 파싱된다. 여기에는 PS2 공식 한국어 토큰과 24×24 로컬
+156/156개가 모두 파싱된다. 여기에는 대사집 한국어 토큰과 24×24 로컬
 글꼴이 들어 있다. 전체 텍스트 후보는 90,216개지만 공용 시스템 문장이
 여러 스테이지에 반복된다. 바이트 동일 중복을 제거하는 기준으로 한
 스테이지에만 존재하는 후보는 1,548개다.
@@ -232,13 +232,13 @@ GDB 스텁이 켜져 있으면 게임이 부팅 직후 멈춘 것처럼 보인�
 
 ```powershell
 python tools/mgs3_ps2_stage_extract.py `
-  analysis/ps2_korean/MGS/STAGE.DAT `
-  analysis/ps2_korean/stages --all
+  analysis/script_ref/MGS/STAGE.DAT `
+  analysis/script_ref/stages --all
 
 python tools/mgs3_ps2_stage_text_catalog.py `
-  analysis/ps2_korean/stages `
-  analysis/ps2_korean/korean_token_map_paragraph_span24.json `
-  analysis/ps2_korean/stage_text_unique.csv --stage-specific-only
+  analysis/script_ref/stages `
+  analysis/script_ref/korean_token_map_paragraph_span24.json `
+  analysis/script_ref/stage_text_unique.csv --stage-specific-only
 ```
 
 카탈로그는 stage, GCX resource index, 원시 토큰, 현재 해독문, 로컬 글리프

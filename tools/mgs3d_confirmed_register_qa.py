@@ -6,7 +6,7 @@ READ-ONLY with respect to master/build/staging. It reads the final verdict/revie
 CSV plus codec-speaker-match.csv, classifies Korean speech level conservatively,
 and emits audit/proposal CSVs only.
 
-Confirmed register policy (derived from PS2 Korean corpus):
+Confirmed register policy (derived from Korean reference corpus):
   Para-Medic, EVA -> polite
   Zero, Sigint, Snake, The Boss -> plain
 

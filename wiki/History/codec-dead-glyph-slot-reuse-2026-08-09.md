@@ -147,7 +147,7 @@ translation batch, because there was nothing left to reduce there.
 
 ## Results (measured against the live production codec.dat)
 
-Whole-file inventory (`analysis/ps2_korean/full_build/dead_slot_reuse/inventory_full.json`):
+Whole-file inventory (`analysis/script_ref/full_build/dead_slot_reuse/inventory_full.json`):
 **14,370 total custom-glyph slots, 1,545 dead, across 147 of 652 GCX with a
 font table** (98,880 reusable bytes) — matches the number cited going into
 this work exactly, now backed by a checked-in tool rather than an ad-hoc
@@ -157,7 +157,7 @@ correction above — small, and self-inflicted by this project's own earlier
 work, not a Japanese donor block).
 
 Independent audit
-(`analysis/ps2_korean/full_build/dead_slot_reuse/audit_full.json`): **all
+(`analysis/script_ref/full_build/dead_slot_reuse/audit_full.json`): **all
 1,545 dead slots confirmed by both scanners, 0 disagreements, 0 overlap
 failures.**
 
@@ -212,7 +212,7 @@ budget. Built with
 
 All artifacts (`inventory_full.json/csv`, `audit_full.json`, test
 translation, built `.dat`/`.hangul.json`, offset-diff/verify-build output)
-are under `analysis/ps2_korean/full_build/dead_slot_reuse/` and the session
+are under `analysis/script_ref/full_build/dead_slot_reuse/` and the session
 scratch directory; nothing was written to the live RomForge staging file —
 all builds in this task ran against a scratch copy.
 

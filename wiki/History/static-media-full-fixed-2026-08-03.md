@@ -43,12 +43,12 @@ to `8302..831B`. The established 165-slot path remains available as the safer
 fallback until this extension is runtime-tested.
 
 The canonical extended candidate is retained under
-`analysis/ps2_korean/integrated_191_candidate/romfs`; it does not overwrite the
+`analysis/script_ref/integrated_191_candidate/romfs`; it does not overwrite the
 golden CCI.
 
 After all boundary checks passed, the same five hashes were staged to the
 external RomForge `output/unpacked/partition0/romfs` tree for packaging. The
-pre-stage files are recoverable from `analysis/ps2_korean/integrated_next` and
+pre-stage files are recoverable from `analysis/script_ref/integrated_next` and
 the existing `staging_backup_*` directories. No existing CCI was overwritten;
 create a newly named test CCI for runtime validation.
 
@@ -66,7 +66,7 @@ RomForge's extracted managed `RepackService` was called directly against the
 staged unpacked tree. It created a new file and did not overwrite either of the
 existing RomForge CCIs or the golden real-3DS image.
 
-- Path: `analysis/ps2_korean/MGS3D_PS2KO_191_FIXED_TEST_Repack.cci`
+- Path: `analysis/script_ref/MGS3D_PS2KO_191_FIXED_TEST_Repack.cci`
 - Size: 3,248,410,624 bytes
 - SHA-256: `792153E09BA07C0EB0A3B916923732FA0E34567DC859DE4E1925EB9AA4F15661`
 - Header: `NCSD`
@@ -124,7 +124,7 @@ For an unambiguous hardware A/B test, the retained 165-glyph files were
 applied to the verified 191-glyph CCI with RomForge's direct repacker. The
 result is a separate image; no existing or golden CCI was overwritten.
 
-- Path: `analysis/ps2_korean/MGS3D_PS2KO_165_FIXED_FALLBACK_v3.cci`
+- Path: `analysis/script_ref/MGS3D_PS2KO_165_FIXED_FALLBACK_v3.cci`
 - Size: 3,248,410,624 bytes, exactly equal to the 191-glyph CCI
 - SHA-256: `951B5986BBF362DB9B395D7933AECE119D7A9B17FFD7A7C9B2F9619C1087A1BC`
 - Embedded `/codec.dat`: `16B02FB3665A779DFCA7CFD13C27B9C2E4889415CBEB6F288385CF1D62B875E6`
@@ -167,7 +167,7 @@ is 17,445 and the selector chooses exactly 17,445 (gap zero) in all 544/544
 records. Of the 3,641 unselected rows, 3,609 require glyphs outside the static
 191-character page and 32 are excluded by fixed per-GCX string capacity. The
 audit is retained in
-`analysis/ps2_korean/codec_selection_static_media_191_exact_audit_report.json`.
+`analysis/script_ref/codec_selection_static_media_191_exact_audit_report.json`.
 
 ## Static HPK scope audit
 
@@ -185,6 +185,6 @@ limited to two isolated stages. The packaged CCI hash audit already proves both
 patched paths are present with the expected bytes.
 
 The reproducible report is
-`analysis/ps2_korean/hpk_static_scope_audit.json`; rerun it with
+`analysis/script_ref/hpk_static_scope_audit.json`; rerun it with
 `tools/mgs3d_hpk_static_audit.py ROMFS --expect-entry-count 2`. The complete
 repository suite passes 103/103 after adding this audit.

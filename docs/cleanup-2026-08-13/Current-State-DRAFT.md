@@ -52,14 +52,14 @@ under Invalidated rather than deleted.
 
 ### Source material
 - PS2 `MOVIE.DAT` is plain MPEG-2 PS; **Korean subtitles are hardsubbed**, so no
-  extractable official PS2 movie text exists. Shinsnote is therefore the
+  extractable extractable reference movie text exists. the script reference is therefore the
   effective movie/demo Korean source, not merely a diagnostic.
 - The "western 5-language" `movie.dat` structure is **this project's own
   reconstruction**, not stock Japanese. The golden build depends on it, so it
   stays.
 - 3DS English text is a **work-in-progress placeholder**, not shipped final text
   — reducing English to buy capacity is cheap.
-- Shinsnote author's own colour boxes classify lines: grey = cutscene
+- the script reference author's own colour boxes classify lines: grey = cutscene
   (movie/demo) 933, green = codec 406, no box 1,692.
 - `LA2` = Nintendo DARC; `ARC` = Capcom MT Framework.
 
@@ -100,7 +100,7 @@ document is kept as evidence; only the conclusion is retired.
 - The leading ~646 KB header/index region of PS2 `DEMO.DAT`.
 - Full decode of the `kind=2` block.
 - The exact count at which simultaneous codec GCX grow breaks.
-- The role of the 1,692 "no colour box" Shinsnote lines.
+- The role of the 1,692 "no colour box" the script reference lines.
 - Whether grow is safe for *arbitrary* GCX at *arbitrary* sizes (validated range
   only).
 
@@ -115,7 +115,7 @@ document is kept as evidence; only the conclusion is retired.
 - Confirmed absent: all 11 `.cci` images on `C:\Users\hhlee` and `D:` were
   enumerated and hashed; none matches. Two archived images match the golden
   **size** exactly but not its hash — a size collision, not the golden.
-- **Reproducible from `analysis/ps2_korean/_archive_2026-08-07/staging_tom_codec_original_media/`**,
+- **Reproducible from `analysis/script_ref/_archive_2026-08-07/staging_tom_codec_original_media/`**,
   which `REPACK_VERSION_INDEX.md` names as the golden's input directory. All five
   recorded input hashes verify there 5/5 byte-exact (`codec.dat` `C32E8C6B…`,
   `movie.dat` `2B774C99…`, `demo.dat` `E216F28F…`, `r_sna01/resident.hpk`
@@ -132,10 +132,10 @@ document is kept as evidence; only the conclusion is retired.
 
 ## Current Data
 
-- codec master review CSV: `analysis/ps2_korean/codec-3ds-INTEGRATED-review.csv`
+- codec master review CSV: `analysis/script_ref/codec-3ds-INTEGRATED-review.csv`
   (11,076,065 B, sha `a836d562…`) — the live master.
-- Manual backlog for PS2-unmatched codec lines:
-  `analysis/ps2_korean/codec-3ds-INTERGRATED-review.csv_trans/`
+- Manual backlog for 대사집 미매칭 codec lines:
+  `analysis/script_ref/codec-3ds-INTERGRATED-review.csv_trans/`
   (`1999final.csv`, `trans1999.csv`). Note the folder name contains the typo
   `INTERGRATED`.
 - The `codec-3ds-INTEGRATED-review.csv` copy inside that `_trans/` folder is

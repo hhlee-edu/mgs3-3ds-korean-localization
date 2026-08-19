@@ -39,7 +39,7 @@ def main() -> int:
     units = [merged[key] for key in sorted(merged)]
     result = {
         "format": "mgs3d-codec-translation-v1",
-        "note": "Official PS2 Korean plus non-overlapping 3DS-only Korean; official Korean wins conflicts.",
+        "note": "Official Korean reference plus non-overlapping 3DS-only Korean; official Korean wins conflicts.",
         "character_map": static,
         "units": units,
         "merge_summary": {"official_units": len(official["units"]),

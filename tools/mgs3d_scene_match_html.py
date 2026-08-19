@@ -58,7 +58,7 @@ def scene_starts(data: bytes, blocks: list[tuple[int, int, int]]) -> list[int]:
 
 def load_script(gamefaqs_path: Path, bilingual_path: Path) -> list[dict[str, object]]:
     """Ordered PS2/GameFAQs English lines, each carrying whatever Korean the
-    existing English<->Shinsnote alignment found for it (may be blank).
+    existing English<->the script reference alignment found for it (may be blank).
 
     English-to-English is the anchor axis (same language as the 3DS card,
     trivial for a human to eyeball-verify) instead of English-to-Korean.
@@ -583,7 +583,7 @@ def main() -> int:
     parser.add_argument("--gamefaqs", type=Path, required=True,
                         help="gamefaqs_mgs3_english.json")
     parser.add_argument("--bilingual", type=Path, required=True,
-                        help="GameFAQs-English<->Shinsnote-Korean alignment CSV "
+                        help="GameFAQs-English<->the script reference-Korean alignment CSV "
                              "(e.g. movie_demo_only_bilingual.csv)")
     parser.add_argument("--movie", type=Path)
     parser.add_argument("--demo", type=Path)

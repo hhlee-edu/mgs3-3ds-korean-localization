@@ -42,7 +42,7 @@ GCX/resource identities or movie/demo byte offsets.
 
 The generated CSVs deliberately leave `accept` blank. Exact game-to-GameFAQs
 English identity proves the English lookup, but does not prove the older
-GameFAQs-to-Shinsnote Korean DP alignment. A witnessed medium-confidence
+GameFAQs-to-the script reference Korean DP alignment. A witnessed medium-confidence
 counterexample maps `Be careful. You might not have a choice.` to an unrelated
 Korean sentence. Production builds must therefore use context-reviewed rows,
 not bulk-approve these counts.

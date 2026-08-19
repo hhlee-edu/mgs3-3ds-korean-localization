@@ -168,14 +168,14 @@ See [GCX Format](GCX-Format.md) and [DAT Formats](DAT-Formats.md).
 
 ### Source material
 - PS2 `MOVIE.DAT` is plain MPEG-2 PS; **Korean subtitles are hardsubbed**, so no
-  extractable official PS2 movie text exists. Shinsnote is therefore the
+  extractable extractable reference movie text exists. the script reference is therefore the
   effective movie/demo Korean source, not merely a diagnostic.
 - The "western 5-language" `movie.dat` structure is **this project's own
   reconstruction**, not stock Japanese. The golden build depends on it, so it
   stays.
 - 3DS English text is a **work-in-progress placeholder**, not shipped final text
   — reducing English to buy capacity is cheap.
-- Shinsnote author's own colour boxes classify lines: grey = cutscene
+- the script reference author's own colour boxes classify lines: grey = cutscene
   (movie/demo) 933, green = codec 406, no box 1,692.
 - `LA2` = Nintendo DARC; `ARC` = Capcom MT Framework.
 
@@ -223,11 +223,11 @@ retired.
 - The leading ~646 KB header/index region of PS2 `DEMO.DAT`.
 - Full decode of the `kind=2` block.
 - The exact count at which simultaneous codec GCX grow breaks.
-- The role of the 1,692 "no colour box" Shinsnote lines.
+- The role of the 1,692 "no colour box" the script reference lines.
 - Whether grow is safe for *arbitrary* GCX at *arbitrary* sizes (validated range
   only).
 - The large `codec_selected_static_media*` / `early-priority-selection*` JSON
-  cluster, still under `analysis/ps2_korean/` (not physically moved — see
+  cluster, still under `analysis/script_ref/` (not physically moved — see
   below) — confirmed to be **active in-progress translation work**
   (2026-08-13), not yet reconciled with the master corpus.
   See [Translation](Translation.md#in-progress-material).
@@ -250,7 +250,7 @@ probe. See `experiments/2026-08-13-clean-glyph-baseline/clean-build-manifest.jso
 - Confirmed absent: all 11 `.cci` images on `C:\Users\hhlee` and `D:` were
   enumerated and hashed 2026-08-13; none matches. Two archived images match the
   golden **size** exactly but not its hash — a size collision, not the golden.
-- **Reproducible from `archive/old-data/ps2_korean_archive_2026-08-07/staging_tom_codec_original_media/`**,
+- **Reproducible from `archive/old-data/script_ref_archive_2026-08-07/staging_tom_codec_original_media/`**,
   which `analysis/REPACK_VERSION_INDEX.md (kept at its original path -- not part of the move, still describes CCI-to-input mapping)` names as the golden's input directory.
   All five recorded input hashes verify there 5/5 byte-exact (`codec.dat`
   `C32E8C6B…`, `movie.dat` `2B774C99…`, `demo.dat` `E216F28F…`,
@@ -265,7 +265,7 @@ probe. See `experiments/2026-08-13-clean-glyph-baseline/clean-build-manifest.jso
   4,083,195,904 bytes, 2026-08-12 23:54. Statically verified as the 169-stage
   patch build (Korean page signature appears exactly 169 times).
 
-- PS2 Korean ISO (`메탈 기어 솔리드 3_한글.iso`): deleted, **confirmed intentional**
+- Korean reference ISO (`메탈 기어 솔리드 3_한글.iso`): deleted, **confirmed intentional**
   by the user 2026-08-13. All five extracted containers survive in
   `originals/ps2/` (`CODEC.DAT`, `DEMO.DAT`, `MOVIE.DAT`, `SLOT.DAT`,
   `STAGE.DAT`); PS2 movie/demo hold no extractable text anyway (hardsubbed). Git
@@ -275,7 +275,7 @@ probe. See `experiments/2026-08-13-clean-glyph-baseline/clean-build-manifest.jso
 
 - codec master review CSV: `translation/10_master/codec-3ds-INTEGRATED-review.csv`
   (11,076,065 B, sha `a836d562…`) — the live master.
-- Manual backlog for PS2-unmatched codec lines:
+- Manual backlog for 대사집 미매칭 codec lines:
   `translation/10_master/manual_backlog/`
   (`1999final.csv`, `trans1999.csv`). Note the folder name contains the typo
   `INTERGRATED`.

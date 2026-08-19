@@ -19,7 +19,7 @@ from mgs3d_codec_tool import parse_codec, GcxRecord  # noqa: E402
 
 def main() -> int:
     src = Path("C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs/codec.dat")
-    out = Path("experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_padding_experiment.dat")
+    out = Path("experiments/script_ref/full_build/rebuild_2026-08-08/codec_padding_experiment.dat")
 
     data = bytearray(src.read_bytes())
     records = parse_codec(bytes(data))

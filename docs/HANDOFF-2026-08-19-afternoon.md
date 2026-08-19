@@ -72,7 +72,7 @@ python tools/mgs3d_media_offset_verdict.py --outdir output/media-register-qa
 
 ### 판정 기준으로 쓸 수 있는 단서
 
-- **확정 오배치 95행은 거의 전부 문장부호 앞 공백**(`몰라 .`)을 달고 있다 — Shinsnote
+- **확정 오배치 95행은 거의 전부 문장부호 앞 공백**(`몰라 .`)을 달고 있다 — the script reference
   표의 표기 습관이 남은 행이다.
 - **미검토 312행은 그 공백이 없다.** 표본 22행을 봤더니 거의 전부 정상이었다
   (`You OK? → 괜찮아?`, `Remember the Alamo → 알라모를 잊지 마라`).
@@ -106,7 +106,7 @@ python tools/mgs3d_media_offset_verdict.py --outdir output/media-register-qa
 (오염 앵커 `71`·`339`·`1254`·`1424` 제거 시 movie 96.8% / demo 85.4% 단조),
 윈도 앵커도 유니크 위치 + LIS 백본으로 교체. 그래도 실패했다.
 
-**근본 원인(측정값): master 한국어 2,917행 중 Shinsnote 대본에서 위치가 잡히는 행이
+**근본 원인(측정값): master 한국어 2,917행 중 대사집 대본에서 위치가 잡히는 행이
 213~225행(7.4%)뿐이다.** 나머지 92.5%는 정규화·축약·재번역을 거쳐 원문과 더는 같지
 않다. 앵커 밀도가 부족하고, 앵커 없는 구간은 고유명사·숫자·길이비만으로 다리를
 놓지 못한다. LIS 백본도 정상/오배치를 구분 못 했다(KEEP 61/107 vs MISPLACED 47/95).
@@ -147,7 +147,7 @@ Zero 존댓말→반말 1 / 직역 2.
 
 - 잔존량 **유니크 1,571행 / 149,592 location / 89,070 B** (prose 1,065)
 - 워크리스트: `docs/evidence/2026-08-19-stage-text-scan/stage-text-english-worklist.csv`
-- **정본 없음.** PS2 한국어 STAGE.DAT은 추출·카탈로그돼 있으나 해독이 1,548행 중 58행뿐 —
+- **정본 없음.** 대사집 STAGE.DAT은 추출·카탈로그돼 있으나 해독이 1,548행 중 58행뿐 —
   codec 때 쓴 로컬 글리프 OCR을 stage용으로 끝까지 돌린 적이 없다. **이게 첫 단계다.**
 - 용량은 여유롭다(donor가 영어의 2.55배, 169/169 스테이지 마진 양수).
   한글 글리프 페이지는 이미 169/169에 붙어 있다.

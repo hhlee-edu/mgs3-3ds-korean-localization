@@ -281,7 +281,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
     parser.add_argument("--korean-script", type=Path, required=True,
-                        help="shinsnote_mgs3_classified.csv")
+                        help="script_ref_mgs3_classified.csv")
     parser.add_argument("--movie", type=Path)
     parser.add_argument("--demo", type=Path)
     parser.add_argument("--movie-matched", type=Path,

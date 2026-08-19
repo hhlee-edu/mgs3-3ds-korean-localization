@@ -1,6 +1,6 @@
 # MGS3D Korean Localization — Wiki
 
-PS2 official Korean release ported onto the 3DS release of *Metal Gear Solid:
+reference Korean release ported onto the 3DS release of *Metal Gear Solid:
 Snake Eater 3D*. This wiki is the canonical knowledge base — new session
 reading order: `README.md` → **this page** → [Current State](Current-State.md)
 → `HANDOFF.md` ([Conventions](Conventions.md) R11).
@@ -19,8 +19,8 @@ reading order: `README.md` → **this page** → [Current State](Current-State.m
 
 - **[Translation](Translation.md)** — source→master→shortened→build-input
   lineage, the current ground-truth bundle, the live production master CSV.
-- **[Matching](Matching.md)** — the 3-way PS2/Shinsnote/3DS alignment
-  pipeline, Shinsnote colour-box classification, review states.
+- **[Matching](Matching.md)** — the 3-way PS2/the script reference/3DS alignment
+  pipeline, the script reference colour-box classification, review states.
 - **[Glyph System](Glyph-System.md)** — the per-GCX custom-glyph mechanism,
   the 191-slot HPK static font, and the newer resident global-Korean-page
   track.

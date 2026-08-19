@@ -60,7 +60,7 @@ def main() -> int:
                 "entry": int(matched["entry"]) if matched.get("entry", "").isdigit() else None,
                 "english_3ds": english,
                 "korean_natural": source_row["korean"].strip(),
-                "ps2_shinsnote_match": None,
+                "ps2_script_ref_match": None,
                 "classification": "3ds_only_unmatched",
                 "translation_status": "translated_manual",
                 "source_part": part_number,
@@ -72,7 +72,7 @@ def main() -> int:
     counts = {media: sum(row["media"] == media for row in output_rows) for media in ("movie", "demo")}
     document = {
         "format": "mgs3d-3ds-only-dialogue-translation-v1",
-        "scope": "Movie/Demo rows left unmatched by the PS2/Shinsnote alignment and manually translated from the original 3DS English",
+        "scope": "Movie/Demo rows left unmatched by the PS2/the script reference alignment and manually translated from the original 3DS English",
         "authority": {
             "english": str(AUDIT.relative_to(ROOT)),
             "translations": [str(path.relative_to(ROOT)) for path in PARTS],
@@ -119,7 +119,7 @@ def main() -> int:
     codec_rows.sort(key=lambda row: (row["gcx"], row["resource"]))
     codec_document = {
         "format": "mgs3d-3ds-only-codec-translation-v1",
-        "scope": "Codec resources translated from the original 3DS English and absent from the PS2 official Korean unit set",
+        "scope": "Codec resources translated from the original 3DS English and absent from the reference Korean unit set",
         "authority": {
             "ps2_official_keys": str(CODEC_OFFICIAL.relative_to(ROOT)),
             "3ds_translation": str(CODEC_3DS_TRANSLATION.relative_to(ROOT)),
@@ -138,7 +138,7 @@ def main() -> int:
     print(f"wrote {len(codec_rows)} Codec 3DS-only resources: {CODEC_OUTPUT}")
     combined = {
         "format": "mgs3d-3ds-only-all-translation-v1",
-        "scope_note": "Movie/Demo are alignment-unmatched dialogue. Codec rows are resources absent from the PS2 official unit set and may include UI/metadata strings; use kind/text when reviewing.",
+        "scope_note": "Movie/Demo are alignment-unmatched dialogue. Codec rows are resources absent from the reference unit set and may include UI/metadata strings; use kind/text when reviewing.",
         "summary": {
             "total": len(output_rows) + len(codec_rows),
             "movie": counts["movie"], "demo": counts["demo"], "codec": len(codec_rows),

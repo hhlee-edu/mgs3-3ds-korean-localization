@@ -5,7 +5,7 @@ READ-ONLY. Never writes to master / *.dat / staging.
 
 For each MISPLACED row it emits:
   * the full master record (English preview + current Korean), in entry order
-  * the Shinsnote transcript window that the record's *other* lines anchor to
+  * the script reference transcript window that the record's *other* lines anchor to
 
 Scene anchoring uses several neighbouring lines at once, never a single unique
 string -- the failure mode documented in
@@ -14,7 +14,7 @@ docs/evidence/2026-08-19-media-offset-audit/README.md sections 3 and 6.
 import csv, io, os, re, glob, argparse, unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SHINS = os.path.join(ROOT, 'translation/00_source/shinsnote/original_scrape')
+SHINS = os.path.join(ROOT, 'translation/00_source/script_ref/original_scrape')
 VERDICTS = os.path.join(ROOT, 'output/media-register-qa/media-offset-verdicts-reviewed.csv')
 MASTER = {'demo': os.path.join(ROOT, 'translation/10_master/current/demo.csv'),
           'movie': os.path.join(ROOT, 'translation/10_master/current/movie.csv')}
@@ -31,7 +31,7 @@ def norm(s):
     return PUNCT.sub('', s)
 
 
-def load_shinsnote():
+def load_script_ref():
     out = []
     files = sorted(glob.glob(os.path.join(SHINS, '*.txt')),
                    key=lambda p: int(re.search(r'\((\d+)\)', p).group(1)))
@@ -98,14 +98,14 @@ def main():
     ap.add_argument('--records', help='comma list of record numbers')
     ap.add_argument('--start', type=int, default=0, help='skip first N misplaced records')
     ap.add_argument('--limit', type=int, default=6, help='number of records to print')
-    ap.add_argument('--grep', help='search the shinsnote corpus for this substring instead')
+    ap.add_argument('--grep', help='search the script reference corpus for this substring instead')
     ap.add_argument('--seq', help='print corpus window LO:HI instead')
     ap.add_argument('--gap', action='store_true', help='per-row in-record interpolation report')
     ap.add_argument('--pin', action='store_true', help='pin each record via its single longest distinctive line')
-    ap.add_argument('--nowin', action='store_true', help='master record context only, no shinsnote window')
+    ap.add_argument('--nowin', action='store_true', help='master record context only, no the script reference window')
     a = ap.parse_args()
 
-    corpus = load_shinsnote()
+    corpus = load_script_ref()
     if a.seq:
         lo, hi = (int(x) for x in a.seq.split(':'))
         for c in corpus[max(0, lo):hi]:
@@ -243,7 +243,7 @@ def main():
             mark = '>>' if (media, rec, e['entry']) in misk else '  '
             print('%s e%-3s %s' % (mark, e['entry'], (e['preview'] or '').replace('<END>', '')[:64]))
             print('%s      KO %s' % (mark, (e['korean'] or '')[:64]))
-        print('-- where each misplaced KO actually lives in shinsnote --')
+        print('-- where each misplaced KO actually lives in the script reference --')
         for t in targets:
             n = norm(t['korean'])
             loc = [c for c in corpus if n and len(n) >= 4 and (n == c['norm'] or (len(n) >= 8 and n in c['norm']))]
@@ -255,7 +255,7 @@ def main():
         clean = [e['korean'] for e in ents
                  if (media, rec, e['entry']) not in misk and e['korean']]
         win, distinct, nhits = anchor_window(corpus, clean)
-        print('-- shinsnote anchor: %d distinct anchor line(s), %d hit(s) --'
+        print('-- the script reference anchor: %d distinct anchor line(s), %d hit(s) --'
               % (distinct, nhits))
         if win and distinct >= 2:
             lo, hi = win

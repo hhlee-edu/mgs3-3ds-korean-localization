@@ -83,7 +83,7 @@ def clean(s):
 
 
 def seq_of(finding):
-    """Pull the shinsnote sequence number out of a replacement_source string."""
+    """Pull the script reference sequence number out of a replacement_source string."""
     src = finding.get('replacement_source') or ''
     for tok in src.replace('seq', ' ').split():
         if tok.isdigit():
@@ -135,7 +135,7 @@ def main():
     findings_path, suspects_path = sys.argv[1], sys.argv[2]
     os.makedirs(OUT, exist_ok=True)
 
-    corpus = ctx.load_shinsnote()
+    corpus = ctx.load_script_ref()
     verd = ctx.read_csv(ctx.VERDICTS)
     misk = set((r['media'], r['record'], r['entry'])
                for r in verd if r['verdict'] == 'MISPLACED')
@@ -249,8 +249,8 @@ def main():
                 'korean': byent[ent]['korean'],
                 'speaker': name, 'addressee': '',
                 'speaker_confidence': 'LOW' if hidden else ('HIGH' if li == seq else 'MEDIUM'),
-                'scene_context': 'shinsnote seq%d, from the record lock verified while reading this scene' % seq,
-                'speaker_source': 'shinsnote seq%d; explicit label on seq%d%s'
+                'scene_context': 'the script reference seq%d, from the record lock verified while reading this scene' % seq,
+                'speaker_source': 'the script reference seq%d; explicit label on seq%d%s'
                                   % (seq, li, '' if li == seq else ' (continuation of the same speaker)'),
             })
             extra += 1

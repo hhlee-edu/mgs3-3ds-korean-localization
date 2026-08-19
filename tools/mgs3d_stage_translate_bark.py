@@ -119,7 +119,7 @@ def main():
         w.writeheader()
         w.writerows(report)
 
-    print('bark/NPC rows      %d  (new %d, PS2 official reused %d)'
+    print('bark/NPC rows      %d  (new %d, reference reused %d)'
           % (len(report), filled, reused))
     print('byte gate          PASS %d / FAIL %d' % (len(report) - len(fails), len(fails)))
     print('NEW glyphs needed  %d %s' % (len(newglyph), ''.join(sorted(newglyph)) or '(none)'))

@@ -64,7 +64,7 @@ used by untranslated Japanese. Mixed output is expected and has been observed.
 - Coherent, runtime-clean radio localization is approximately 1–3%; overall
   radio content progress is approximately 3–5%.
 
-The Korean reference corpus is available (`analysis/shinsnote_mgs3_script.json`,
+The Korean reference corpus is available (`analysis/script_ref_mgs3_script.json`,
 4,071 segments over 20 parts) together with the English script (4,767 lines),
 but it is not a one-to-one map to the 198,227 game resources.
 

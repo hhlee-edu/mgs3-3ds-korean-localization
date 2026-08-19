@@ -44,10 +44,10 @@ DAT = {'movie': os.path.join(CLEAN, 'movie.dat'),
 # The four extra suspects were KEEP in the reviewed CSV but read as MISPLACED
 # against the transcript; their recovered Korean is recorded here.
 SUSPECT_PROMOTIONS = {
-    ('demo', '141', '3'): ('그만둬!!', 'shinsnote p14 seq2845', '소코로프 (Sokolov)'),
-    ('demo', '154', '4'): ('이제 알겠지. 너무 늦었다는 의미를.', 'shinsnote p14 seq2869', '소코로프 (Sokolov)'),
-    ('demo', '156', '29'): ('에바?', 'shinsnote p14 seq2881', '스네이크 (Snake)'),
-    ('demo', '240', '21'): ('처음으로 당신의 약한 소릴 들었어.', 'shinsnote p19 seq3793', '스네이크 (Snake)'),
+    ('demo', '141', '3'): ('그만둬!!', 'the script reference p14 seq2845', '소코로프 (Sokolov)'),
+    ('demo', '154', '4'): ('이제 알겠지. 너무 늦었다는 의미를.', 'the script reference p14 seq2869', '소코로프 (Sokolov)'),
+    ('demo', '156', '29'): ('에바?', 'the script reference p14 seq2881', '스네이크 (Snake)'),
+    ('demo', '240', '21'): ('처음으로 당신의 약한 소릴 들었어.', 'the script reference p19 seq3793', '스네이크 (Snake)'),
 }
 
 # HUMAN rows whose position was confirmed correct -- they are NOT patched.
@@ -59,9 +59,9 @@ PLAN_COLS = ['media', 'record', 'entry', 'offset', 'english', 'current_korean',
 
 # Proposals that silently correct an obvious typo in the transcript source.
 TYPO_FIXES = {
-    ('demo', '82', '6'): ('2족 보행전자?', '2족 보행전차?', 'shinsnote p11 seq2168'),
-    ('demo', '203', '5'): ('예, 그게 임무니가요', '예, 그게 임무니까요.', 'shinsnote p16 seq3318'),
-    ('demo', '101', '24'): ('아니, 나도 마찬가지로.. 상처 투성이다.', '아니, 나도 마찬가지로.. 상처 투성이다.', 'shinsnote p13 seq2510'),
+    ('demo', '82', '6'): ('2족 보행전자?', '2족 보행전차?', 'the script reference p11 seq2168'),
+    ('demo', '203', '5'): ('예, 그게 임무니가요', '예, 그게 임무니까요.', 'the script reference p16 seq3318'),
+    ('demo', '101', '24'): ('아니, 나도 마찬가지로.. 상처 투성이다.', '아니, 나도 마찬가지로.. 상처 투성이다.', 'the script reference p13 seq2510'),
 }
 
 

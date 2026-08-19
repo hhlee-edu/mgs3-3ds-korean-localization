@@ -133,8 +133,8 @@ gcx     rows  is_donor          language        korean
 10행 중 8행 `no`/2행 `yes`로 **혼재**했는데, 그런 record는 그것 하나뿐이었다.
 나머지 14개 record는 모두 균일하다.
 
-- **20행 (record 359, 1500)**: `is_donor=no`, `status=PS2대응없음`.
-  영어 분기인데 PS2 한국어 원본이 없어 비어 있던 것이다. → 번역 대상.
+- **20행 (record 359, 1500)**: `is_donor=no`, `status=대사집 대응 없음`.
+  영어 분기인데 대사집 원본이 없어 비어 있던 것이다. → 번역 대상.
 - **57행 (8개 record)**: `is_donor=yes`, `language=es/fr`. record 전체가 스페인어
   또는 프랑스어 분기다. 내용이 영어인 이유는 코나미가 PERSONAL DATA 카드 본문을
   현지화하지 않았기 때문이지, 영어 분기라서가 아니다. → **번역하지 않는다.**

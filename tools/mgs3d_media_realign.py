@@ -5,7 +5,7 @@ Every existing alignment artifact is the origin of the mis-placed Korean, not
 evidence about it (see docs/evidence/2026-08-19-media-offset-audit/), so this
 starts from the two raw axes instead:
 
-  Korean   `20_matching/shinsnote/shinsnote_mgs3_script.csv`, ordered by
+  Korean   `20_matching/script_ref/script_ref_mgs3_script.csv`, ordered by
            (page, sequence) -- 4,071 lines with a `speaker` column
   English  `10_master/current/{movie,demo}.csv` `preview`, ordered by
            (record, entry) -- verified byte-identical to the DAT, 2,917/2,917
@@ -16,7 +16,7 @@ on a monotone path through both axes, and the score is carried by anchors that
 survive translation -- digits and proper nouns -- rather than by string shape.
 
 Alignment is per record. A record is one cutscene, its entries are in playback
-order, and its Korean is a contiguous run of the Shinsnote script. The run is
+order, and its Korean is a contiguous run of the script reference. The run is
 located from the record's already-confirmed-correct lines, then a Needleman-
 Wunsch style DP walks both sides forward inside a margin around it.
 
@@ -51,7 +51,7 @@ csv.field_size_limit(10 ** 9)
 
 ROOT = Path(__file__).resolve().parent.parent
 MASTERS = ROOT / "translation/10_master/current"
-SHINSNOTE = ROOT / "translation/20_matching/shinsnote/shinsnote_mgs3_script.csv"
+SCRIPT_REF = ROOT / "translation/20_matching/script_ref/script_ref_mgs3_script.csv"
 VERDICTS = ROOT / "docs/evidence/2026-08-19-media-qa/verdicts.py"
 
 DIGITS = re.compile(r"\d+")
@@ -71,7 +71,7 @@ NAMES = {
     "kgb": "KGB", "cia": "CIA", "gru": "GRU", "nsa": "NSA", "cqc": "CQC",
     "spetsnaz": "스페츠나츠", "makarov": "마카로프", "patriot": "패트리어트",
 }
-MARGIN = 60          # Shinsnote lines of slack around a record's anchored window
+MARGIN = 60          # script-reference lines of slack around a record's anchored window
 GAP = -0.35          # cost of advancing one side alone
 
 
@@ -111,9 +111,9 @@ def score(en: dict, ko: dict) -> tuple[float, int]:
     return value, len(shared)
 
 
-def load_shinsnote() -> list[dict]:
+def load_script_ref() -> list[dict]:
     rows = []
-    with io.open(SHINSNOTE, encoding="utf-8-sig", newline="") as handle:
+    with io.open(SCRIPT_REF, encoding="utf-8-sig", newline="") as handle:
         for row in csv.DictReader(handle):
             text = clean(row.get("text"))
             if not text or not HANGUL.search(text):
@@ -185,8 +185,8 @@ def align(english: list[dict], korean: list[dict]) -> dict[int, int]:
     return pairs
 
 
-def window(block, shin_by_norm, shinsnote):
-    """Bracket the record's Korean run using lines whose text is already in Shinsnote."""
+def window(block, shin_by_norm, script_ref):
+    """Bracket the record's Korean run using lines whose text is already in the script reference."""
     positions = []
     for row in block:
         for candidate in shin_by_norm.get(row["norm_ko"], []):
@@ -196,8 +196,8 @@ def window(block, shin_by_norm, shinsnote):
     positions.sort()
     middle = positions[len(positions) // 2]
     low = max(0, min(positions[0], middle) - MARGIN)
-    high = min(len(shinsnote), max(positions[-1], middle) + MARGIN)
-    return shinsnote[low:high]
+    high = min(len(script_ref), max(positions[-1], middle) + MARGIN)
+    return script_ref[low:high]
 
 
 def main() -> int:
@@ -215,15 +215,15 @@ def main() -> int:
     spec.loader.exec_module(verdicts)
     misplaced = set(verdicts.MISMAPPED)
 
-    shinsnote = load_shinsnote()
+    script_ref = load_script_ref()
     shin_by_norm = defaultdict(list)
-    for row in shinsnote:
+    for row in script_ref:
         shin_by_norm[row["norm"]].append(row["index"])
     records = load_master()
 
     results = []
     for key, block in sorted(records.items()):
-        candidates = window(block, shin_by_norm, shinsnote)
+        candidates = window(block, shin_by_norm, script_ref)
         if not candidates:
             for row in block:
                 results.append({**row, "status": "NO_WINDOW", "proposed": "",
@@ -271,7 +271,7 @@ def main() -> int:
         writer.writerows(results)
 
     summary = {
-        "shinsnote_lines": len(shinsnote),
+        "script_ref_lines": len(script_ref),
         "master_lines": len(results),
         "status": dict(Counter(r["status"] for r in results).most_common()),
         "gate_confirmed_keep_rows": len(keep_rows),

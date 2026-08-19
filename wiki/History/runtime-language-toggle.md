@@ -8,8 +8,8 @@
 
 ```powershell
 python tools/mgs3d_runtime_language_toggle.py catalog `
-  analysis/ps2_korean/runtime-language-decisions.csv `
-  --codec analysis/ps2_korean/codec_selected_static_media_191_fixed.json `
+  analysis/script_ref/runtime-language-decisions.csv `
+  --codec analysis/script_ref/codec_selected_static_media_191_fixed.json `
   --movie analysis/english_bulk_final/movie_translation.csv `
   --demo analysis/english_bulk_final/demo_translation.csv
 ```
@@ -22,9 +22,9 @@ python tools/mgs3d_runtime_language_toggle.py catalog `
 
 ```powershell
 python tools/mgs3d_runtime_language_toggle.py apply `
-  analysis/ps2_korean/runtime-language-decisions.csv `
-  analysis/ps2_korean/runtime-language-output `
-  --codec analysis/ps2_korean/codec_selected_static_media_191_fixed.json `
+  analysis/script_ref/runtime-language-decisions.csv `
+  analysis/script_ref/runtime-language-output `
+  --codec analysis/script_ref/codec_selected_static_media_191_fixed.json `
   --movie analysis/english_bulk_final/movie_translation.csv `
   --demo analysis/english_bulk_final/demo_translation.csv
 ```
@@ -33,9 +33,9 @@ python tools/mgs3d_runtime_language_toggle.py apply `
 
 ```powershell
 python tools/mgs3d_runtime_language_toggle.py apply `
-  analysis/ps2_korean/runtime-language-decisions.csv `
-  analysis/ps2_korean/runtime-language-output `
-  --codec analysis/ps2_korean/codec_selected_static_media_191_fixed.json `
+  analysis/script_ref/runtime-language-decisions.csv `
+  analysis/script_ref/runtime-language-output `
+  --codec analysis/script_ref/codec_selected_static_media_191_fixed.json `
   --english codec:15:14
 ```
 

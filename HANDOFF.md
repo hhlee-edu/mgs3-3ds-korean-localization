@@ -55,7 +55,7 @@
 > 같은 문서(MHamlin, MGS3 Game Script v1.60)의 평문 미러가 GitHub에 있다.
 > `translation/00_source/english_script/mgs3-game-script.txt` (251,806 B / 7,424행).
 > **화자가 명시된 컷신·무전 대본이다.** movie/demo 판정 5건을 이걸로 교차검증했고
-> 모순 0건. 앞으로 화자/장면 판정은 Shinsnote(한국어) + 이 대본(영어) 2중 근거로 한다.
+> 모순 0건. 앞으로 화자/장면 판정은 대사집(한국어) + 이 대본(영어) 2중 근거로 한다.
 > **단, 인게임 적 대사(`Who's that!` 등)는 이 대본에 없다.**
 
 > **movie/demo — master 반영 + DAT 재빌드 + staging 완료 (2026-08-19 저녁). HUMAN 0.**
@@ -72,19 +72,19 @@
 > 남은 보류: **0** (backlog CSV의 27건은 전부 해소됨).
 
 > **말투 FIX 91건 전부 적용 완료.** 오배치 세트와 교집합 0이었고 master 드리프트도 0이라
-> 충돌 없이 들어갔다. 화자 말투는 Shinsnote로 검증: 스네이크=해라체, 소령=하게체,
+> 충돌 없이 들어갔다. 화자 말투는 대사집으로 검증: 스네이크=해라체, 소령=하게체,
 > 소코로프=하오체(master 레코드 내부 관행과 일치). 재분류 근거는
 > `docs/evidence/2026-08-19-media-misplaced-recovery/media-register-fix-reclassified.csv`,
 > 적용 내역은 `media-finalize-applied.csv`.
 
 > **stage/scenerio.gcx — 적/NPC 대사는 1,571행 중 13행뿐이다.**
 > 나머지는 도감·아이템·UI다. 규모 인식을 여기서 맞출 것.
-> **PS2 STAGE.DAT이 stage의 유일한 한국어 authority다 — Shinsnote는 stage를 커버하지
+> **대사집이 stage의 유일한 한국어 authority다 — 대사집은 stage를 커버하지
 > 않는다(완전해독 58행 대조, 일치 0건).**
 > 적 대사 3종은 이미 복구됐다: `I see him!!`→**있다!!**(occurrence 228=228 정확 일치),
 > `Who's that!`→**누구냐!**, `Speak!`→**말해!** (전부 미해결 토큰 0).
 > `Answer me!`는 로컬 글리프 `L229` 하나가 막는다 — OCR이 `=`로 오독. 추측 금지.
-> **최대 레버리지는 미상 static 토큰 43개** — 이것만 풀면 PS2 stage 해독이
+> **최대 레버리지는 미상 static 토큰 43개** — 이것만 풀면 대사집 stage 해독이
 > 59 → 196행(12.7%)으로 세 배가 된다. OCR 임계값 낮추기는 금지.
 > 조사 리포트: `docs/evidence/2026-08-19-stage-recovery/STAGE-RECOVERY-SURVEY.md`
 
@@ -137,7 +137,7 @@ read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
 각각 20·12·11·5행에 중복. 정제하면 **movie 96.8% / demo 85.4% 단조**), 윈도 앵커도
 유니크 위치 + LIS 백본으로 바꿨다. 그래도 실패했다.
 
-**근본 원인(측정값): master 한국어 2,917행 중 Shinsnote 대본에서 위치가 잡히는 행이
+**근본 원인(측정값): master 한국어 2,917행 중 대사집 대본에서 위치가 잡히는 행이
 213~225행(7.4%)뿐이다.** 나머지 92.5%는 정규화·축약·재번역을 거쳐 원문과 더는 같지
 않다. 앵커 밀도가 부족하고, 앵커 없는 구간은 EN↔KO 점수(고유명사·숫자·길이비)로
 다리를 놓지 못한다. LIS 백본도 정상/오배치를 구분 못 했다(KEEP 61/107 vs
@@ -162,7 +162,7 @@ read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
 **`page` 내 인덱스**(0~266)였고, `en_*_korean_matches.csv`가 `page`를 버려서 해석이
 안 됐던 것이다. `page`를 보존한 파일이 있다 —
 **`analysis/mgs3_korean_english_alignment.csv`**(3,031행). 거기의
-`(page, korean_sequence)`가 `shinsnote_mgs3_script.csv`의 `(page, sequence)`로
+`(page, korean_sequence)`가 `script_ref_mgs3_script.csv`의 `(page, sequence)`로
 **97.6% 해석된다.**
 
 **그런데 MISPLACED 95행의 자동 REMAP은 여전히 0이다 — 기존 정렬 전부가 원천이기 때문이다.**
@@ -177,9 +177,9 @@ read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
 `mgs3_korean_english_alignment.csv`, `mgs3_korean_english_alignment_dp.csv`.
 
 **재정렬 입력은 두 축 모두 확보됐다:**
-한국어 = `shinsnote_mgs3_script.csv` 4,071행 `(page, sequence, kind, **speaker**, text)`,
+한국어 = `script_ref_mgs3_script.csv` 4,071행 `(page, sequence, kind, **speaker**, text)`,
 영어 = master `current/{movie,demo}.csv` `preview` (DAT와 2,917/2,917 검증됨).
-**Shinsnote의 `speaker` 열은 movie/demo에 없던 화자 정보다** — 재정렬이 성공하면
+**대사집의 `speaker` 열은 movie/demo에 없던 화자 정보다** — 재정렬이 성공하면
 codec처럼 확정 화자 기반 말투 검수가 가능해진다.
 
 **다음 절차(설계 완료, 미실행):** monotone DP 재정렬(두 축 전진만, gap 패널티) +
@@ -209,8 +209,8 @@ read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
 **따라서 연속 drift block이 아니라 산발성 오배치다 — LIS 분석에서도 block 0개.**
 
 **REMAP 0인 이유:** `korean_sequence`가 가리키는 중간 한국어 리스트가 보존돼 있지 않다
-(`shinsnote_mgs3_script.csv` 30/366, `classified` 30/366, `movie_demo_only` 0/366).
-**기존 산출물만으로는 remap 불가** — Shinsnote 대본을 영어 DAT 순서에 맞춰 **재정렬**해야
+(`script_ref_mgs3_script.csv` 30/366, `classified` 30/366, `movie_demo_only` 0/366).
+**기존 산출물만으로는 remap 불가** — the script reference 대본을 영어 DAT 순서에 맞춰 **재정렬**해야
 하고, 그때는 `exact-unique-korean`이 아니라 **단조 시퀀스 정렬**을 써야 한다.
 
 **스크리닝 신호는 약하다.** LIS backbone 이탈 표시는 손으로 읽은 오배치의 94%를 잡지만
@@ -246,8 +246,8 @@ codec.dat 레코드와 **완전히 같은 GCX 포맷**이라 `GcxRecord`가 그�
 period-3 가정은 81%밖에 설명 못 한다. 구조 판정과 어휘 판정 **불일치 0건**,
 donor:english location 비 **정확히 2.000**으로 교차검산됐다.
 
-**번역 정본:** 프로젝트 내부엔 없다(매칭 8건 전부 오탐). PS2 한국어 STAGE.DAT은
-이미 추출·카탈로그돼 있으나(`analysis/ps2_korean/stage_text_catalog.csv` 90,216행)
+**번역 정본:** 프로젝트 내부엔 없다(매칭 8건 전부 오탐). 대사집 STAGE.DAT은
+이미 추출·카탈로그돼 있으나(`analysis/script_ref/stage_text_catalog.csv` 90,216행)
 **해독률이 1,548행 중 58행**이다 — codec 때 쓴 로컬 글리프 OCR 파이프라인을 stage용으로
 끝까지 돌린 적이 없다. 용량은 여유롭다(donor가 영어의 2.55배, 169/169 스테이지 마진 양수).
 

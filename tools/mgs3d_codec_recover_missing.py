@@ -47,7 +47,7 @@ CLEAN = ROOT / "experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs/cod
 MASTER = ROOT / "translation/10_master/current/codec.csv"
 CHARMAP = ROOT / "translation/40_build_input/global_page_v2/character-map.json"
 SOURCES = [
-    ROOT / "translation/30_shortened/ps2_korean/runtime-language-decisions.csv",
+    ROOT / "translation/30_shortened/script_ref/runtime-language-decisions.csv",
     ROOT / "translation/20_matching/en_codec_korean_matches.csv",
 ]
 ACCENT = re.compile(rb"\x1f[\x20-\x7f]")
@@ -171,7 +171,7 @@ def main() -> int:
         row.update({
             "translate": "yes",
             "accept": accept,
-            "status": "PS2대응없음",
+            "status": "대사집 대응 없음",
             "language": "en",
             "is_donor": "no",
             "text_kind": "display_text",
@@ -184,7 +184,7 @@ def main() -> int:
             "korean": korean,
             "raw_text": entry["raw_text"],
             "note": f"2026-08-16 recovered from {entry['source']} "
-                    f"(master extraction gap; PS2 official Korean)"
+                    f"(master extraction gap; reference Korean)"
                     + (f" | REVIEW: {reason}" if reason else ""),
         })
         added.append(row)

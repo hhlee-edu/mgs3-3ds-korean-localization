@@ -1,6 +1,6 @@
 {
   "format": "mgs3d-codec-speech-level-v3",
-  "shinsnote_anchor_lines": 331,
+  "script_ref_anchor_lines": 331,
   "lines_with_proven_speaker": 273,
   "candidates": 549,
   "by_detector": {

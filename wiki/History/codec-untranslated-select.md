@@ -6,7 +6,7 @@
 
 현재 생성된 검토표:
 
-`analysis/ps2_korean/codec-untranslated-review.csv`
+`analysis/script_ref/codec-untranslated-review.csv`
 
 - 전체 미번역 후보: 3,641개
 - 공용 글꼴에 필요한 글자가 없는 후보: 3,609개
@@ -20,13 +20,13 @@ CSV에는 원본 영어, 공식 한글, 필요한 추가 글자, GCX 여유 바�
 
 ```powershell
 python tools/mgs3d_codec_untranslated_select.py select `
-  analysis/ps2_korean/staging_media_minimal/codec.dat `
-  analysis/ps2_korean/codec_translation_static_media_191.json `
-  analysis/ps2_korean/codec_selected_static_media_191_fixed.json `
-  analysis/ps2_korean/codec_selection_static_media_191_fixed_report.json `
-  analysis/ps2_korean/static_media_allocation_191.json `
-  analysis/ps2_korean/codec-untranslated-review.csv `
-  analysis/ps2_korean/codec-priority-output
+  analysis/script_ref/staging_media_minimal/codec.dat `
+  analysis/script_ref/codec_translation_static_media_191.json `
+  analysis/script_ref/codec_selected_static_media_191_fixed.json `
+  analysis/script_ref/codec_selection_static_media_191_fixed_report.json `
+  analysis/script_ref/static_media_allocation_191.json `
+  analysis/script_ref/codec-untranslated-review.csv `
+  analysis/script_ref/codec-priority-output
 ```
 
 도구는 다음 순서로 안전하게 처리한다.
@@ -50,12 +50,12 @@ python tools/mgs3d_codec_untranslated_select.py select `
 
 ```powershell
 python tools/mgs3d_codec_untranslated_select.py build-files `
-  analysis/ps2_korean/staging_media_minimal/codec.dat `
-  analysis/ps2_korean/codec-priority-output/codec_selected.json `
-  analysis/ps2_korean/codec-priority-output/static_allocation.json `
-  analysis/ps2_korean/integrated_191_candidate/romfs/stage/r_sna01/resident.hpk `
-  analysis/ps2_korean/integrated_191_candidate/romfs/stage/r_sna02/resident.hpk `
-  analysis/ps2_korean/codec-priority-files
+  analysis/script_ref/staging_media_minimal/codec.dat `
+  analysis/script_ref/codec-priority-output/codec_selected.json `
+  analysis/script_ref/codec-priority-output/static_allocation.json `
+  analysis/script_ref/integrated_191_candidate/romfs/stage/r_sna01/resident.hpk `
+  analysis/script_ref/integrated_191_candidate/romfs/stage/r_sna02/resident.hpk `
+  analysis/script_ref/codec-priority-files
 ```
 
 `codec-priority-files` 아래에 RomFS 상대 경로로 `codec.dat`와 두 HPK가 생성된다. 도구는

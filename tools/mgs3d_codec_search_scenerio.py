@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROMFS = Path("C:/Users/hhlee/Desktop/Romforge/output/unpacked/partition0/romfs")
 CANDIDATES = json.loads(Path(
-    "experiments/ps2_korean/full_build/rebuild_2026-08-08/codec_gcx_candidates.json"
+    "experiments/script_ref/full_build/rebuild_2026-08-08/codec_gcx_candidates.json"
 ).read_text(encoding="utf-8"))
 
 
@@ -56,7 +56,7 @@ def main() -> int:
                     })
 
     print(f"raw hits: {len(hits)}")
-    out_path = Path("experiments/ps2_korean/full_build/rebuild_2026-08-08/scenerio_scan_hits.json")
+    out_path = Path("experiments/script_ref/full_build/rebuild_2026-08-08/scenerio_scan_hits.json")
     out_path.write_text(json.dumps(hits, indent=1), encoding="utf-8")
     print(f"wrote {out_path}")
 

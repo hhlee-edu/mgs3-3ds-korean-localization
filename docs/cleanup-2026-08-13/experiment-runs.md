@@ -6,7 +6,7 @@ PASS-FAIL-INCONCLUSIVE / effect on current conclusions) and a `manifest.json`.
 
 | run | files | size |
 |---|---|---|
-| `experiments/ps2_korean/full_build/rebuild_2026-08-08/` | 202 | 24.83 GB |
+| `experiments/script_ref/full_build/rebuild_2026-08-08/` | 202 | 24.83 GB |
 | `experiments/global_korean_glyph_poc_2026-08-12/` | 966 | 12.28 GB |
 | `experiments/story_media_order/` | 182 | 11.66 GB |
 | `experiments/scene_fixed_natural_2026-08-12/` | 22 | 3.87 GB |
@@ -21,7 +21,7 @@ PASS-FAIL-INCONCLUSIVE / effect on current conclusions) and a `manifest.json`.
 | `experiments/romforge_ready_hybrid_2026-08-12/` | 6 | 0.84 GB |
 | `experiments/japanese_reassembly/` | 1993 | 0.79 GB |
 | `experiments/fixed_budget_build_2026-08-12/` | 10 | 0.78 GB |
-| `experiments/ps2_korean/golden_real3ds_2026-08-02/` | 3 | 0.77 GB |
+| `experiments/script_ref/golden_real3ds_2026-08-02/` | 3 | 0.77 GB |
 | `experiments/codec_grow_stress_20260810/` | 9 | 0.21 GB |
 | `experiments/gcx53_dynamic_debug/` | 16 | 0.14 GB |
 | `experiments/html/` | 37 | 0.13 GB |
