@@ -99,3 +99,73 @@ master 무수정, staging 무수정, CCI 없음, commit/push 없음.
 - `docs/evidence/2026-08-19-personal-data-round2/capacity-summary.json`
 - `docs/evidence/2026-08-19-personal-data-round2/codec-final-verification.json`
 - scratch 빌드: `scratchpad/pd-round/codec.dat` (production 산출물 아님)
+
+---
+
+# 후속 라운드 — 공란 77행 정리 (2026-08-20)
+
+## 결론: 20행 번역, 57행은 정상 donor
+
+`is_donor` 플래그를 **record 단위**로 검증했다. PERSONAL DATA를 담은 15개 GCX
+record는 전부 내부적으로 일관된다 — 한 record는 통째로 `en`이거나 통째로
+`es`/`fr`이다.
+
+```
+gcx     rows  is_donor          language        korean
+15        14  no                en              14/14
+28        10  no                en              10/10   <- 2026-08-19 교정 후
+32         3  no                en               3/3
+445       10  no                en              10/10
+1480      10  no                en              10/10
+359       10  no                unknown          0/10   <- 번역 대상
+1500      10  no                unknown          0/10   <- 번역 대상
+75         5  yes               es               0/5
+315        1  yes               es               0/1
+362       10  yes               fr               0/10
+395       10  yes               es               0/10
+567        6  yes               es               0/6
+787        5  yes               fr               0/5
+1489      10  yes               es               0/10
+1724      10  yes               fr               0/10
+```
+
+이 표는 2026-08-19의 28/21·28/18 교정이 옳았다는 근거도 된다. 교정 전 record 28은
+10행 중 8행 `no`/2행 `yes`로 **혼재**했는데, 그런 record는 그것 하나뿐이었다.
+나머지 14개 record는 모두 균일하다.
+
+- **20행 (record 359, 1500)**: `is_donor=no`, `status=PS2대응없음`.
+  영어 분기인데 PS2 한국어 원본이 없어 비어 있던 것이다. → 번역 대상.
+- **57행 (8개 record)**: `is_donor=yes`, `language=es/fr`. record 전체가 스페인어
+  또는 프랑스어 분기다. 내용이 영어인 이유는 코나미가 PERSONAL DATA 카드 본문을
+  현지화하지 않았기 때문이지, 영어 분기라서가 아니다. → **번역하지 않는다.**
+
+## 20행 처리 방식
+
+20행의 clean English가 **이미 번역된 47행 중 하나와 바이트 단위로 완전히 동일**함을
+확인했다(20/20 일치). record 1500은 1480(EVA)과, record 359는 28(PARA-MEDIC)과
+같은 카드다. 따라서 새로 저작하지 않고 **검증이 끝난 동일 카드의 한국어를 그대로
+재사용**했다. 새 번역 판단이 개입하지 않으므로 위험이 없다.
+
+`accept=yes`, `translate=yes`, `language=en`으로 바꾸고 status에 출처 행을 기록했다.
+
+## 검증
+
+```
+expand        226,665 -> 226,825 units   (+160 = 20행 x 각 locations)
+capacity      2,289 / 2,289 ready · failing 0 · deficit 0
+build         2,289 records changed · glyphs 0 · final_gcx_size_delta 0
+sha256        e9026a5e8fe50358f97d0b0e685cb17dfc0bd6829c244863b5c80b0eaf6fb21c
+size          67,204,976
+
+20행 location            160
+  control 0A x9 + 00     160 / 160
+  한국어                  0 -> 160
+  read-back              20 / 20
+57 donor행               213 location 전부 영어 유지
+regression vs v0.92      176 리소스 차이, PERSONAL DATA 밖 16개는 전부 후행 NUL only
+records                  2,326 무변화
+final gate               전항목 PASS · coverage 100.0000% · read-back 67/67
+```
+
+master sha256 `2770c3c02d38ebf8`, staged codec.dat `370506be… -> e9026a5e…`.
+movie/demo/stage/code.bin/exheader 무변경. CCI 없음.

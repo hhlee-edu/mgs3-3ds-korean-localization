@@ -1,7 +1,7 @@
 {
   "coverage_rule": "locations, not rows; denominator excludes DONOR_ERROR and VALID_ENGLISH",
-  "accepted_rows": 8994,
-  "accepted_locations": 233427,
+  "accepted_rows": 9014,
+  "accepted_locations": 233587,
   "residual_by_bucket_rows": {
     "REVIEW": 55,
     "REAL_UNTRANSLATED": 11,
@@ -28,7 +28,7 @@
   "excluded_locations": 12128,
   "remaining_translate_rows": 0,
   "remaining_translate_locations": 0,
-  "translatable_locations": 233427,
+  "translatable_locations": 233587,
   "coverage_now": 100.0,
   "coverage_after_translate": 100.0
 }
