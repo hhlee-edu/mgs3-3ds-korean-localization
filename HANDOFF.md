@@ -1,3 +1,12 @@
+# 2026-08-20 — stage 전건 종결 / PERSONAL DATA 종결 / 저작권 정리
+
+최신 상태는 [`docs/HANDOFF-2026-08-20.md`](docs/HANDOFF-2026-08-20.md)를 먼저 읽을 것.
+stage 1,571행 종결, codec PERSONAL DATA 종결, 게임 스크립트 49개 파일을
+히스토리에서 제거하고 evidence 규칙을 전면 제외 + 허용 목록으로 뒤집었다.
+남은 일: 번역 데이터 통합, 최종 두 벌 빌드.
+
+---
+
 # HANDOFF — MGS3D Korean Glyph Integration
 
 ## 다음 세션 체크포인트 (2026-08-19 저녁)
