@@ -1,0 +1,22 @@
+{
+  "shinsnote_lines": 3933,
+  "master_lines": 2917,
+  "unique_position_candidates": 225,
+  "backbone_anchors": 126,
+  "backbone_check": {
+    "confirmed_KEEP_rows_on_backbone": 61,
+    "confirmed_KEEP_total": 107,
+    "confirmed_MISPLACED_on_backbone": 47,
+    "confirmed_MISPLACED_total": 95
+  },
+  "status": {
+    "MATCHED": 2878,
+    "UNMATCHED": 39
+  },
+  "gate": {
+    "rows": 107,
+    "reproduced": 3,
+    "rate": 0.028
+  },
+  "misplaced_auto_remap_candidates": 1
+}

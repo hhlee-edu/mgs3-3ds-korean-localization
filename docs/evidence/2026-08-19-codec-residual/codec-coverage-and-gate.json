@@ -1,0 +1,34 @@
+{
+  "coverage_rule": "locations, not rows; denominator excludes DONOR_ERROR and VALID_ENGLISH",
+  "accepted_rows": 8994,
+  "accepted_locations": 233427,
+  "residual_by_bucket_rows": {
+    "REVIEW": 55,
+    "REAL_UNTRANSLATED": 11,
+    "VALID_ENGLISH": 94,
+    "DONOR_ERROR": 947
+  },
+  "residual_by_bucket_locations": {
+    "REVIEW": 1216,
+    "REAL_UNTRANSLATED": 30,
+    "VALID_ENGLISH": 1170,
+    "DONOR_ERROR": 10928
+  },
+  "review_verdicts_rows": {
+    "TRANSLATED": 46,
+    "KEEP_ENGLISH": 13,
+    "DONOR": 7
+  },
+  "review_verdicts_locations": {
+    "TRANSLATED": 1216,
+    "KEEP_ENGLISH": 13,
+    "DONOR": 17
+  },
+  "excluded_rows": 1061,
+  "excluded_locations": 12128,
+  "remaining_translate_rows": 0,
+  "remaining_translate_locations": 0,
+  "translatable_locations": 233427,
+  "coverage_now": 100.0,
+  "coverage_after_translate": 100.0
+}

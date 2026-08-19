@@ -1,0 +1,26 @@
+{
+  "offset_rows_total": 514,
+  "by_verdict": {
+    "UNREVIEWED": 312,
+    "KEEP": 107,
+    "MISPLACED": 95
+  },
+  "by_media": {
+    "movie": {
+      "UNREVIEWED": 24,
+      "KEEP": 15
+    },
+    "demo": {
+      "UNREVIEWED": 288,
+      "MISPLACED": 95,
+      "KEEP": 92
+    }
+  },
+  "remap_resolved": 0,
+  "remap_blocked_reason": "the aligner's `korean_sequence` indexes an intermediate Korean list that was not preserved; it resolves against neither shinsnote_mgs3_script.csv (30/366) nor the classified/movie-demo subsets (0/366), so the correct Korean cannot be read off an index",
+  "next_session_start": {
+    "unreviewed": 312,
+    "priority_first": 130,
+    "priority_range": "demo r5 e5"
+  }
+}

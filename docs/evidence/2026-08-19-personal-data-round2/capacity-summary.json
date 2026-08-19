@@ -1,0 +1,11 @@
+{
+ "format": "mgs3d-codec-capacity-summary",
+ "summary": {
+  "gcx_records": 2288,
+  "ready_records": 2288,
+  "failing_records": 0,
+  "listed_resources": 226665,
+  "changed_resources": 226525,
+  "total_slot_deficit": 0
+ }
+}

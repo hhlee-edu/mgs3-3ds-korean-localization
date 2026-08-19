@@ -1,0 +1,136 @@
+{
+  "romfs": "D:\\dev\\3dsmetal\\experiments\\2026-08-13-clean-glyph-baseline\\clean-tree\\romfs",
+  "stage_files": 169,
+  "string_locations": 487202,
+  "unique_strings": 5067,
+  "diagnostics": {
+    "conflicts": 0,
+    "donor_only_tokens": 3031,
+    "english_only_tokens": 1226
+  },
+  "locations_by_language": {
+    "donor": 320946,
+    "english": 130903,
+    "non_western": 27493,
+    "unknown": 7860
+  },
+  "locations_by_basis": {
+    "structure": 307662,
+    "vocabulary": 144187,
+    "container": 27493,
+    "none": 7860
+  },
+  "unique_by_language": {
+    "donor": 3372,
+    "english": 1443,
+    "non_western": 188,
+    "unknown": 64
+  },
+  "unique_by_branch_span": {
+    "donor": 3308,
+    "english": 1388,
+    "non_western": 188,
+    "shared": 119,
+    "unknown": 64
+  },
+  "english": {
+    "unique": 1443,
+    "locations": 130082,
+    "unique_bytes": 87010,
+    "by_kind": {
+      "prose": 1006,
+      "label": 296,
+      "ui_help": 141
+    },
+    "by_basis": {
+      "structure": 1026,
+      "vocabulary": 417
+    }
+  },
+  "donor": {
+    "unique": 3372,
+    "locations": 323298,
+    "unique_bytes": 225868,
+    "by_kind": {
+      "prose": 2442,
+      "label": 644,
+      "ui_help": 286
+    },
+    "by_basis": {
+      "structure": 2096,
+      "vocabulary": 1276
+    }
+  },
+  "unknown": {
+    "unique": 64,
+    "locations": 6329,
+    "unique_bytes": 1378,
+    "by_kind": {
+      "prose": 48,
+      "label": 15,
+      "ui_help": 1
+    },
+    "by_basis": {
+      "none": 64
+    }
+  },
+  "non_western": {
+    "unique": 188,
+    "locations": 27493,
+    "unique_bytes": 41478,
+    "by_kind": {
+      "prose": 128,
+      "symbol": 28,
+      "ui_help": 21,
+      "label": 11
+    },
+    "by_basis": {
+      "container": 188
+    }
+  },
+  "korean_scope": {
+    "english_branch": {
+      "unique": 1388,
+      "locations": 119448,
+      "unique_bytes": 86284,
+      "by_kind": {
+        "prose": 994,
+        "label": 253,
+        "ui_help": 141
+      },
+      "by_basis": {
+        "structure": 971,
+        "vocabulary": 417
+      }
+    },
+    "shared_all_branches": {
+      "unique": 119,
+      "locations": 23815,
+      "unique_bytes": 1408,
+      "by_kind": {
+        "label": 96,
+        "prose": 23
+      },
+      "by_basis": {
+        "structure": 119
+      }
+    },
+    "no_evidence": {
+      "unique": 64,
+      "locations": 6329,
+      "unique_bytes": 1378,
+      "by_kind": {
+        "prose": 48,
+        "label": 15,
+        "ui_help": 1
+      },
+      "by_basis": {
+        "none": 64
+      }
+    },
+    "total_unique": 1571,
+    "total_locations": 149592,
+    "total_unique_bytes": 89070,
+    "prose_unique": 1065
+  }
+}

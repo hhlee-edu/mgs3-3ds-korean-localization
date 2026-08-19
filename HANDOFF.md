@@ -1,11 +1,376 @@
 # HANDOFF — MGS3D Korean Glyph Integration
 
+## 다음 세션 체크포인트 (2026-08-19 저녁)
+
+> ## 개발 staging = **CPP-on** 기본 (2026-08-19 최종 확정)
+> 개발·실기 검수 편의를 위해 **개발 staging의 기본 상태는 CPP-on**이다.
+> 최종 릴리즈는 동일한 확정 공통 빌드에서 **CPP-off 호환판** / **CPP-on판(New 3DS 계열
+> + 에뮬레이터)** 으로 분기하고, **사용자용 범용 패처는 제공하지 않는다** —
+> `docs/RELEASE-PACKAGING-POLICY.md` 기준.
+>
+> - `exefs/code.bin` **`4e693f32b1b20d99705576a209efca4671f80fad71930650c5befe2d46527cb4`** (CPP-on)
+> - CPP-off 기준본: `archive/pre-cpp-20260819/code.bin` `b9514ec5da8897db…`
+> - 두 이미지 차이는 압축 해제 기준 **21바이트, 전부 `0x0010AEF6..0x0010AF0B` 안. 창 밖 차이 0**
+> - renderer 6훅 **6/6 불변**, 리터럴 풀 `0x008E1618` 정상
+>
+> **재적용 시 반드시 `--output`으로 workdir를 staging 밖에 둘 것.**
+> 그러지 않으면 `code.blz.bin` / `code.decompressed.bin`이 exefs에 쌓인다
+> (2026-08-19에 실제로 발생해 정리함). staging exefs에는 `banner/code/icon/logo`만 있어야 한다.
+>
+> **exefs 중간 산출물 정리(같이 확정).** `code.blz.bin` / `code.decompressed.bin`은
+> 원래 스테이징 레이아웃에 없던 파일이다 — `mgs3d_cpp_default_patch.py`가 workdir
+> (= exefs)에 남긴 부산물이고, CPP 작업 이전 아카이브 스테이징의 exefs에는 `code.bin`
+> 하나뿐이었다. 저장소의 모든 도구도 `exefs/code.bin`만 읽는다. 그래서 재생성이 아니라
+> **아카이브 후 제거**했다. **CPP 패치를 다시 돌릴 때는 `--output`으로 workdir를
+> 스테이징 밖으로 빼서 이 부산물이 exefs에 남지 않게 할 것.**
+>
+> codec.dat `b6e30310…` / movie.dat `c48d8cc8…` / demo.dat `c44bb512…` /
+> exheader.bin / scenerio.gcx 169개 전부 무변경. CCI·commit·push 없음.
+
+> ## ⚠️ codec production build에는 `mgs3d_codec_expand_locations`가 **필수**
+> **`tools/mgs3d_build.py`를 그대로 쓰면 codec 빌드가 실패한다** — 확장 단계가 없다.
+> master는 동일 문자열을 1행으로 접고 나머지를 `locations` 열에 두는데,
+> `make-translation`은 canonical 1개만 내보낸다. byte 예산은 **GCX 단위 풀**이라
+> 빠진 위치의 바이트가 풀에서 사라지고 **멀쩡한 번역이 용량 초과로 실패**한다.
+> 실측: GCX 44는 확장 없이 3행/73B(+10B 초과, 실패) → 확장 후 17행/2,048B(성공).
+> 전체 8,994행 → 225,307 units.
+> **`exceed fixed region by N bytes`가 뜨면 번역 길이가 아니라 확장 누락을 먼저 의심할 것.**
+> donor accept 해제나 행 제외로 대응하면 멀쩡한 번역을 잃는다.
+> 올바른 순서와 상세는 `wiki/Build-System.md` 최상단 참조.
+
+> ## codec 번역 트랙 종결 (2026-08-19)
+> 최종 게이트 **9/9 PASS**, location coverage **100%** (233,427 / 233,427).
+> 이번 적용: **46행** (신규 번역 40 / 기존 복구 2 / 복구 후 축약 4), HUMAN **0**.
+> 함께 처음으로 DAT에 실린 것: **말투 QA 1,333행** — master에는 2026-08-18부터
+> 있었으나 codec.dat에 빌드된 적이 없었다. 이번 빌드가 최초 반영본이다.
+> overflow 0 / missing glyph 0 / Hangul glyph 추가 0 / 레코드 크기 변화 0 /
+> DAT 역판독 46-46 일치.
+> **최종 codec.dat SHA256 `b6e303105a08bfc905fe7e3ac6e4cd450f22dff228b066198bee7d751403f981`**
+> staging 반영 완료 (이전 `b29807f8…`). 근거: `docs/evidence/2026-08-19-codec-residual/`.
+> DONOR_ERROR 947 / VALID_ENGLISH 94 / KEEP_ENGLISH 13은 번역 대상이 아니며
+> coverage 분모에서 제외한다 (`tools/mgs3d_codec_final_gate.py`가 규칙을 구현).
+> CCI·release·commit·push·버전 태그 없음.
+
+> **새 authority 확보 — 영문 게임 대본.** GameFAQs·Neoseeker는 둘 다 HTTP 403이지만
+> 같은 문서(MHamlin, MGS3 Game Script v1.60)의 평문 미러가 GitHub에 있다.
+> `translation/00_source/english_script/mgs3-game-script.txt` (251,806 B / 7,424행).
+> **화자가 명시된 컷신·무전 대본이다.** movie/demo 판정 5건을 이걸로 교차검증했고
+> 모순 0건. 앞으로 화자/장면 판정은 Shinsnote(한국어) + 이 대본(영어) 2중 근거로 한다.
+> **단, 인게임 적 대사(`Who's that!` 등)는 이 대본에 없다.**
+
+> **movie/demo — master 반영 + DAT 재빌드 + staging 완료 (2026-08-19 저녁). HUMAN 0.**
+> 총 **191행** 반영: 오배치 REPLACE 72 + 오탈자 T1/T2/T3 + 말투 FIX 91 + overflow 축약 8
+> + HUMAN 해소 2 + NO_SOURCE 신규번역 17 + 고유명사 교정 1.
+> 백업 `demo.csv.bak-pre-misplaced-recovery-20260819`, `*.bak-pre-finalize-20260819`.
+> 인코더 게이트: **movie 107/107 · 689/689, demo 328/328 · 2,228/2,228,
+> font_deficit 0, missing_characters 0, overflow 0.**
+> DAT는 clean-tree에서 `--fixed-layout-reclaim`으로 재빌드(크기 무변동, +0 바이트),
+> 실제 DAT 바이트 역판독 **119/119 일치**.
+> staging `Romforge/output/unpacked/partition0`: **18개 중 movie.dat·demo.dat 2개만 변경**,
+> codec.dat·slot.dat·vox.dat·code.bin·exheader.bin·scenerio.gcx 169개 전부 무변경.
+> **CCI·release·commit·push는 하지 않았다.**
+> 남은 보류: **0** (backlog CSV의 27건은 전부 해소됨).
+
+> **말투 FIX 91건 전부 적용 완료.** 오배치 세트와 교집합 0이었고 master 드리프트도 0이라
+> 충돌 없이 들어갔다. 화자 말투는 Shinsnote로 검증: 스네이크=해라체, 소령=하게체,
+> 소코로프=하오체(master 레코드 내부 관행과 일치). 재분류 근거는
+> `docs/evidence/2026-08-19-media-misplaced-recovery/media-register-fix-reclassified.csv`,
+> 적용 내역은 `media-finalize-applied.csv`.
+
+> **stage/scenerio.gcx — 적/NPC 대사는 1,571행 중 13행뿐이다.**
+> 나머지는 도감·아이템·UI다. 규모 인식을 여기서 맞출 것.
+> **PS2 STAGE.DAT이 stage의 유일한 한국어 authority다 — Shinsnote는 stage를 커버하지
+> 않는다(완전해독 58행 대조, 일치 0건).**
+> 적 대사 3종은 이미 복구됐다: `I see him!!`→**있다!!**(occurrence 228=228 정확 일치),
+> `Who's that!`→**누구냐!**, `Speak!`→**말해!** (전부 미해결 토큰 0).
+> `Answer me!`는 로컬 글리프 `L229` 하나가 막는다 — OCR이 `=`로 오독. 추측 금지.
+> **최대 레버리지는 미상 static 토큰 43개** — 이것만 풀면 PS2 stage 해독이
+> 59 → 196행(12.7%)으로 세 배가 된다. OCR 임계값 낮추기는 금지.
+> 조사 리포트: `docs/evidence/2026-08-19-stage-recovery/STAGE-RECOVERY-SURVEY.md`
+
+> **위험: 상수 오프셋 금지.** PS2↔3DS 리소스 런은 대응하지만 오프셋이 구간마다 어긋난다
+> (`ending`에서 -1221과 -1222가 공존). 반드시 ASCII 앵커 + 단조 정렬로 풀 것.
+> movie/demo에서 exact-unique 매칭이 대규모 오배치를 만든 전례를 반복하지 말 것.
+
+
+## 중요 결정사항
+
+> **[`docs/RELEASE-PACKAGING-POLICY.md`](docs/RELEASE-PACKAGING-POLICY.md) — 릴리즈/배포 방침 (2026-08-19 확정).**
+> 배포 관련 결정은 이 문서가 기준이며, 다른 문서와 충돌하면 이 문서가 이긴다.
+> 요약: **개발 중에는 staging 트리 하나만** 유지하고 실기용/에뮬용을 분리하지 않는다.
+> **최종 릴리즈에서만** 하나의 확정 한글판에서 실기용(CPP 없음)과 에뮬용(마지막
+> 단계에 CPP 패치 적용)을 각각 완성된 패치로 만들고, 두 산출물의 차이가 CPP 외에
+> 없음을 SHA/diff로 검증한다. 사용자용 범용 패처·옵션 체크박스·CPP 단독 도구는
+> 배포물로 만들지 않는다. 최종 패치 형식(xdelta/BPS/LayeredFS/RomFS)은 미확정.
+> 결정 ID: `wiki/Decisions.md` DEC-019 ~ DEC-022.
+
+> **릴리스 규칙 (2026-08-19).** 이후 **모든 버전은 사용자 승인 없이 올리지 않는다.**
+> 빌드·스테이징·문서화까지는 진행하되, 배포·commit/push는 승인 후에만.
+
+## ▶ 오후 재개는 이 문서부터 (2026-08-19)
+
+> **[`docs/HANDOFF-2026-08-19-afternoon.md`](docs/HANDOFF-2026-08-19-afternoon.md)**
+> 오전 세션 전체가 read-only 분석이었다 — master·DAT·빌드·스테이징·commit 전부 무변경.
+>
+> **오후 첫 작업**: movie/demo 오배치 수동 문맥 검수 312행.
+> 시작 행 = `output/media-register-qa/media-offset-verdicts.csv`의
+> `verdict=UNREVIEWED` 첫 행 **`demo r0 e30`**
+> (이전 메모의 `demo r5 e5`는 우선순위 flag 기준이었다 — **정정**).
+>
+> 금지: 자동 재정렬 재시도, 말투 FIX 91건 적용,
+> `en_*_korean_matches.csv`·`mgs3_korean_english_alignment*.csv`를 authority로 사용.
+
+## NEXT — 재정렬 트랙 중단, 수동 검수로 복귀 (2026-08-19)
+
+**[`docs/evidence/2026-08-19-media-offset-audit/REMAP-SOURCE-RECOVERY.md`](docs/evidence/2026-08-19-media-offset-audit/REMAP-SOURCE-RECOVERY.md) 부록 1·2를 읽어라.**
+read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
+
+**자동 재정렬 2회 시도, 2회 모두 게이트 실패.**
+
+| 시도 | 게이트(확정 KEEP 107행 재현) | MISPLACED 95 자동 REMAP |
+|---|---:|---:|
+| 1차 `mgs3d_media_realign.py` | 0 / 107 | 0 |
+| 2차 `mgs3d_media_realign2.py` | **3 / 107 (2.8%)** | 1 |
+
+2차에서 1차의 결함은 실제로 고쳤다. **(record, entry) 순서 = 스토리 순서임을 검증**
+했고(1차의 58%는 앵커 오염이었다 — `english_sequence` 값 `71`·`339`·`1254`·`1424`가
+각각 20·12·11·5행에 중복. 정제하면 **movie 96.8% / demo 85.4% 단조**), 윈도 앵커도
+유니크 위치 + LIS 백본으로 바꿨다. 그래도 실패했다.
+
+**근본 원인(측정값): master 한국어 2,917행 중 Shinsnote 대본에서 위치가 잡히는 행이
+213~225행(7.4%)뿐이다.** 나머지 92.5%는 정규화·축약·재번역을 거쳐 원문과 더는 같지
+않다. 앵커 밀도가 부족하고, 앵커 없는 구간은 EN↔KO 점수(고유명사·숫자·길이비)로
+다리를 놓지 못한다. LIS 백본도 정상/오배치를 구분 못 했다(KEEP 61/107 vs
+MISPLACED 47/95 — 비율이 같다). **파라미터 문제가 아니다.**
+
+**결정: 재정렬 트랙 중단.** 다시 하려면 **의미 기반 이중언어 정렬기**(문장 임베딩)가
+필요하고 현재 프로젝트 자산에 없다.
+**검증된 경로인 312행 수동 문맥 검수로 복귀한다** — 확정된 95 MISPLACED / 107 KEEP도
+전부 그 방식으로 얻었다. 시작점: `media-offset-verdicts.csv`의 `verdict=UNREVIEWED`
+첫 행 **`demo r5 e5`**.
+
+**게이트는 유지한다** — 앞으로 어떤 자동 정렬이든 **KEEP 107행 107/107 재현**을 먼저
+넘어야 한다. 말투 FIX 91건은 계속 보류.
+
+## NEXT — REMAP 근거 복원: 한국어 순서는 살아 있다, 기존 정렬은 전부 못 쓴다 (2026-08-19)
+
+**[`docs/evidence/2026-08-19-media-offset-audit/REMAP-SOURCE-RECOVERY.md`](docs/evidence/2026-08-19-media-offset-audit/REMAP-SOURCE-RECOVERY.md) 를 읽어라.**
+read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
+
+**한국어 sequence source 복원 = 성공 (2,958/3,031 = 97.6%).**
+지난 세션의 "복원 불가" 판단은 **틀렸다.** `korean_sequence`는 전역 인덱스가 아니라
+**`page` 내 인덱스**(0~266)였고, `en_*_korean_matches.csv`가 `page`를 버려서 해석이
+안 됐던 것이다. `page`를 보존한 파일이 있다 —
+**`analysis/mgs3_korean_english_alignment.csv`**(3,031행). 거기의
+`(page, korean_sequence)`가 `shinsnote_mgs3_script.csv`의 `(page, sequence)`로
+**97.6% 해석된다.**
+
+**그런데 MISPLACED 95행의 자동 REMAP은 여전히 0이다 — 기존 정렬 전부가 원천이기 때문이다.**
+`analysis/mgs3_korean_english_alignment_dp.csv`(1,389행, english_sequence distinct
+1,389 = 1:1 단조)는 이미 DP 단조 정렬인데, 95행 전부에서 **DP의 한국어 = master의
+한국어**였고 동시에 **DP의 `english` = 실제 DAT 대사(95/95)**였다. 즉 영어는 제대로
+짚고 **엉뚱한 한국어를 붙였다** — 오배치의 뿌리는 DP 정렬 자신이고
+`exact-unique-korean`은 그걸 하류로 복사했을 뿐이다. `confidence`도 1,326/1,389가
+`medium`이라 게이트 구실을 못 한다.
+
+**authority 사용 금지 목록(확정):** `en_{demo,movie}_korean_matches.csv`,
+`mgs3_korean_english_alignment.csv`, `mgs3_korean_english_alignment_dp.csv`.
+
+**재정렬 입력은 두 축 모두 확보됐다:**
+한국어 = `shinsnote_mgs3_script.csv` 4,071행 `(page, sequence, kind, **speaker**, text)`,
+영어 = master `current/{movie,demo}.csv` `preview` (DAT와 2,917/2,917 검증됨).
+**Shinsnote의 `speaker` 열은 movie/demo에 없던 화자 정보다** — 재정렬이 성공하면
+codec처럼 확정 화자 기반 말투 검수가 가능해진다.
+
+**다음 절차(설계 완료, 미실행):** monotone DP 재정렬(두 축 전진만, gap 패널티) +
+**고유명사·숫자 앵커**를 점수에 필수 포함 + 확정 조건 3개(경로 위 · 앵커 1개 이상 ·
+좌우 이웃 2행 일관) 전부 만족할 때만 자동 REMAP, 아니면 HUMAN.
+**검증 게이트: 확정 KEEP 107행을 먼저 107/107 재현**해야 정렬을 신뢰한다.
+앵커 없는 짧은 대사(`그래 ?`, `음 .`)는 원리적으로 자동 확정 불가 — 이번 오배치가
+정확히 그 집합이다. 실패 시 312행 수동 검수(`demo r5 e5`부터)로 복귀.
+
+## NEXT — offset 오배치 전수 감사 체크포인트 (2026-08-19)
+
+**[`docs/evidence/2026-08-19-media-offset-audit/README.md`](docs/evidence/2026-08-19-media-offset-audit/README.md) 를 읽어라.**
+read-only. master·DAT·빌드·스테이징·commit 전부 무변경.
+
+**offset 514행 중 KEEP 107 / MISPLACED 95 / REMAP 0 / UNREVIEWED 312.**
+확정 시트: `output/media-register-qa/media-offset-verdicts.csv`.
+
+**핵심 발견 — 근거로 쓰려던 파일이 원인이었다.** `20_matching/en_{demo,movie}_korean_matches.csv`
+는 영어 DAT 키라 독립 검증용으로 보였지만, **손으로 확인한 오배치 95행 전부가 그 파일에
+같은 키·같은 한국어로 들어 있다(95/95).** master offset 행의 **출처**이므로 대조하면 항상
+일치한다 — 첫 자동 감사가 KEEP 215를 낸 이유다.
+
+**메커니즘:** 그 표의 `match_status`가 **`exact-unique-korean`**(demo 457 중 333) —
+**한국어 문자열의 유일성으로만 매칭**하고 시퀀스를 안 본다. `그래 ?`·`몰라 ?`·`음 .`
+같은 짧은 대사가 대본 아무 데나 붙는다. 정상 구간은 `en_seq - ko_seq` 델타가 +5로 일정한데
+오배치는 `265/144`, `476/2`, `501/50`처럼 튄다.
+**따라서 연속 drift block이 아니라 산발성 오배치다 — LIS 분석에서도 block 0개.**
+
+**REMAP 0인 이유:** `korean_sequence`가 가리키는 중간 한국어 리스트가 보존돼 있지 않다
+(`shinsnote_mgs3_script.csv` 30/366, `classified` 30/366, `movie_demo_only` 0/366).
+**기존 산출물만으로는 remap 불가** — Shinsnote 대본을 영어 DAT 순서에 맞춰 **재정렬**해야
+하고, 그때는 `exact-unique-korean`이 아니라 **단조 시퀀스 정렬**을 써야 한다.
+
+**스크리닝 신호는 약하다.** LIS backbone 이탈 표시는 손으로 읽은 오배치의 94%를 잡지만
+508행 중 419행을 flag한다. 미검토 flag 상위 22행 표본은 **거의 전부 정상**이었다
+(`You OK? → 괜찮아?`). **312행 자동 판정 금지, 읽는 순서 힌트로만 쓸 것.**
+
+**더 쓸모 있는 단서:** 확정 오배치 95행은 거의 전부 **문장부호 앞 공백**을 달고 있고,
+UNREVIEWED 312행은 그 공백이 없다. **정규화를 거친 행 = 재작성된 행**이라는 가설을
+다음 세션에서 검증할 것.
+
+**다음 세션 시작:** `media-offset-verdicts.csv`의 `verdict=UNREVIEWED` 첫 행 **`demo r5 e5`**.
+**말투 FIX 91건은 계속 보류** — 오배치 정리 전 적용 금지.
+
+## NEXT — 인게임 대사 텍스트 경로 발견 + movie/demo 문맥 검수 (2026-08-19)
+
+분석·판정만 했다. **master·빌드·스테이징 전부 무변경.**
+
+### 1. 인게임 적/NPC 대사는 codec/movie/demo에 없다
+
+**[`docs/ingame-stage-text-english-residue-2026-08-19.md`](docs/ingame-stage-text-english-residue-2026-08-19.md) 를 읽어라.**
+
+`stage/<이름>/scenerio.gcx` **169개 파일**이 네 번째 텍스트 컨테이너다 —
+codec.dat 레코드와 **완전히 같은 GCX 포맷**이라 `GcxRecord`가 그대로 파싱한다
+(디스크에서 정렬 패딩이 없을 뿐, 복사본을 패딩하면 풀린다). 여기에 적 경계 대사
+(`Who's that!` 52스테이지 208곳), 무기·식량·약품 설명, 동식물 도감, 부상 이름,
+지역명, RESULTS 화면, 칭호, 조작 도움말이 **전부 영어 원문 그대로** 들어 있다.
+
+**미번역이지 빌드 누락이 아니다.** 스테이징된 169개의 문자열 영역이 영어 원본과
+**169/169 SHA 동일**(글리프 페이지만 EOF에 덧붙어 있다).
+
+**잔존량: 유니크 1,571행 / 149,592 location / 89,070 B** (prose 1,065).
+언어 분기는 **EN/FR/ES 3개뿐**(독일어·이탈리아어 없음), 가변 길이 블록 3연쌍이라
+period-3 가정은 81%밖에 설명 못 한다. 구조 판정과 어휘 판정 **불일치 0건**,
+donor:english location 비 **정확히 2.000**으로 교차검산됐다.
+
+**번역 정본:** 프로젝트 내부엔 없다(매칭 8건 전부 오탐). PS2 한국어 STAGE.DAT은
+이미 추출·카탈로그돼 있으나(`analysis/ps2_korean/stage_text_catalog.csv` 90,216행)
+**해독률이 1,548행 중 58행**이다 — codec 때 쓴 로컬 글리프 OCR 파이프라인을 stage용으로
+끝까지 돌린 적이 없다. 용량은 여유롭다(donor가 영어의 2.55배, 169/169 스테이지 마진 양수).
+
+도구: `tools/mgs3d_stage_text_scan.py` (읽기 전용),
+증거: `docs/evidence/2026-08-19-stage-text-scan/`.
+
+**주의: stage 텍스트는 `originals/3ds_pristine/`(일본판)이 아니라
+`experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs/`(영어판)를 봐야 한다.**
+
+### 2. movie/demo — 말투보다 먼저, 대사 116행이 남의 자리에 있다
+
+**[`docs/movie-demo-contextual-qa-2026-08-19.md`](docs/movie-demo-contextual-qa-2026-08-19.md) 를 읽어라.**
+
+말투 검수를 하려고 문맥 순서로 읽다가 **한국어가 다른 대사 자리에 들어간 116행**을
+찾았다. 영어 쪽은 멀쩡하다 — master 2,917행의 `preview`를 실제 DAT 엔트리와 대조해
+**2,917/2,917 일치**. 원인은 `translation_source=offset` 514행이 **일본판 DAT 기준**
+비교표에서 바이트 오프셋으로 옮겨온 것이라는 점이고, 문장부호 앞 공백(`좋아 , `)이
+그 지문이다(offset 행의 36.6% vs 다른 소스 1% 미만). **116은 하한** — 나머지 326개
+offset 행은 아직 안 읽었다.
+
+**말투 자체는 대체로 멀쩡했다.** 두 말투가 섞인 75레코드 중 55행은 정상(EVA 존댓말,
+볼긴/보스에게 보고하는 부하, 하오체 소코로프 장면의 스네이크 반말). 진짜 흔들림은
+**12행**, 거의 전부 **스네이크가 제로에게 존댓말**을 쓰는 codec↔demo 불일치다.
+
+제안 시트 `output/media-register-qa/media-qa-proposals.csv` (509행):
+**FIX 91**(전부 바이트 검증 통과) · KEEP 55 · REVIEW 131 · HUMAN 232
+(오배치 116 / 고유명사 표기 분열 78 / 한국어 속 영어 잔존 34 / 기타 4).
+
+분류기 수정 2건: **하오체를 독립 클래스로** 분리(소코로프 `-거요`가 존댓말로 잡히던
+문제, 하오체 레코드 안에서만 재판정하는 2-pass), **`-십시오`가 하오체로 오분류**되던
+문제(`시오`가 `보십시오`를 삼킴). **codec 분류기는 건드리지 않았다.**
+
+판정 근거는 `docs/evidence/2026-08-19-media-qa/verdicts.py`에 행 단위로 남겼다(KEEP 포함).
+
+**순서 제안:** 오배치 116행 → 나머지 326 offset 행 검수 → FIX 91 적용 →
+고유명사 표기 정책 → 영어 잔존 34행 재번역. **말투만 먼저 고치면 통째 교체 때 날아간다.**
+
+## NEXT — v0.9 CPP 강제 패치 테스트 빌드 스테이징 완료 (2026-08-19)
+
+**[`docs/v0.9-cpp-test-staging-2026-08-19.md`](docs/v0.9-cpp-test-staging-2026-08-19.md) 를 읽어라.**
+
+`code.bin` **하나만** 바뀌었다: `b9514ec5…` → **`4e693f32b1b20d99…`**
+(압축 크기는 5,264,540 B로 이전과 **우연히 같다** — SHA로 구분할 것).
+`codec.dat b29807f8…`·`movie.dat`·`demo.dat`·`exheader.bin` 전부 그대로.
+되돌리기: `Romforge\archive\pre-cpp-20260819\code.bin` 복구. **CCI 미생성.**
+
+패치는 `0x0010AEC0` 강제 루틴의 "꺼짐" 갈래 6워드(24 B)를 **"꺼져 있으면 켠다"**로
+교체한 것이다 — `config+8` bit0을 세우고 `0x0010AEDC`(진짜 켜짐 갈래)로 합류시켜
+프리셋 3과 컨트롤 표를 게임 자신의 경로로 채우게 한다. 코드 케이브 불필요, 크기 동일,
+exheader 무변경. 도구: `tools/mgs3d_cpp_default_patch.py` (앵커 5개 검증 → 교체 →
+BLZ 재압축 → 왕복 검증, 재실행 안전).
+
+검증: 압축 해제 이미지 차이 21 B(전부 패치 구간 안), 글리프 패치 6곳·트램폴린
+`0x0087F8C4..0x008838C3` 무변경, BLZ 왕복 OK, 교체 구간 진입 분기는 `0x0010AED8`
+하나뿐(점프테이블 참조 없음).
+
+**아자르 테스트**: 세이브는 쓰던 것 그대로. 아자르 입력에 **ZL·ZR·오른쪽 스틱이
+바인딩돼 있는지 먼저 확인**(CPP 스킴은 `R→ZR`, `L→ZL`). 오른쪽 스틱으로 카메라가
+움직이면 성공. 안 되면 `builds/cstick-test-2026-08-18/A_basic_savedata`로 재시도해
+원인을 가른다. **옵션 메뉴는 열지 말 것**(켜기 동작은 여전히 애플릿 → 먹통).
+
+배포 위치는 **마지막 옵션**으로 합의됨: 최종 산출물(CCI 또는 .3ds)에 마지막 단계로
+`code.bin`만 다시 패치. 구형 3DS(CPP 미장착)에서는 조작이 깨지므로 **기본 빌드가
+아니라 별도 옵션 빌드**로 낸다.
+
+## NEXT — CPP를 기본값으로: 가능하다 + 어제 패처의 결함 수정 (2026-08-19)
+
+**[`docs/cstick-default-scheme-feasibility-2026-08-19.md`](docs/cstick-default-scheme-feasibility-2026-08-19.md) 를 읽어라.**
+
+안드로이드에서 세이브 파일을 만지기 어렵다는 문제 → **세이브 없이 `code.bin`
+패치로 기본값을 바꿀 수 있다.** `code.bin`은 BLZ 압축이라 그냥 검색하면 안 나온다
+(`tools/nintendo_blz.py`로 풀어야 한다. 5.26 MB → 8.48 MB, VA = 파일오프셋+0x100000).
+
+압축 해제 이미지에서 확인한 구조:
+
+- `0x0088F470` **컨트롤 프리셋 4개**(0x100 간격). preset[0] = CPP-off 세이브의
+  `0x3C..0xF7`과 바이트 동일, **preset[3] = CPP-on 세이브와 바이트 동일**.
+- `0x0012BD8C` `apply_scheme(i)` — preset[i] 47워드를 config+0x38에 복사하고
+  config+0x138에 i를 저장. 세이브는 `u32 CRC || config`라 **config+X = 세이브 X+4**.
+- `0x0010AEC0` **강제 루틴** — `config+8` bit0(= 세이브 `0x0C` bit0)이 켜져 있으면
+  scheme 3, 꺼져 있으면 scheme 0을 **강제한다**.
+- 켜기 `0x0082C9F0`(`flags |= 1`), 끄기 `0x00116B50`·`0x001319A0`·`0x007FD6F4`·
+  `0x007FDBDC`. **끄는 쪽은 애플릿을 부르지 않는다** — Citra 먹통은 켤 때뿐.
+
+**어제 패처는 불완전했다.** 컨트롤 표 33바이트만 써서 게이트 비트와 프리셋 번호가
+빠졌고, 위 강제 루틴이 그걸 preset[0]으로 되돌린다. 수정 완료 —
+`enable-cpp`는 이제 `표 + 0x0C bit0 + 0x13C=3`을 모두 쓴다(`0x0C`는 비트 마스크로만).
+왕복 검증 재실행 3/3 통과, `builds/cstick-test-2026-08-18/` A/B 세이브 재생성.
+
+**주의: 메인 빌드 기본값으로 넣으면 안 된다.** preset[3]은 ZL/ZR·오른쪽 스틱을
+전제해서 구형 3DS(CPP 미장착)에서는 조작이 망가진다. **별도 옵션 빌드**로 내라.
+
+## NEXT — 확장 슬라이드 패드(CPP): 남의 세이브 배포 대신 세이브 패처 (2026-08-18)
+
+**[`docs/cstick-save-patcher-2026-08-18.md`](docs/cstick-save-patcher-2026-08-18.md) 를 읽어라.**
+
+배포물에 RT37 세이브를 동봉하지 않아도 되도록, **플레이어 자기 세이브에서 CPP를
+켜는** 도구를 만들었다: `tools/mgs3d_save_tool.py`의 `enable-cpp` / `disable-cpp` /
+`learn-cpp`. 진행도 보존, 되돌리기 가능, 재배포 문제 없음.
+
+세이브 5개(CPP-off 2 + RT37 CPP-on 3) **그룹 차분**으로 58바이트를 얻었고 그중
+**33바이트가 `0x3C..0xF7`**(스킴 id + 주 버튼 표 + CPP 표)다. 정적 검증 전부 PASS —
+사용자 세이브에 enable하면 그 창이 RT37 CPP-on과 **바이트 동일**, RT37에 disable하면
+진짜 CPP-off 세이브와 **바이트 동일**(3/3), 창 밖 변경 0, on→off→on 왕복 바이트 동일.
+
+**미확정 2가지:** ① 에뮬 실동작 미확인 ② 창 밖 옵션 블록 5바이트
+(`0x13C/0x140/0x15C/0x162/0x168`, on일 때만 비0, `2D`=45·`40`=64는 **카메라 감도로
+추정**) — 필수면 기본 프로파일만으로는 우측 스틱 카메라가 안 움직일 수 있다.
+`--with-option-block` 플래그로 A/B 테스트하면 결판난다.
+
+**지금 실기 검증 중이면 2분짜리 캡처를 부탁한다** — 실기에서 CPP **끈** 상태 세이브
+백업(Checkpoint/JKSM) → 게임 내에서 **켜고** 같은 슬롯 세이브 → 다시 백업.
+이 쌍을 `learn-cpp`에 넣으면 추측이 전부 사라진다. RT37의 "토글하지 마라" 경고는
+**에뮬레이터 이야기**이고 실기 토글은 안전하다(RT37 본인이 2DS에서 그렇게 만들었다).
+
 ## NEXT — 화자 말투(register) 1,333행 교정, master·빌드·스테이징 반영 (2026-08-18)
 
 **[`docs/codec-speaker-register-apply-2026-08-18.md`](docs/codec-speaker-register-apply-2026-08-18.md) 를 읽어라.**
 
 외부 대본으로 화자가 확정된 행만 대상으로 말투를 고쳤다. Para-Medic·EVA 존댓말,
-Zero·Sigint·Snake·The Boss 반말. **MISMATCH 1,335 → 적용 1,333, HUMAN 2.**
+Zero·Sigint·Snake·The Boss 반말. **MISMATCH 1,335 → 적용 1,333, HUMAN 2**
+(HUMAN 2건은 2026-08-18 사용자 판단으로 **둘 다 KEEP 종결** — 텍스트 변경이 없어
+재빌드·재스테이징 불필요, `codec.dat b29807f8…` 그대로 유효).
 (Para-Medic 329 / Sigint 319 / Zero 298 / EVA 149 / Snake 135 / The Boss 103,
 존댓말→반말 855 · 반말→존댓말 478.)
 

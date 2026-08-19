@@ -5,6 +5,15 @@ the Citra Extrapad freeze
 ([`citra-extrapad-applet-freeze-2026-08-17.md`](citra-extrapad-applet-freeze-2026-08-17.md)).
 **Verdict: viable, ship 3 of the 4 files, with attribution and one added warning.**
 
+> **2026-08-18 update.** The "only reason to prefer distribution over patching"
+> named at the end of the next section no longer holds on its own: the two
+> control tables turned out to be enough to build an in-place patcher, and it is
+> implemented and statically verified in
+> [`cstick-save-patcher-2026-08-18.md`](cstick-save-patcher-2026-08-18.md)
+> (`mgs3d_save_tool.py enable-cpp` / `disable-cpp`). Shipping RT37's saves is now
+> the fallback, not the plan. What is written below still stands as the terms for
+> that fallback.
+
 ## What is in the archive
 
 RAR5, 4,778 bytes, authored 2021-10-24 by **RT37**. `readme.txt` states the saves

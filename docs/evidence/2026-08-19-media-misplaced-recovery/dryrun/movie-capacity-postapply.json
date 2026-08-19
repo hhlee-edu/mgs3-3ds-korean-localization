@@ -1,0 +1,5902 @@
+{
+  "format": "mgs3d-movie-fixed-capacity-v1",
+  "accepted_rows": 689,
+  "changed_records": 107,
+  "safe_records": 107,
+  "safe_rows": 689,
+  "records": [
+    {
+      "record": 0,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 292,
+          "needed_bytes": 24,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 608,
+          "needed_bytes": 19,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 872,
+          "needed_bytes": 26,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 1064,
+          "needed_bytes": 11,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 1280,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 1584,
+          "needed_bytes": 44,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 1944,
+          "needed_bytes": 35,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 1,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 2204,
+          "needed_bytes": 15,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 2464,
+          "needed_bytes": 30,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 2800,
+          "needed_bytes": 31,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 2964,
+          "needed_bytes": 7,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 3264,
+          "needed_bytes": 32,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 3428,
+          "needed_bytes": 6,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 3616,
+          "needed_bytes": 11,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 3956,
+          "needed_bytes": 46,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 2,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 4260,
+          "needed_bytes": 26,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 4532,
+          "needed_bytes": 39,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 4872,
+          "needed_bytes": 28,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 5236,
+          "needed_bytes": 38,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 5612,
+          "needed_bytes": 42,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 5976,
+          "needed_bytes": 42,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 6160,
+          "needed_bytes": 15,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 3,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 6376,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 6748,
+          "needed_bytes": 46,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 7084,
+          "needed_bytes": 43,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 7264,
+          "needed_bytes": 15,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 7616,
+          "needed_bytes": 38,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 7912,
+          "needed_bytes": 21,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 8184,
+          "needed_bytes": 27,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 4,
+      "accepted_rows": 5,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 8548,
+          "needed_bytes": 44,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 8944,
+          "needed_bytes": 48,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 9328,
+          "needed_bytes": 37,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 9748,
+          "needed_bytes": 34,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 10116,
+          "needed_bytes": 45,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 5,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 10516,
+          "needed_bytes": 42,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 10696,
+          "needed_bytes": 8,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 10944,
+          "needed_bytes": 25,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 11340,
+          "needed_bytes": 47,
+          "capacity_bytes": 84,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 11568,
+          "needed_bytes": 16,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 11964,
+          "needed_bytes": 60,
+          "capacity_bytes": 84,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 12340,
+          "needed_bytes": 42,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 6,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 12776,
+          "needed_bytes": 46,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 13076,
+          "needed_bytes": 29,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 13476,
+          "needed_bytes": 41,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 13688,
+          "needed_bytes": 8,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 13944,
+          "needed_bytes": 30,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 14220,
+          "needed_bytes": 33,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 14572,
+          "needed_bytes": 38,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 7,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 14952,
+          "needed_bytes": 45,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 15352,
+          "needed_bytes": 25,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 15704,
+          "needed_bytes": 29,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 15972,
+          "needed_bytes": 23,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 16340,
+          "needed_bytes": 29,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 16596,
+          "needed_bytes": 21,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 8,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 16812,
+          "needed_bytes": 18,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 17200,
+          "needed_bytes": 31,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 17580,
+          "needed_bytes": 52,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 17948,
+          "needed_bytes": 35,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 18216,
+          "needed_bytes": 21,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 18516,
+          "needed_bytes": 37,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 9,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 18912,
+          "needed_bytes": 23,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 19220,
+          "needed_bytes": 28,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 19572,
+          "needed_bytes": 34,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 20012,
+          "needed_bytes": 49,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 20468,
+          "needed_bytes": 60,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 20808,
+          "needed_bytes": 30,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 10,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 21148,
+          "needed_bytes": 26,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 21548,
+          "needed_bytes": 46,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 21832,
+          "needed_bytes": 18,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 22160,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 22504,
+          "needed_bytes": 34,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 22876,
+          "needed_bytes": 37,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 11,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 23172,
+          "needed_bytes": 22,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 23600,
+          "needed_bytes": 52,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 23780,
+          "needed_bytes": 4,
+          "capacity_bytes": 4,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 24104,
+          "needed_bytes": 41,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 24412,
+          "needed_bytes": 27,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 24728,
+          "needed_bytes": 24,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 25020,
+          "needed_bytes": 29,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 12,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 25368,
+          "needed_bytes": 41,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 25772,
+          "needed_bytes": 20,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 26096,
+          "needed_bytes": 21,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 26264,
+          "needed_bytes": 11,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 26512,
+          "needed_bytes": 36,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 26692,
+          "needed_bytes": 9,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 27052,
+          "needed_bytes": 56,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 13,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 27304,
+          "needed_bytes": 9,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 27572,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 27828,
+          "needed_bytes": 24,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 28064,
+          "needed_bytes": 15,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 28472,
+          "needed_bytes": 52,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 28756,
+          "needed_bytes": 27,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 29108,
+          "needed_bytes": 47,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 14,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 29484,
+          "needed_bytes": 46,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 29788,
+          "needed_bytes": 25,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 30088,
+          "needed_bytes": 39,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 30356,
+          "needed_bytes": 29,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 30548,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 30896,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 31116,
+          "needed_bytes": 16,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 15,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 31452,
+          "needed_bytes": 35,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 31820,
+          "needed_bytes": 34,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 32092,
+          "needed_bytes": 23,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 32412,
+          "needed_bytes": 36,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 32816,
+          "needed_bytes": 60,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 33044,
+          "needed_bytes": 14,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 33244,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 16,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 33592,
+          "needed_bytes": 39,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 33964,
+          "needed_bytes": 34,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 34208,
+          "needed_bytes": 15,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 34544,
+          "needed_bytes": 27,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 34772,
+          "needed_bytes": 19,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 35088,
+          "needed_bytes": 32,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 35400,
+          "needed_bytes": 42,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 17,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 35836,
+          "needed_bytes": 29,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 36168,
+          "needed_bytes": 36,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 36512,
+          "needed_bytes": 49,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 36848,
+          "needed_bytes": 38,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 37116,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 37312,
+          "needed_bytes": 15,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 37576,
+          "needed_bytes": 31,
+          "capacity_bytes": 34,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 18,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 37860,
+          "needed_bytes": 31,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 38020,
+          "needed_bytes": 6,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 38308,
+          "needed_bytes": 48,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 38668,
+          "needed_bytes": 41,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 38936,
+          "needed_bytes": 31,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 39248,
+          "needed_bytes": 29,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 39500,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 19,
+      "accepted_rows": 1,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 39924,
+          "needed_bytes": 50,
+          "capacity_bytes": 58,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 20,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 41044,
+          "needed_bytes": 42,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 41384,
+          "needed_bytes": 38,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 41752,
+          "needed_bytes": 31,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 42092,
+          "needed_bytes": 55,
+          "capacity_bytes": 80,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 42532,
+          "needed_bytes": 15,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 42936,
+          "needed_bytes": 31,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 21,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 43204,
+          "needed_bytes": 50,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 43580,
+          "needed_bytes": 26,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 43912,
+          "needed_bytes": 30,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 44196,
+          "needed_bytes": 39,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 44536,
+          "needed_bytes": 27,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 44820,
+          "needed_bytes": 12,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 44960,
+          "needed_bytes": 51,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 22,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 45388,
+          "needed_bytes": 44,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 45720,
+          "needed_bytes": 61,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 46168,
+          "needed_bytes": 24,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 46484,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 46712,
+          "needed_bytes": 50,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 47028,
+          "needed_bytes": 43,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 23,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 47444,
+          "needed_bytes": 49,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 47840,
+          "needed_bytes": 29,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 48088,
+          "needed_bytes": 35,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 48360,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 48664,
+          "needed_bytes": 39,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 48916,
+          "needed_bytes": 54,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 49380,
+          "needed_bytes": 46,
+          "capacity_bytes": 46,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 25,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 51620,
+          "needed_bytes": 40,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 51884,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 52280,
+          "needed_bytes": 42,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 52584,
+          "needed_bytes": 26,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 52868,
+          "needed_bytes": 34,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 53172,
+          "needed_bytes": 32,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 26,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 53472,
+          "needed_bytes": 18,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 53884,
+          "needed_bytes": 54,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 54200,
+          "needed_bytes": 26,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 54492,
+          "needed_bytes": 34,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 54920,
+          "needed_bytes": 52,
+          "capacity_bytes": 84,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 55232,
+          "needed_bytes": 27,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 55372,
+          "needed_bytes": 4,
+          "capacity_bytes": 4,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 27,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 55692,
+          "needed_bytes": 43,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 55988,
+          "needed_bytes": 29,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 56320,
+          "needed_bytes": 33,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 56556,
+          "needed_bytes": 9,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 56776,
+          "needed_bytes": 17,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 57116,
+          "needed_bytes": 35,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 57400,
+          "needed_bytes": 8,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 28,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 57652,
+          "needed_bytes": 16,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 57908,
+          "needed_bytes": 35,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 58212,
+          "needed_bytes": 30,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 58536,
+          "needed_bytes": 30,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 58688,
+          "needed_bytes": 4,
+          "capacity_bytes": 4,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 58900,
+          "needed_bytes": 22,
+          "capacity_bytes": 23,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 29,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 59772,
+          "needed_bytes": 40,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 59996,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 60244,
+          "needed_bytes": 28,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 60648,
+          "needed_bytes": 44,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 60956,
+          "needed_bytes": 27,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 61124,
+          "needed_bytes": 9,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 61304,
+          "needed_bytes": 9,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 30,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 61692,
+          "needed_bytes": 44,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 62000,
+          "needed_bytes": 19,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 62216,
+          "needed_bytes": 13,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 62516,
+          "needed_bytes": 41,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 62868,
+          "needed_bytes": 18,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 63112,
+          "needed_bytes": 26,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 63520,
+          "needed_bytes": 51,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 31,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 63960,
+          "needed_bytes": 24,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 64256,
+          "needed_bytes": 32,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 64504,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 64760,
+          "needed_bytes": 21,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 65044,
+          "needed_bytes": 39,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 65364,
+          "needed_bytes": 39,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 32,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 65812,
+          "needed_bytes": 57,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 66112,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 66488,
+          "needed_bytes": 63,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 66756,
+          "needed_bytes": 2,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 66888,
+          "needed_bytes": 8,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 67104,
+          "needed_bytes": 26,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 67400,
+          "needed_bytes": 22,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 33,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 67780,
+          "needed_bytes": 46,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 67960,
+          "needed_bytes": 6,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 68172,
+          "needed_bytes": 26,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 68452,
+          "needed_bytes": 23,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 68668,
+          "needed_bytes": 15,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 68888,
+          "needed_bytes": 20,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 69300,
+          "needed_bytes": 48,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 69628,
+          "needed_bytes": 37,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 34,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 69844,
+          "needed_bytes": 8,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 69992,
+          "needed_bytes": 15,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 70248,
+          "needed_bytes": 31,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 70436,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 70792,
+          "needed_bytes": 42,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 71152,
+          "needed_bytes": 30,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 71584,
+          "needed_bytes": 48,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 35,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 71940,
+          "needed_bytes": 16,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 72236,
+          "needed_bytes": 44,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 72528,
+          "needed_bytes": 32,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 72832,
+          "needed_bytes": 24,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 73128,
+          "needed_bytes": 18,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 73420,
+          "needed_bytes": 25,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 73808,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 36,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 74124,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 74444,
+          "needed_bytes": 23,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 74724,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 75044,
+          "needed_bytes": 40,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 75348,
+          "needed_bytes": 30,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 75680,
+          "needed_bytes": 30,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 75904,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 37,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 76324,
+          "needed_bytes": 47,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 76640,
+          "needed_bytes": 28,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 76852,
+          "needed_bytes": 15,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 77040,
+          "needed_bytes": 12,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 77436,
+          "needed_bytes": 56,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 77644,
+          "needed_bytes": 13,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 77972,
+          "needed_bytes": 44,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 38,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 78428,
+          "needed_bytes": 55,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 78788,
+          "needed_bytes": 27,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 79196,
+          "needed_bytes": 55,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 79396,
+          "needed_bytes": 12,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 79796,
+          "needed_bytes": 60,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 80088,
+          "needed_bytes": 27,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 39,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 80488,
+          "needed_bytes": 49,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 80804,
+          "needed_bytes": 38,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 81132,
+          "needed_bytes": 44,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 81392,
+          "needed_bytes": 28,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 81672,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 81976,
+          "needed_bytes": 22,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 82232,
+          "needed_bytes": 30,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 40,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 82576,
+          "needed_bytes": 18,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 82816,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 83072,
+          "needed_bytes": 26,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 83376,
+          "needed_bytes": 27,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 83764,
+          "needed_bytes": 42,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 84016,
+          "needed_bytes": 23,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 84324,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 41,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 84732,
+          "needed_bytes": 51,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 85080,
+          "needed_bytes": 36,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 85344,
+          "needed_bytes": 28,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 85636,
+          "needed_bytes": 31,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 85948,
+          "needed_bytes": 31,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 86304,
+          "needed_bytes": 36,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 42,
+      "accepted_rows": 9,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 86644,
+          "needed_bytes": 30,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 86936,
+          "needed_bytes": 31,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 87188,
+          "needed_bytes": 33,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 87480,
+          "needed_bytes": 34,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 87716,
+          "needed_bytes": 18,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 87868,
+          "needed_bytes": 12,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 88056,
+          "needed_bytes": 18,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 88364,
+          "needed_bytes": 31,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 88652,
+          "needed_bytes": 35,
+          "capacity_bytes": 38,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 43,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 89020,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 89344,
+          "needed_bytes": 36,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 89720,
+          "needed_bytes": 45,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 90036,
+          "needed_bytes": 26,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 90424,
+          "needed_bytes": 51,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 90656,
+          "needed_bytes": 13,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 44,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 90856,
+          "needed_bytes": 10,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 91048,
+          "needed_bytes": 9,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 91328,
+          "needed_bytes": 32,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 91708,
+          "needed_bytes": 36,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 92156,
+          "needed_bytes": 52,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 92584,
+          "needed_bytes": 53,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 92764,
+          "needed_bytes": 7,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 45,
+      "accepted_rows": 5,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 93016,
+          "needed_bytes": 11,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 93324,
+          "needed_bytes": 50,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 93584,
+          "needed_bytes": 27,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 93936,
+          "needed_bytes": 49,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 94164,
+          "needed_bytes": 19,
+          "capacity_bytes": 19,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 46,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 94292,
+          "needed_bytes": 15,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 94520,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 94820,
+          "needed_bytes": 41,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 95128,
+          "needed_bytes": 48,
+          "capacity_bytes": 84,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 95600,
+          "needed_bytes": 19,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 95848,
+          "needed_bytes": 39,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 96144,
+          "needed_bytes": 46,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 47,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 96472,
+          "needed_bytes": 45,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 96820,
+          "needed_bytes": 22,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 97156,
+          "needed_bytes": 40,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 97452,
+          "needed_bytes": 25,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 97724,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 98084,
+          "needed_bytes": 37,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 48,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 98484,
+          "needed_bytes": 20,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 98672,
+          "needed_bytes": 22,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 98932,
+          "needed_bytes": 34,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 99260,
+          "needed_bytes": 35,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 99552,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 99876,
+          "needed_bytes": 24,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 100224,
+          "needed_bytes": 32,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 100500,
+          "needed_bytes": 65,
+          "capacity_bytes": 75,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 49,
+      "accepted_rows": 4,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 101016,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 101288,
+          "needed_bytes": 6,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 101404,
+          "needed_bytes": 22,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 101660,
+          "needed_bytes": 10,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 50,
+      "accepted_rows": 5,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 102768,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 102996,
+          "needed_bytes": 20,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 103428,
+          "needed_bytes": 55,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 103888,
+          "needed_bytes": 43,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 104216,
+          "needed_bytes": 37,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 51,
+      "accepted_rows": 2,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 104548,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 104820,
+          "needed_bytes": 28,
+          "capacity_bytes": 30,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 52,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 106936,
+          "needed_bytes": 27,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 107296,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 107632,
+          "needed_bytes": 29,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 107908,
+          "needed_bytes": 29,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 108172,
+          "needed_bytes": 23,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 108456,
+          "needed_bytes": 30,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 53,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 108824,
+          "needed_bytes": 30,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 109188,
+          "needed_bytes": 37,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 109520,
+          "needed_bytes": 37,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 109772,
+          "needed_bytes": 20,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 110096,
+          "needed_bytes": 41,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 110424,
+          "needed_bytes": 34,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 110648,
+          "needed_bytes": 23,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 54,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 111008,
+          "needed_bytes": 27,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 111188,
+          "needed_bytes": 18,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 111524,
+          "needed_bytes": 33,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 111900,
+          "needed_bytes": 46,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 112160,
+          "needed_bytes": 18,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 112556,
+          "needed_bytes": 59,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 55,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 112868,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 113088,
+          "needed_bytes": 13,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 113304,
+          "needed_bytes": 20,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 113592,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 113860,
+          "needed_bytes": 29,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 114160,
+          "needed_bytes": 32,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 114452,
+          "needed_bytes": 30,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 114780,
+          "needed_bytes": 42,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 56,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 115220,
+          "needed_bytes": 30,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 115472,
+          "needed_bytes": 26,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 115752,
+          "needed_bytes": 33,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 116040,
+          "needed_bytes": 22,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 116436,
+          "needed_bytes": 52,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 116816,
+          "needed_bytes": 43,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 57,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 117088,
+          "needed_bytes": 28,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 117464,
+          "needed_bytes": 44,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 117780,
+          "needed_bytes": 28,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 118056,
+          "needed_bytes": 28,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 118408,
+          "needed_bytes": 51,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 118836,
+          "needed_bytes": 31,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 58,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 119156,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 119456,
+          "needed_bytes": 26,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 119788,
+          "needed_bytes": 38,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 120212,
+          "needed_bytes": 58,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 120660,
+          "needed_bytes": 59,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 121064,
+          "needed_bytes": 41,
+          "capacity_bytes": 53,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 59,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 121376,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 121684,
+          "needed_bytes": 46,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 122016,
+          "needed_bytes": 40,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 122284,
+          "needed_bytes": 32,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 122632,
+          "needed_bytes": 58,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 122996,
+          "needed_bytes": 43,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 60,
+      "accepted_rows": 1,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 123392,
+          "needed_bytes": 49,
+          "capacity_bytes": 63,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 61,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 125012,
+          "needed_bytes": 23,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 125244,
+          "needed_bytes": 48,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 125660,
+          "needed_bytes": 46,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 125980,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 126264,
+          "needed_bytes": 55,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 126628,
+          "needed_bytes": 28,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 126880,
+          "needed_bytes": 7,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 127020,
+          "needed_bytes": 41,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 62,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 127492,
+          "needed_bytes": 48,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 127832,
+          "needed_bytes": 18,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 128044,
+          "needed_bytes": 48,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 128388,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 128768,
+          "needed_bytes": 22,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 128976,
+          "needed_bytes": 40,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 63,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 129336,
+          "needed_bytes": 8,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 129472,
+          "needed_bytes": 48,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 129836,
+          "needed_bytes": 15,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 130020,
+          "needed_bytes": 48,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 130388,
+          "needed_bytes": 29,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 130732,
+          "needed_bytes": 30,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 131044,
+          "needed_bytes": 25,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 64,
+      "accepted_rows": 5,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 131412,
+          "needed_bytes": 56,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 131800,
+          "needed_bytes": 56,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 132240,
+          "needed_bytes": 53,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 132616,
+          "needed_bytes": 29,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 132904,
+          "needed_bytes": 52,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 65,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 133380,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 133616,
+          "needed_bytes": 9,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 133772,
+          "needed_bytes": 37,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 134208,
+          "needed_bytes": 19,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 134460,
+          "needed_bytes": 48,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 134800,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 135028,
+          "needed_bytes": 40,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 135384,
+          "needed_bytes": 47,
+          "capacity_bytes": 61,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 66,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 135804,
+          "needed_bytes": 50,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 136152,
+          "needed_bytes": 22,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 136396,
+          "needed_bytes": 53,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 136840,
+          "needed_bytes": 34,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 137096,
+          "needed_bytes": 25,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 137436,
+          "needed_bytes": 46,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 67,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 137796,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 138048,
+          "needed_bytes": 34,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 138348,
+          "needed_bytes": 28,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 138636,
+          "needed_bytes": 17,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 138844,
+          "needed_bytes": 27,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 139260,
+          "needed_bytes": 42,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 68,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 139668,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 139956,
+          "needed_bytes": 15,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 140136,
+          "needed_bytes": 25,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 140504,
+          "needed_bytes": 43,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 140836,
+          "needed_bytes": 36,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 141140,
+          "needed_bytes": 37,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 141420,
+          "needed_bytes": 34,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 69,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 141764,
+          "needed_bytes": 44,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 142144,
+          "needed_bytes": 35,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 142432,
+          "needed_bytes": 51,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 142860,
+          "needed_bytes": 36,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 143156,
+          "needed_bytes": 39,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 143548,
+          "needed_bytes": 52,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 70,
+      "accepted_rows": 4,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 143996,
+          "needed_bytes": 36,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 144288,
+          "needed_bytes": 62,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 144716,
+          "needed_bytes": 51,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 145124,
+          "needed_bytes": 46,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 71,
+      "accepted_rows": 9,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 147540,
+          "needed_bytes": 15,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 147732,
+          "needed_bytes": 34,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 148096,
+          "needed_bytes": 18,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 148268,
+          "needed_bytes": 28,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 148520,
+          "needed_bytes": 27,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 148724,
+          "needed_bytes": 36,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 148984,
+          "needed_bytes": 25,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 149240,
+          "needed_bytes": 35,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 149544,
+          "needed_bytes": 17,
+          "capacity_bytes": 22,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 72,
+      "accepted_rows": 1,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 149780,
+          "needed_bytes": 42,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 73,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 151816,
+          "needed_bytes": 11,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 152148,
+          "needed_bytes": 18,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 152488,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 152768,
+          "needed_bytes": 34,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 153112,
+          "needed_bytes": 37,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 153376,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 153652,
+          "needed_bytes": 22,
+          "capacity_bytes": 43,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 74,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 154080,
+          "needed_bytes": 58,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 154448,
+          "needed_bytes": 42,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 154740,
+          "needed_bytes": 29,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 154964,
+          "needed_bytes": 20,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 155308,
+          "needed_bytes": 43,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 155668,
+          "needed_bytes": 50,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 75,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 156016,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 156316,
+          "needed_bytes": 28,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 156544,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 156880,
+          "needed_bytes": 39,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 157192,
+          "needed_bytes": 30,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 157468,
+          "needed_bytes": 32,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 76,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 157892,
+          "needed_bytes": 60,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 158264,
+          "needed_bytes": 37,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 158584,
+          "needed_bytes": 34,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 158844,
+          "needed_bytes": 28,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 159200,
+          "needed_bytes": 34,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 159496,
+          "needed_bytes": 48,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 159720,
+          "needed_bytes": 18,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 159860,
+          "needed_bytes": 10,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 77,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 160216,
+          "needed_bytes": 45,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 160524,
+          "needed_bytes": 23,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 160900,
+          "needed_bytes": 56,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 161316,
+          "needed_bytes": 50,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 161548,
+          "needed_bytes": 12,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 161896,
+          "needed_bytes": 51,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 78,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 162208,
+          "needed_bytes": 32,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 162592,
+          "needed_bytes": 41,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 162848,
+          "needed_bytes": 27,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 163076,
+          "needed_bytes": 32,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 163348,
+          "needed_bytes": 29,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 163576,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 163808,
+          "needed_bytes": 34,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 164020,
+          "needed_bytes": 15,
+          "capacity_bytes": 25,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 79,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 166044,
+          "needed_bytes": 44,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 166268,
+          "needed_bytes": 40,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 166476,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 166684,
+          "needed_bytes": 47,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 166908,
+          "needed_bytes": 22,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 167124,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 80,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 168084,
+          "needed_bytes": 43,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 168284,
+          "needed_bytes": 25,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 168460,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 168608,
+          "needed_bytes": 7,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 168772,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 168952,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 169124,
+          "needed_bytes": 31,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 81,
+      "accepted_rows": 9,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 170148,
+          "needed_bytes": 44,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 170380,
+          "needed_bytes": 29,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 170580,
+          "needed_bytes": 31,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 170784,
+          "needed_bytes": 24,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 170984,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 171188,
+          "needed_bytes": 47,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 171424,
+          "needed_bytes": 39,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 171672,
+          "needed_bytes": 37,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 171900,
+          "needed_bytes": 39,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 82,
+      "accepted_rows": 10,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 172132,
+          "needed_bytes": 38,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 172368,
+          "needed_bytes": 39,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 172596,
+          "needed_bytes": 27,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 172796,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 173004,
+          "needed_bytes": 45,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 173220,
+          "needed_bytes": 44,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 173440,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 173656,
+          "needed_bytes": 32,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 173848,
+          "needed_bytes": 26,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 174044,
+          "needed_bytes": 48,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 83,
+      "accepted_rows": 4,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 174260,
+          "needed_bytes": 19,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 174436,
+          "needed_bytes": 32,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 174644,
+          "needed_bytes": 46,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 174876,
+          "needed_bytes": 46,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 84,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 176476,
+          "needed_bytes": 40,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 176796,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 176988,
+          "needed_bytes": 16,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 177296,
+          "needed_bytes": 39,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 177648,
+          "needed_bytes": 36,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 178020,
+          "needed_bytes": 39,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 85,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 178276,
+          "needed_bytes": 20,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 178456,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 178708,
+          "needed_bytes": 18,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 178984,
+          "needed_bytes": 26,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 179260,
+          "needed_bytes": 32,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 179652,
+          "needed_bytes": 45,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 179996,
+          "needed_bytes": 33,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 86,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 180484,
+          "needed_bytes": 39,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 180740,
+          "needed_bytes": 19,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 180932,
+          "needed_bytes": 17,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 181108,
+          "needed_bytes": 8,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 181388,
+          "needed_bytes": 33,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 181552,
+          "needed_bytes": 10,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 181788,
+          "needed_bytes": 10,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 182184,
+          "needed_bytes": 58,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 87,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 182628,
+          "needed_bytes": 37,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 183040,
+          "needed_bytes": 40,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 183280,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 183624,
+          "needed_bytes": 44,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 183960,
+          "needed_bytes": 40,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 184272,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 88,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 184616,
+          "needed_bytes": 47,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 184996,
+          "needed_bytes": 22,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 185324,
+          "needed_bytes": 47,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 185664,
+          "needed_bytes": 17,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 185908,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 186264,
+          "needed_bytes": 35,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 89,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 186612,
+          "needed_bytes": 35,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 187012,
+          "needed_bytes": 39,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 187392,
+          "needed_bytes": 24,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 187676,
+          "needed_bytes": 29,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 188076,
+          "needed_bytes": 39,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 188436,
+          "needed_bytes": 33,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 90,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 188920,
+          "needed_bytes": 70,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 189236,
+          "needed_bytes": 19,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 189612,
+          "needed_bytes": 28,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 189960,
+          "needed_bytes": 45,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 190268,
+          "needed_bytes": 27,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 190528,
+          "needed_bytes": 19,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 91,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 190872,
+          "needed_bytes": 32,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 191248,
+          "needed_bytes": 43,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 191532,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 191760,
+          "needed_bytes": 18,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 192080,
+          "needed_bytes": 42,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 192484,
+          "needed_bytes": 43,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 92,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 192960,
+          "needed_bytes": 51,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 193148,
+          "needed_bytes": 8,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 193384,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 193668,
+          "needed_bytes": 35,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 193980,
+          "needed_bytes": 20,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 194200,
+          "needed_bytes": 4,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 194532,
+          "needed_bytes": 41,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 194844,
+          "needed_bytes": 40,
+          "capacity_bytes": 45,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 93,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 195092,
+          "needed_bytes": 21,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 195360,
+          "needed_bytes": 43,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 195652,
+          "needed_bytes": 25,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 195896,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 196048,
+          "needed_bytes": 7,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 196312,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 196572,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 196824,
+          "needed_bytes": 31,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 94,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 197200,
+          "needed_bytes": 48,
+          "capacity_bytes": 52,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 197576,
+          "needed_bytes": 39,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 197996,
+          "needed_bytes": 54,
+          "capacity_bytes": 72,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 198320,
+          "needed_bytes": 28,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 198540,
+          "needed_bytes": 20,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 198756,
+          "needed_bytes": 31,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 199028,
+          "needed_bytes": 30,
+          "capacity_bytes": 35,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 95,
+      "accepted_rows": 5,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 199356,
+          "needed_bytes": 29,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 199624,
+          "needed_bytes": 24,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 199856,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 199996,
+          "needed_bytes": 7,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 200176,
+          "needed_bytes": 21,
+          "capacity_bytes": 21,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 96,
+      "accepted_rows": 8,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 200884,
+          "needed_bytes": 7,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 201028,
+          "needed_bytes": 14,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 201284,
+          "needed_bytes": 31,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 201460,
+          "needed_bytes": 8,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 201764,
+          "needed_bytes": 40,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 202192,
+          "needed_bytes": 49,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 202424,
+          "needed_bytes": 12,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 202652,
+          "needed_bytes": 31,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 97,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 202976,
+          "needed_bytes": 30,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 203292,
+          "needed_bytes": 38,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 203536,
+          "needed_bytes": 24,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 203680,
+          "needed_bytes": 8,
+          "capacity_bytes": 12,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 204064,
+          "needed_bytes": 49,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 204296,
+          "needed_bytes": 19,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 204680,
+          "needed_bytes": 33,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 98,
+      "accepted_rows": 5,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 205120,
+          "needed_bytes": 40,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 205564,
+          "needed_bytes": 44,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 205900,
+          "needed_bytes": 48,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 206228,
+          "needed_bytes": 20,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 206556,
+          "needed_bytes": 39,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 99,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 207012,
+          "needed_bytes": 56,
+          "capacity_bytes": 84,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 207360,
+          "needed_bytes": 38,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 207660,
+          "needed_bytes": 31,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 207960,
+          "needed_bytes": 30,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 208272,
+          "needed_bytes": 43,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 208584,
+          "needed_bytes": 29,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 208844,
+          "needed_bytes": 38,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 100,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 209204,
+          "needed_bytes": 44,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 209612,
+          "needed_bytes": 29,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 209920,
+          "needed_bytes": 31,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 210256,
+          "needed_bytes": 24,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 210532,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 210908,
+          "needed_bytes": 47,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 101,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 211304,
+          "needed_bytes": 39,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 211712,
+          "needed_bytes": 37,
+          "capacity_bytes": 76,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 212048,
+          "needed_bytes": 39,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 212404,
+          "needed_bytes": 38,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 212764,
+          "needed_bytes": 39,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 213100,
+          "needed_bytes": 27,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 102,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 213384,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 213680,
+          "needed_bytes": 45,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 213980,
+          "needed_bytes": 44,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 214356,
+          "needed_bytes": 47,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 214640,
+          "needed_bytes": 32,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 214936,
+          "needed_bytes": 26,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 103,
+      "accepted_rows": 7,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 215300,
+          "needed_bytes": 48,
+          "capacity_bytes": 48,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 215552,
+          "needed_bytes": 19,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 215836,
+          "needed_bytes": 32,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 216196,
+          "needed_bytes": 46,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 216620,
+          "needed_bytes": 46,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 216952,
+          "needed_bytes": 46,
+          "capacity_bytes": 56,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 217284,
+          "needed_bytes": 35,
+          "capacity_bytes": 38,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 104,
+      "accepted_rows": 6,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 217724,
+          "needed_bytes": 45,
+          "capacity_bytes": 64,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 218172,
+          "needed_bytes": 41,
+          "capacity_bytes": 68,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 218564,
+          "needed_bytes": 37,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 218860,
+          "needed_bytes": 35,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 219016,
+          "needed_bytes": 8,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 219212,
+          "needed_bytes": 27,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 105,
+      "accepted_rows": 9,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 219576,
+          "needed_bytes": 41,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 219896,
+          "needed_bytes": 36,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 220108,
+          "needed_bytes": 20,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 220296,
+          "needed_bytes": 25,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 220500,
+          "needed_bytes": 19,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 220696,
+          "needed_bytes": 15,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 220876,
+          "needed_bytes": 13,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 221004,
+          "needed_bytes": 8,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 221260,
+          "needed_bytes": 44,
+          "capacity_bytes": 44,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 106,
+      "accepted_rows": 9,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 221544,
+          "needed_bytes": 29,
+          "capacity_bytes": 32,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 221688,
+          "needed_bytes": 7,
+          "capacity_bytes": 8,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 221952,
+          "needed_bytes": 40,
+          "capacity_bytes": 40,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 222216,
+          "needed_bytes": 29,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 222404,
+          "needed_bytes": 16,
+          "capacity_bytes": 16,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 222584,
+          "needed_bytes": 19,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 222848,
+          "needed_bytes": 33,
+          "capacity_bytes": 36,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 223052,
+          "needed_bytes": 20,
+          "capacity_bytes": 20,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 223264,
+          "needed_bytes": 22,
+          "capacity_bytes": 28,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    },
+    {
+      "record": 107,
+      "accepted_rows": 3,
+      "needed_glyphs": 0,
+      "freed_slots": 0,
+      "font_deficit": 0,
+      "entries": [
+        {
+          "offset": 223620,
+          "needed_bytes": 44,
+          "capacity_bytes": 60,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 223868,
+          "needed_bytes": 23,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        },
+        {
+          "offset": 224072,
+          "needed_bytes": 19,
+          "capacity_bytes": 24,
+          "deficit_bytes": 0,
+          "missing_characters": []
+        }
+      ],
+      "safe": true
+    }
+  ]
+}

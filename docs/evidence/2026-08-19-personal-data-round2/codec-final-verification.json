@@ -1,0 +1,31 @@
+{
+ "format": "mgs3d-codec-final-verification-v1",
+ "date": "2026-08-19",
+ "pipeline": [
+  "make-translation",
+  "mgs3d_codec_expand_locations",
+  "capacity --check",
+  "build-korean"
+ ],
+ "expanded_units": 226665,
+ "capacity": {
+  "gcx_records": 2288,
+  "ready": 2288,
+  "failing": 0,
+  "total_slot_deficit": 0
+ },
+ "readback": {
+  "rows": 47,
+  "ok": 47,
+  "mismatch": 0
+ },
+ "layout": {
+  "source_records": 2326,
+  "built_records": 2326,
+  "records_size_changed": 0
+ },
+ "hangul_glyphs_added": 0,
+ "built_sha256": "370506bef7434b9c99cf4fe01854d83626c0336c2db5640269d2aaa693924545",
+ "staged_sha256": null,
+ "round": "PERSONAL DATA field restore + donor reclassification (dry-run)"
+}

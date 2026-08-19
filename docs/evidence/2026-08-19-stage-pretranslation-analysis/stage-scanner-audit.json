@@ -1,0 +1,60 @@
+{
+  "resources": 828396,
+  "disagree": 950,
+  "by_class": {
+    "GLYPH_SECOND_BYTE_FALSE_CONTROL": 950
+  },
+  "new_scanner_drops_real_token": 0,
+  "examples": {
+    "GLYPH_SECOND_BYTE_FALSE_CONTROL": [
+      {
+        "stage": "ending",
+        "resource": 2560,
+        "old_only": [
+          [
+            7,
+            "1FC1"
+          ]
+        ],
+        "new_only": [],
+        "bytes": "F7C1C20A356EC01FC100"
+      },
+      {
+        "stage": "ending",
+        "resource": 2654,
+        "old_only": [
+          [
+            7,
+            "1FC1"
+          ]
+        ],
+        "new_only": [],
+        "bytes": "F7C1C20A356EC01FC100"
+      },
+      {
+        "stage": "ending",
+        "resource": 2748,
+        "old_only": [
+          [
+            7,
+            "1FC1"
+          ]
+        ],
+        "new_only": [],
+        "bytes": "F7C1C20A356EC01FC100"
+      },
+      {
+        "stage": "ending",
+        "resource": 2842,
+        "old_only": [
+          [
+            7,
+            "1FC1"
+          ]
+        ],
+        "new_only": [],
+        "bytes": "F7C1C20A356EC01FC100"
+      }
+    ]
+  }
+}

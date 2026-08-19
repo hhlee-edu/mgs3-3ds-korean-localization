@@ -1,5 +1,43 @@
 # Build System
 
+## ⚠️ codec production build에는 `expand_locations`가 **필수**다
+
+**`tools/mgs3d_build.py`를 그대로 쓰면 codec 빌드가 깨진다.** 이 스크립트에는
+duplicate-location 확장 단계가 **없다**. 2026-08-19에 이것 때문에 빌드가 실패했고
+원인을 찾는 데 상당한 시간이 들었다.
+
+이유: `translation/10_master/current/codec.csv`는 동일 문자열을 **한 행으로 접고**
+나머지 위치를 `locations` 열에 담는다. `make-translation`은 canonical `(gcx, resource)`
+**하나만** 내보내므로, 확장하지 않으면 같은 GCX의 나머지 중복 위치가 문서에서 빠진다.
+
+byte 예산은 **GCX 단위 풀**(교체 대상 리소스들의 원본 바이트 합계) 안에서 재배분되므로,
+위치가 빠지면 그 바이트도 풀에서 사라져 **멀쩡한 번역이 용량 초과로 실패**한다.
+
+```
+GCX 44 실측 (2026-08-19)
+  확장 없음 : 교체 3행,  풀    73B → 한국어 83B  = +10B 초과, 빌드 실패
+  확장 적용 : 교체 17행, 풀 2,048B → 여유 충분,  빌드 성공
+전체       : 8,994행 → 225,307 units (25배)
+```
+
+**증상**: `error: GCX <n>: replacement strings exceed fixed region by <n> bytes`
+→ 번역이 길어서가 아니라 **확장 단계 누락**을 먼저 의심할 것. donor accept 해제나
+행 제외로 대응하면 멀쩡한 번역을 잃는다.
+
+올바른 순서:
+
+```
+1. mgs3d_script_compare.py make-translation  <master.csv> <canonical.json> --codec <codec.dat> --character-map <map>
+2. mgs3d_codec_expand_locations.py           --translation <canonical.json> --out-doc <expanded.json> --out-report <report.json>
+3. mgs3d_gcx_font_tool.py capacity           <codec.dat> <expanded.json> --json <cap.json> --check
+4. mgs3d_gcx_font_tool.py build-korean       <codec.dat> <expanded.json> <font> <out.dat> --font-size 15 --reuse-freed-font --preserve-record-layout
+```
+
+소스 codec.dat은 항상 clean-tree(`experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs/codec.dat`,
+`dd6ea4b8…`)다. staging본을 소스로 쓰면 이중 적용이 된다.
+
+`mgs3d_build.py`는 movie/demo에는 그대로 써도 된다 — 그쪽 CSV는 위치를 접지 않는다.
+
 ## RomForge pipeline
 
 - Analysis/translation/verification work: `D:\dev\3dsmetal\analysis` (this repo).

@@ -1,0 +1,21 @@
+{
+  "format": "mgs3d-personal-data-layout-feasibility-v1",
+  "analysis_only": true,
+  "master_or_dat_modified": false,
+  "canonical_rows": 124,
+  "unique_locations": 27132,
+  "verdicts": {
+    "PASS": 44,
+    "SHORTEN": 3,
+    "HUMAN": 77
+  },
+  "separator_restoration": "0A x 9 + 00 from clean authority",
+  "predicted_failing_locations": 1780,
+  "predicted_failing_records": 2,
+  "predicted_total_slot_deficit": 18,
+  "worst_deficit": -11,
+  "new_glyph_required": false,
+  "existing_translation_text_changed": 0,
+  "field_mapping_human_rows": 77,
+  "note": "Byte feasibility only; no proposed Korean text is written. Separator insertion is counted as missing 0A bytes."
+}

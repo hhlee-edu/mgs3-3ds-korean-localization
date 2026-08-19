@@ -1,0 +1,30 @@
+{
+  "offset_rows_total": 514,
+  "audited": 514,
+  "by_verdict": {
+    "HUMAN": 274,
+    "KEEP": 215,
+    "REMAP": 22,
+    "MISPLACED": 3
+  },
+  "by_media": {
+    "movie": {
+      "HUMAN": 19,
+      "KEEP": 19,
+      "REMAP": 1
+    },
+    "demo": {
+      "HUMAN": 255,
+      "KEEP": 196,
+      "REMAP": 21,
+      "MISPLACED": 3
+    }
+  },
+  "misplaced_with_home_located": 15,
+  "correct_korean_recovered": 146,
+  "drift_blocks": [],
+  "thresholds": {
+    "same_line": 0.72,
+    "different_line": 0.42
+  }
+}

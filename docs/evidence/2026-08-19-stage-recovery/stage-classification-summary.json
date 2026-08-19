@@ -1,0 +1,32 @@
+{
+  "unique_english": 1571,
+  "english_locations_total": 130903,
+  "by_category_unique": {
+    "AREA_NAME": 76,
+    "ENEMY_BARK": 12,
+    "FLORA_FAUNA": 393,
+    "FOOD": 63,
+    "INJURY": 28,
+    "ITEM_WEAPON": 121,
+    "MEDICINE": 32,
+    "NPC_DIALOGUE": 1,
+    "OTHER": 652,
+    "RESULTS": 7,
+    "TITLE_AWARD": 44,
+    "TUTORIAL_CONTROL": 142
+  },
+  "by_category_locations": {
+    "AREA_NAME": 10533,
+    "ENEMY_BARK": 638,
+    "FLORA_FAUNA": 37353,
+    "FOOD": 5968,
+    "INJURY": 5355,
+    "ITEM_WEAPON": 10437,
+    "MEDICINE": 2937,
+    "NPC_DIALOGUE": 1,
+    "OTHER": 70260,
+    "RESULTS": 1183,
+    "TITLE_AWARD": 44,
+    "TUTORIAL_CONTROL": 4883
+  }
+}

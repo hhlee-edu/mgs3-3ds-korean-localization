@@ -1,0 +1,40 @@
+{
+  "source_worklist_sha256": "4e5d1bdeda8d0a83b1944e8a39c817901ce3fd7e23e765886bf6a035bdaadcb1",
+  "unique_rows": 1571,
+  "occurrences": 149592,
+  "ready_rows": 3,
+  "new_translation_rows": 1568,
+  "category_counts": {
+    "ENEMY_BARK": 12,
+    "NPC_DIALOGUE": 1,
+    "TUTORIAL_CONTROL": 142,
+    "ITEM_WEAPON": 121,
+    "MEDICINE": 32,
+    "FOOD": 63,
+    "FLORA_FAUNA": 393,
+    "INJURY": 28,
+    "AREA_NAME": 76,
+    "RESULTS": 7,
+    "TITLE_AWARD": 44,
+    "SHORT_LABEL": 208,
+    "OTHER": 323,
+    "SYSTEM_UI": 59,
+    "MUSIC_TITLE": 61,
+    "STATUS_MESSAGE": 1
+  },
+  "other_before": 652,
+  "other_after": 323,
+  "translation_group_count": 29,
+  "grouped_rows": 74,
+  "safe_group_count": 27,
+  "review_group_count": 2,
+  "existing_exact_candidate_rows": 1,
+  "glossary_candidate_count": 664,
+  "risk_counts": {
+    "HIGH": 1516,
+    "LOW": 44,
+    "MEDIUM": 11
+  },
+  "analysis_only": true,
+  "translation_performed": false
+}

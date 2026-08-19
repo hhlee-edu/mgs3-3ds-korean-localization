@@ -1,0 +1,31 @@
+{
+  "rows_with_both_sequences": 508,
+  "by_media": {
+    "movie": 51,
+    "demo": 457
+  },
+  "on_backbone_keep": 89,
+  "off_backbone": 419,
+  "off_backbone_by_media": {
+    "movie": 26,
+    "demo": 393
+  },
+  "verdicts": {
+    "MISPLACED": 418,
+    "KEEP": 89,
+    "REMAP": 1
+  },
+  "off_backbone_by_match_status": {
+    "exact-unique-korean": 287,
+    "exact-ambiguous-korean": 132
+  },
+  "hand_read_cross_check": {
+    "hand_misplaced_rows_present": 106,
+    "also_off_backbone": 100,
+    "on_backbone_despite_hand_read": 6
+  },
+  "master_coverage": {
+    "rows_present_in_master": 508,
+    "of_those_source_offset": 357
+  }
+}

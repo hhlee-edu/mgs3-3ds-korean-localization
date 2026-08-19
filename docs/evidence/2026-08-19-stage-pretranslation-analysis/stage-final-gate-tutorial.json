@@ -1,0 +1,14 @@
+{
+  "format": "mgs3d-stage-final-gate-v1",
+  "stage_files_before": 169,
+  "stage_files_after": 169,
+  "parse_169_pass": true,
+  "changed_resources": 4257,
+  "errors": [],
+  "fr_es_unchanged": true,
+  "control_code_preserved": true,
+  "unexpected_changes": true,
+  "overflow": "requires apply dry-run report with zero encode/overflow errors",
+  "missing_glyphs": "requires apply dry-run report with zero encode errors",
+  "pass": true
+}
