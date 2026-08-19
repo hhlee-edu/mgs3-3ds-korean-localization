@@ -1,142 +1,107 @@
-# MGS3D Korean localization tools
+# MGS3D 한국어 패치
 
-Reverse-engineered tools and documentation for localizing the Japanese Nintendo
-3DS release of *Metal Gear Solid 3D: Snake Eater*.
+닌텐도 3DS판 *Metal Gear Solid 3D: Snake Eater* 한국어 패치와, 그 패치를 만들기
+위해 직접 만든 도구들입니다.
 
-This repository contains only source code and format documentation. Original
-game files, extracted scripts, generated patches, emulator binaries/state, and
-reference-site downloads are excluded by `.gitignore`.
+## 왜 만들었나
 
-## Current capabilities
+이 게임을 3DS 실기의 3D 효과로 제대로 즐겨보고 싶었습니다. 그런데 한국어가
+없었습니다. 그래서 만들었습니다.
 
-- extract, inspect, edit, and rebuild `codec.dat` GCX resources;
-- render and allocate the embedded 16x16, 2-bpp codec glyphs;
-- preserve all 2,326 GCX positions for runtime-safe codec builds;
-- inspect and rebuild `movie.dat` and `demo.dat` subtitle/font records;
-- compare Korean and English reference scripts with game-side resources;
-- separate French/Spanish donor branches from English using a language ID built
-  from the corpus itself, not hand-written stopword lists
-  (`tools/mgs3d_codec_langid.py`);
-- preserve 3DS button-icon tokens through a translation by pouring the Korean
-  into the source resource's own control-code schema
-  (`tools/mgs3d_codec_icon_schema_fit.py`);
-- generate an offline translation review page;
-- build and verify a Citra-compatible mod directory;
-- inspect LA2/DARC and ARC/zlib archives.
+번역은 AI로 진행했습니다. 화자 구분은 영문 대사집을 참고해서 잡았습니다 — 코덱
+대화는 누가 말하는지에 따라 말투가 완전히 달라지는데(스네이크는 해라체, 제로
+소령은 하게체, 소콜로프는 하오체, 파라메딕과 EVA는 존댓말), 게임 데이터 자체에는
+화자 정보가 없어서 대사집 대조 없이는 문체를 맞출 수가 없었습니다.
 
-Runtime testing has confirmed complete Korean codec sentences followed by
-stable Japanese dialogue when every GCX record keeps its original layout.
+솔직히 말해서 만드는 과정이 정말 힘들었습니다. 게임 텍스트가 네 개의 서로 다른
+컨테이너에 흩어져 있고, 각각 포맷이 다르고, 문자열 하나를 바꾸는 데도 원본 슬롯
+크기를 넘으면 안 되고, 5개 언어 분기가 한 레코드 안에 섞여 있어서 잘못 건드리면
+프랑스어·스페인어판이 깨지고, 한글 글꼴은 게임에 아예 없어서 글리프 페이지를
+따로 만들어 넣어야 했습니다. 실기에서 멈추는 크래시도 여러 번 겪었습니다.
 
-## Start here
+억짱, 김정짱, 손정짱 고맙습니다.
 
-- **[Wiki home](wiki/Home.md)** — the canonical knowledge base. Read
-  [Current State](wiki/Current-State.md) next, then `HANDOFF.md`.
-- [Toolkit workflow](MGS3D_KOREAN_TOOLKIT.md)
+## 빌드는 항상 두 가지입니다
 
-Dated session records and topic docs formerly linked here directly now live in
-[`wiki/History/`](wiki/History/). Documents that quoted game dialogue were
-removed from the repository and its history; see the policy below.
+3DS 기종에 따라 조작 방식이 달라서 빌드를 두 개로 나눕니다.
 
-## Install and diagnose
+| 빌드 | 대상 | 서클패드 프로 |
+|---|---|---|
+| **구형 3DS용** | 구형 3DS / 2DS | **OFF** |
+| **New 3DS · 에뮬용** | New 3DS / New 2DS / Azahar·Citra | **ON** |
 
-Python 3.10 or newer is required. Install the two runtime dependencies and run
-the readiness check:
+CPP(서클패드 프로) 설정이 켜져 있으면 오른쪽 스틱으로 카메라를 조작합니다. New
+3DS는 C스틱이 내장돼 있고 에뮬레이터도 이를 지원하지만, 구형 3DS는 별매 주변기기가
+없으면 조작이 되지 않습니다. 그래서 같은 번역 데이터로 두 벌을 만듭니다.
+
+개발 중 스테이징 트리는 CPP-ON 하나만 유지하고, 릴리스 시점에만 두 갈래로
+나눕니다. 자세한 내용은 [`docs/RELEASE-PACKAGING-POLICY.md`](docs/RELEASE-PACKAGING-POLICY.md).
+
+## 배포 형태
+
+아직 확정하지 않았습니다. 현재는 RomForge로 romfs를 다시 묶어 CCI를 만드는
+경로가 검증돼 있고, 실기 적용 방식(패치 파일 배포 등)은 검토 중입니다.
+
+## 번역 범위
+
+| 컨테이너 | 내용 | 상태 |
+|---|---|---|
+| `codec.dat` | 코덱 무전 대화 | 번역 대상 100% |
+| `movie.dat` | 컷신 자막 | 적용 완료, 검수 항목 일부 |
+| `demo.dat` | 데모/이벤트 자막 | 적용 완료, 검수 항목 일부 |
+| `stage/*/scenerio.gcx` | 인게임 텍스트 (아이템·도감·랭크·시스템 UI) | 1,571행 전건 종결 |
+
+`stage`는 1,257행 번역 / 131행 원문 유지 / 183행 프랑스어·스페인어 분기 제외로
+종결했습니다. 원문 유지는 주크박스 곡명, 랭크 칭호, 러시아어 지명처럼 원문이
+맞는 항목과, 슬롯이 3~7바이트라 의미를 지킨 한국어가 물리적으로 들어가지 않는
+라벨입니다.
+
+## 기술적으로 지켜야 하는 것들
+
+- **원본 레코드 레이아웃 유지.** GCX 레코드 크기가 바뀌면 뒤쪽 레코드가 전부
+  밀려서 실기에서 크래시합니다. 빌드는 `safe-fixed` 모드를 씁니다.
+- **신규 글리프 0.** 한글은 미리 만들어 넣은 상주 글리프 페이지 안에서만
+  씁니다. 없는 글자가 필요하면 표현을 바꿉니다.
+- **프랑스어·스페인어 분기 불가침.** 한 레코드에 5개 언어가 들어 있고, 의학
+  용어처럼 영어와 스페인어 철자가 같은 문자열이 많아서 스캐너의 언어 판정을
+  믿으면 안 됩니다. 인접 리소스를 직접 읽어 분기를 확정합니다.
+- **슬롯 예산.** 컨테이너마다 모델이 다릅니다. codec은 레코드 단위 문자열 영역
+  합계, stage는 리소스 단위 고정 슬롯입니다.
+
+## 저장소에 들어 있는 것
+
+도구와 포맷 문서, 집계 수치뿐입니다.
 
 ```powershell
 python -m pip install -r requirements.txt
-python tools/mgs3d_doctor.py
-```
-
-Use `--source-only` when checking a source checkout that does not contain local
-game files or the configured Korean font.
-
-## Safety rule for codec builds
-
-Use the unified builder's default `safe-fixed` codec mode. A resized GCX may
-reparse correctly but is known to crash in game because later records move.
-Diagnostic and relocation modes are research-only and must not be released.
-
-```powershell
-python tools/mgs3d_build.py --help
-python tools/mgs3d_verify_build.py --help
-python tools/mgs3d_codec_tool.py validate-translation translation.json
 python tools/mgs3d_doctor.py --source-only
-```
-
-Use `mgs3d_verify_build.py <title-id-directory>` for an incremental build, or
-add `--require-complete` when validating a release candidate containing all
-three DAT outputs. Safe-fixed codec verification includes the recorded capacity
-report and rejects any nonzero glyph deficit. Complete release verification
-also rejects diagnostic, experimental, unknown, and legacy unrecorded codec
-modes.
-
-Run the source-only safety regression tests (no game files required):
-
-```powershell
 python -m unittest discover -s tests -v
 ```
 
-These tests cover unchanged-resource detection, custom-glyph ownership,
-capacity-plan range/mandatory constraints, impossible targets, strict capacity
-CLI behavior, and codec translation schema validation.
+- **[위키](wiki/Home.md)** — 정본 지식 베이스. [Current State](wiki/Current-State.md),
+  그다음 `HANDOFF.md` 순서로 읽으면 됩니다.
+- [빌드 시스템](wiki/Build-System.md) · [툴킷 워크플로](MGS3D_KOREAN_TOOLKIT.md)
 
-No copyrighted game data is included or required in version control.
+주요 도구:
 
-## Version 0.83 status
+```powershell
+python tools/mgs3d_build.py --help          # 통합 빌더
+python tools/mgs3d_verify_build.py --help   # 릴리스 검증
+python tools/mgs3d_codec_tool.py --help     # codec.dat GCX 조작
+python tools/mgs3d_stage_apply.py --help    # stage 번역 적용
+```
 
-Version 0.83 is a development checkpoint, not a finished translation release.
-**Version numbering stops here** — later codec work continues on this
-checkpoint instead of incrementing.
+## 게임 텍스트는 이 저장소에 없습니다
 
-Confirmed on hardware: the HPK padded-slot cursor-drift crash is fixed, the
-global Korean glyph page renders, and the codec ships Korean for the early
-briefing, survival, CQC, camouflage and Para-Medic conversations.
+코나미의 게임 스크립트와 제3자 전사본은 저작물입니다. 어떤 형태로도 커밋하지
+않습니다.
 
-Known open items:
+- `translation/`, `docs/decisions/`는 gitignore 대상이라 마스터 CSV와 번역
+  테이블은 로컬에만 있습니다.
+- `docs/evidence/` 아래 CSV는 **기본이 제외**이고, 카운트·해시·주소만 담은
+  파일만 허용 목록으로 추적합니다. 2026-08-20에 규칙을 이렇게 뒤집었습니다 —
+  이름 패턴 기반 규칙으로는 새 덤프가 계속 빠져나갔기 때문입니다.
+- 문서도 대사를 인용하지 않습니다. 위치는 `gcx` / `resource` 번호로만
+  지칭합니다.
 
-- the native opening-history Korean texture is still visibly corrupted, because
-  its BCLIM pixel layout is not modelled correctly yet;
-- 640 codec rows remain for human review, mostly because the speaker cannot be
-  proven — Shinsnote only covers 423 of its 4,070 lines with codec targets, and
-  that is the binding constraint, not the analysis;
-- `movie.dat` and `demo.dat` subtitles retain known omissions and review items.
-
-Translation drafts, game data, DAT/CCI outputs, and other large generated
-artifacts remain outside the public repository.
-
-### The extractor was blind to 3DS-only strings
-
-`strict_western()` accepted `0x80 0x7C` and rejected the whole resource on any
-other high byte. 3DS button icons are two-byte tokens — `( # { 7 } #)` is
-`80 23 A0 7B A3 1E 80 37 C0 7D 80 23` — so **every control-tutorial string that
-mentions a button was dropped before it could reach the master**, and no
-coverage report could see it: the same predicate built both the numerator and
-the denominator, so the two matched by construction and reported zero missing.
-
-Measuring the icon-token grammar over the whole corpus showed it is completely
-closed (`0xA0`→`0x7B` and `0xC0`→`0x7D` in 16,981/16,981 cases, `0xA3`→`0x1E` in
-16,815/16,815, `0x80` taking twelve distinct second bytes), so only that exact
-set was allowed. The parser change loses **no** previously accepted resource and
-exposes 13,569 positions across 316 strings.
-
-Coverage is now computed without self-reference: `ACTUAL_CODEC_ENGLISH` comes
-from the binary, `MASTER_KNOWN` from the master's own index, and
-`MASTER_MISSING` is the **set difference** — never a subtraction of totals.
-
-Method, measurements and the gate list are written up in
-[`docs/codec-extraction-method.md`](docs/codec-extraction-method.md).
-
-## Game text is not in this repository
-
-Konami's script — English or Japanese — the PS2 Korean localization, and
-third-party transcriptions of it are copyrighted. None of it is committed here,
-in any form:
-
-- `translation/` and `docs/decisions/` are gitignored, so master CSVs and the
-  hand-adjudicated translation tables stay local;
-- evidence files that embed script are excluded by name in `.gitignore`;
-- the documentation does not quote dialogue either. Positions are identified by
-  `gcx` / `resource` number, never by their text.
-
-What stays in version control is tooling, byte-level format documentation, and
-aggregate counts.
+버전 관리에 남는 것은 도구, 바이트 수준 포맷 문서, 집계 수치입니다.
