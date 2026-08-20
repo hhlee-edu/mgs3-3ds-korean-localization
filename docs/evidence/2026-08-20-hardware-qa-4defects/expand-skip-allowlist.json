@@ -1,0 +1,19 @@
+{
+  "format": "mgs3d-codec-expand-skip-allowlist-v1",
+  "date": "2026-08-20",
+  "rule": "mgs3d_codec_expand_locations.py may leave a duplicate location in English ONLY if that location is listed here. Every entry needs a reason that says what the location actually holds. A skip that is not listed here fails the final gate.",
+  "entries": [
+    {
+      "canonical": [1757, 26],
+      "location": [1788, 43],
+      "reason": "master `locations` over-claims. Canonical 1757:26 is \"You've got to be kidding me.\"; this location holds a different sentence, \"You can't be serious.\", which is owned and correctly translated by master row 1759:17. Propagating here would overwrite a correct translation with the wrong line.",
+      "verified": "2026-08-20 readback: location holds 말도 안 돼. from canonical 1759:17"
+    },
+    {
+      "canonical": [1757, 26],
+      "location": [1789, 43],
+      "reason": "same as 1788:43 - holds \"You can't be serious.\", owned by master row 1759:17.",
+      "verified": "2026-08-20 readback: location holds 말도 안 돼. from canonical 1759:17"
+    }
+  ]
+}

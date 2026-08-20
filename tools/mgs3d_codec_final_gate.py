@@ -39,6 +39,8 @@ EVID = os.path.join(ROOT, 'docs/evidence/2026-08-19-codec-residual')
 CLASSIFIED = os.path.join(EVID, 'codec-residual-classified.csv')
 VERDICTS = os.path.join(EVID, 'codec-review-verdicts.csv')
 MASTER = os.path.join(ROOT, 'translation/10_master/current/codec.csv')
+SKIP_ALLOWLIST = os.path.join(
+    ROOT, 'docs/evidence/2026-08-20-hardware-qa-4defects/expand-skip-allowlist.json')
 
 
 def accepted(row):
@@ -52,11 +54,81 @@ def occ(row):
         return 0
 
 
+
+def expand_skip_gate(verify):
+    """Every duplicate-location skip must be explicitly allowlisted.
+
+    Added 2026-08-20. The v0.91-v0.93 builds silently left 570 duplicate
+    locations in English: mgs3d_codec_expand_locations.py recorded them in
+    expand-report.json under "original bytes differ from canonical" and nothing
+    read the file. Coverage still said 100% because it counts master
+    `occurrences` for accept=yes rows and never re-reads the built DAT.
+    """
+    report_path = (verify or {}).get('expand_report')
+    if not report_path:
+        return None, 'not run (no expand_report recorded)'
+    full = report_path if os.path.isabs(report_path) else os.path.join(ROOT, report_path)
+    if not os.path.exists(full):
+        return None, 'not run (%s missing)' % report_path
+    report = json.load(io.open(full, encoding='utf-8'))
+    skipped = report.get('skipped') or []
+    total = report.get('skipped_total', len(skipped))
+    if report.get('skipped_truncated'):
+        return False, 'skip list truncated - cannot verify %d skips' % total
+    allow = set()
+    if os.path.exists(SKIP_ALLOWLIST):
+        for e in json.load(io.open(SKIP_ALLOWLIST, encoding='utf-8'))['entries']:
+            allow.add((tuple(e['canonical']), tuple(e['location'])))
+    unlisted = [x for x in skipped
+                if (tuple(x['canonical']), tuple(x['location'])) not in allow]
+    if total == 0:
+        return True, '0 skipped'
+    if not unlisted:
+        return True, '%d skipped, all %d allowlisted' % (total, total)
+    return False, '%d skipped, %d NOT allowlisted (e.g. %s)' % (
+        total, len(unlisted),
+        ' '.join('%d:%d' % tuple(u['location']) for u in unlisted[:3]))
+
+
+def dat_residue_gate(verify):
+    """Untranslated English left in the built DAT, measured by reading the DAT.
+
+    Coverage is a master-side declaration; this is the binary-side counterpart.
+    `nondonor_english_locations` counts accepted, non-donor locations whose
+    bytes still hold the original English instead of the master's translation.
+    """
+    residue = (verify or {}).get('dat_residue')
+    if not residue:
+        return None, 'not run'
+    n = residue.get('nondonor_english_locations')
+    if n is None:
+        return None, 'not run'
+    return n == 0, ('%d non-donor English locations left (%d donor fr/es excluded, '
+                    '%d ASCII-only translations counted as applied)'
+                    % (n, residue.get('donor_english_locations', 0),
+                       residue.get('ascii_only_translation_locations', 0)))
+
+
 def main():
     csv.field_size_limit(10 ** 9)
     master = list(csv.DictReader(io.open(MASTER, encoding='utf-8-sig', newline='')))
-    classified = list(csv.DictReader(io.open(CLASSIFIED, encoding='utf-8-sig', newline='')))
-    verdicts = list(csv.DictReader(io.open(VERDICTS, encoding='utf-8-sig', newline='')))
+
+    def load_optional(path, what):
+        # The 2026-08-20 copyright purge removed the game-text evidence CSVs from
+        # the repo (.gitignore now excludes /docs/evidence/**/*.csv). The bucket
+        # file is regenerable with mgs3d_codec_residual_classify.py; the manual
+        # review verdicts are not. Degrade to PENDING instead of crashing so the
+        # structural, glyph, expand and DAT-residue gates still run.
+        if not os.path.exists(path):
+            print('  note: %s missing (%s) - dependent checks report PENDING'
+                  % (os.path.relpath(path, ROOT).replace(os.sep, '/'), what))
+            return []
+        return list(csv.DictReader(io.open(path, encoding='utf-8-sig', newline='')))
+
+    classified = load_optional(CLASSIFIED, 'run tools/mgs3d_codec_residual_classify.py')
+    verdicts = load_optional(VERDICTS, 'manual review verdicts, not regenerable')
+    have_buckets = bool(classified)
+    have_verdicts = bool(verdicts)
 
     acc_rows = [r for r in master if accepted(r)]
     acc_loc = sum(occ(r) for r in acc_rows)
@@ -100,11 +172,13 @@ def main():
     coverage = acc_loc / translatable if translatable else 0.0
 
     checks = [
-        ('HUMAN = 0', vd['HUMAN'] == 0, '%d' % vd['HUMAN']),
-        ('residual TRANSLATE = 0', todo_rows == 0, '%d rows / %d locations' % (todo_rows, todo_loc)),
-        ('donor excluded', bucket_rows['DONOR_ERROR'] > 0,
+        ('HUMAN = 0', (vd['HUMAN'] == 0) if have_verdicts else None,
+         ('%d' % vd['HUMAN']) if have_verdicts else 'verdicts file absent'),
+        ('residual TRANSLATE = 0', (todo_rows == 0) if have_verdicts else None,
+         ('%d rows / %d locations' % (todo_rows, todo_loc)) if have_verdicts else 'verdicts file absent'),
+        ('donor excluded', (bucket_rows['DONOR_ERROR'] > 0) if have_buckets else None,
          '%d rows / %d locations' % (bucket_rows['DONOR_ERROR'], bucket_loc['DONOR_ERROR'])),
-        ('valid-english excluded', bucket_rows['VALID_ENGLISH'] > 0,
+        ('valid-english excluded', (bucket_rows['VALID_ENGLISH'] > 0) if have_buckets else None,
          '%d rows / %d locations' % (bucket_rows['VALID_ENGLISH'], bucket_loc['VALID_ENGLISH'])),
         ('capacity overflow = 0',
          bool(verify) and verify['capacity']['failing'] == 0 or None,
@@ -124,6 +198,8 @@ def main():
          bool(verify) and verify['readback']['mismatch'] == 0 or None,
          ('%d/%d rows, mismatch %d' % (verify['readback']['ok'], verify['readback']['rows'],
                                        verify['readback']['mismatch'])) if verify else 'not run'),
+        ('expand skips allowlisted',) + expand_skip_gate(verify),
+        ('DAT English residue = 0',) + dat_residue_gate(verify),
     ]
 
     summary = {

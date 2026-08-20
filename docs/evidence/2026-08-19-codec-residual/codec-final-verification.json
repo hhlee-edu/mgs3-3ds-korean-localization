@@ -1,43 +1,57 @@
 {
  "format": "mgs3d-codec-final-verification-v1",
  "date": "2026-08-20",
+ "build": "diag-2026-08-20-codec-textidentity",
  "pipeline": [
   "make-translation",
-  "mgs3d_codec_expand_locations",
+  "mgs3d_codec_expand_locations --text-identity",
   "capacity --check",
   "build-korean"
  ],
- "expanded_units": 226825,
+ "changes_this_pass": [
+  "#4 --text-identity added to the production expand step: 568 duplicate locations that hold the same sentence with a different line-break/case were propagated instead of being left in English",
+  "#3 master row 2154:10 (Chin up!) korean changed 턱을 위로! -> 힘내!"
+ ],
+ "expanded_units": 227393,
+ "expand_report": "builds/diag-2026-08-20-codec-textidentity/dryrun/expand-report.json",
+ "expand_skipped_total": 2,
  "capacity": {
   "gcx_records": 2289,
   "ready": 2289,
   "failing": 0,
   "total_slot_deficit": 0
  },
- "gcx44": {
-  "gcx": 44,
-  "listed_resources": 17,
-  "resources": 17,
-  "unique_hangul": 0,
-  "freed_slots": 0,
-  "slot_deficit": 0,
-  "old_string_bytes": 2048
- },
  "readback": {
-  "rows": 67,
-  "ok": 67,
-  "mismatch": 0
+  "unit": "locations",
+  "rows": 233456,
+  "ok": 227271,
+  "mismatch": 0,
+  "mismatch_basis": "accepted non-donor locations whose bytes still equal the clean English while master carries a different translation",
+  "donor_english_excluded": 6181,
+  "ambiguous_other": 4
+ },
+ "dat_residue": {
+  "nondonor_english_locations": 0,
+  "donor_english_locations": 6181,
+  "ascii_only_translation_locations": 311,
+  "other_locations": 4,
+  "encode_failures": 4
  },
  "layout": {
   "source_records": 2326,
   "built_records": 2326,
-  "records_size_changed": 0
+  "records_size_changed": 0,
+  "resource_count_changed": 0,
+  "file_size_equal_to_clean": true
+ },
+ "glyphs": {
+  "unmapped_token_kinds": 0,
+  "unmapped_instances": 0,
+  "missing_terminators": 0
  },
  "hangul_glyphs_added": 0,
- "built_sha256": "e9026a5e8fe50358f97d0b0e685cb17dfc0bd6829c244863b5c80b0eaf6fb21c",
- "staged_sha256": "e9026a5e8fe50358f97d0b0e685cb17dfc0bd6829c244863b5c80b0eaf6fb21c",
- "master_rows_applied_this_pass": 20,
- "master_rows_also_newly_built": 1333,
- "master_rows_also_newly_built_note": "the closed 1,335-line speaker-register QA was in master since 2026-08-18 but had never been built into codec.dat; this build is the first to carry it",
- "round": "PERSONAL DATA blank rows: 20 english-branch rows filled from the identical English card (+160 locations); 57 es/fr branch rows left as donor"
+ "built_sha256": "72936022de47a5f80319177a81ab6b956dd7077d3934b22d669568c8321a2690",
+ "staged_sha256": "72936022de47a5f80319177a81ab6b956dd7077d3934b22d669568c8321a2690",
+ "previous_staged_sha256": "e9026a5e8fe50358f97d0b0e685cb17dfc0bd6829c244863b5c80b0eaf6fb21c",
+ "round": "#4 duplicate-location propagation closed (566 non-donor English locations -> 0); #3 Chin up! retranslated"
 }

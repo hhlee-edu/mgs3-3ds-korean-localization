@@ -3,29 +3,21 @@
   "accepted_rows": 9014,
   "accepted_locations": 233587,
   "residual_by_bucket_rows": {
-    "REVIEW": 55,
-    "REAL_UNTRANSLATED": 11,
+    "REVIEW": 14,
+    "REAL_UNTRANSLATED": 6,
     "VALID_ENGLISH": 94,
-    "DONOR_ERROR": 947
+    "DONOR_ERROR": 927
   },
   "residual_by_bucket_locations": {
-    "REVIEW": 1216,
-    "REAL_UNTRANSLATED": 30,
+    "REVIEW": 24,
+    "REAL_UNTRANSLATED": 6,
     "VALID_ENGLISH": 1170,
-    "DONOR_ERROR": 10928
+    "DONOR_ERROR": 10768
   },
-  "review_verdicts_rows": {
-    "TRANSLATED": 46,
-    "KEEP_ENGLISH": 13,
-    "DONOR": 7
-  },
-  "review_verdicts_locations": {
-    "TRANSLATED": 1216,
-    "KEEP_ENGLISH": 13,
-    "DONOR": 17
-  },
-  "excluded_rows": 1061,
-  "excluded_locations": 12128,
+  "review_verdicts_rows": {},
+  "review_verdicts_locations": {},
+  "excluded_rows": 1021,
+  "excluded_locations": 11938,
   "remaining_translate_rows": 0,
   "remaining_translate_locations": 0,
   "translatable_locations": 233587,

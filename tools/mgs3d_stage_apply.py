@@ -15,6 +15,20 @@ from collections import defaultdict
 from pathlib import Path
 
 csv.field_size_limit(10**9)
+# Locations that must never be translated, with the evidence that put them here.
+# Keyed by (stage, record, resource).
+PERMANENT_EXCLUSIONS = {
+    ("r_sna01", 0, 479): (
+        "clean 'SAVE\0' -- the codec SAVE channel label. 2026-08-20 resource-level "
+        "bisection on hardware: restoring this one resource to clean ASCII, and "
+        "nothing else, is what makes the SAVE label render again. Padding, the "
+        "appended glyph page and the line-break structure were all cleared first."
+    ),
+}
+
+NUL = bytes([0])          # string terminator
+PAD = bytes([0x20])       # slack filler: a space, never a terminator
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 from mgs3d_codec_tool import CodecError, GcxRecord, parse_rendered  # noqa: E402
@@ -84,6 +98,7 @@ def main() -> int:
 
     errors = []
     changes = []
+    excluded = []
     changed_by_file = defaultdict(dict)
     for path in sorted(args.romfs.glob("stage/**/scenerio.gcx")):
         stage = path.parent.name
@@ -98,6 +113,11 @@ def main() -> int:
             resources = record.resources()
             if resource >= len(resources):
                 errors.append(f"{stage}:{ri}:{resource}: resource missing")
+                continue
+            reason = PERMANENT_EXCLUSIONS.get((stage, ri, resource))
+            if reason is not None:
+                excluded.append({"stage": stage, "record": ri, "resource": resource,
+                                 "reason": reason})
                 continue
             source = resources[resource].data
             expected = loc_rows[0]["raw_hex"]
@@ -120,14 +140,34 @@ def main() -> int:
             # replace_resources() and pile up as trailing NULs on the record's
             # LAST resource, which the final gate correctly reports as an
             # unexpected non-EN change (measured 2026-08-19: 89 extra resources,
-            # one per touched stage). Strings are NUL-terminated, so padding is
-            # invisible to the reader and keeps every other resource identical.
-            encoded = encoded + b"\x00" * (len(source) - len(encoded))
+            # one per touched stage).
+            #
+            # 2026-08-20: the padding BYTE matters. This used to fill the slack
+            # with NUL, on the assumption that "strings are NUL-terminated, so
+            # padding is invisible to the reader". Hardware disproved that:
+            # v001a built this way reproduced The Boss showing EVA and Major
+            # Tom's missing name, and the byte-identical build with only the
+            # surplus NULs replaced (diagnostic P1) rendered both correctly.
+            # Korean is shorter than English, so this was adding 17,269 extra
+            # terminators to v001a alone: 9,424 NUL bytes in clean became
+            # 26,693. Keep exactly the terminator run the clean resource had
+            # and fill the rest with spaces, which cannot read as another empty
+            # string. The resource length is still preserved exactly.
+            slack = len(source) - len(encoded)
+            if slack > 0:
+                keep = max(1, len(source) - len(source.rstrip(NUL)))
+                core = encoded.rstrip(NUL)
+                if len(core) + keep <= len(source):
+                    encoded = (core + NUL * keep
+                               + PAD * (len(source) - len(core) - keep))
+                else:
+                    encoded = encoded + NUL * slack
             changed_by_file[path][(ri, resource)] = encoded
             changes.append({"stage": stage, "record": ri, "resource": resource, "old_bytes": len(source), "new_bytes": len(encoded), "occurrences": len(loc_rows)})
 
     report = {
         "format": "mgs3d-stage-apply-dryrun-v1",
+        "permanently_excluded": excluded,
         "dry_run": not args.apply,
         "source_root": str(args.romfs),
         "changed_resources": len(changes),

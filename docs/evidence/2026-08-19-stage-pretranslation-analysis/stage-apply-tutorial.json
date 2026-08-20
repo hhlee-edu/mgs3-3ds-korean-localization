@@ -7,7 +7,7 @@
   "fr_es_write_policy": "never target non-English locations",
   "control_code_gate": "exact token stream",
   "capacity_gate": "encoded bytes <= original resource slot",
-  "output_root": "builds\\v0.93-stage-tutorial-verify\\romfs",
+  "output_root": "builds\\diag-2026-08-19-stage-tutorial-verify\\romfs",
   "changes": [
     {
       "stage": "hx001a",

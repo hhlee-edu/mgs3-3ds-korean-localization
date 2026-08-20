@@ -1,18 +1,18 @@
 {
   "master_rows": 22820,
-  "accepted_rows": 8948,
-  "residual_rows": 1107,
+  "accepted_rows": 9014,
+  "residual_rows": 1041,
   "by_bucket": {
-    "REVIEW": 55,
-    "REAL_UNTRANSLATED": 11,
+    "REVIEW": 14,
+    "REAL_UNTRANSLATED": 6,
     "VALID_ENGLISH": 94,
-    "DONOR_ERROR": 947
+    "DONOR_ERROR": 927
   },
   "occurrences_by_bucket": {
-    "REVIEW": 1216,
-    "REAL_UNTRANSLATED": 30,
+    "REVIEW": 24,
+    "REAL_UNTRANSLATED": 6,
     "VALID_ENGLISH": 1170,
-    "DONOR_ERROR": 10928
+    "DONOR_ERROR": 10768
   },
   "langid_lexicon": {
     "donor_only_tokens": 13103,
