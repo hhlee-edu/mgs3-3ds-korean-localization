@@ -17,13 +17,24 @@ from pathlib import Path
 csv.field_size_limit(10**9)
 # Locations that must never be translated, with the evidence that put them here.
 # Keyed by (stage, record, resource).
+_SAVE_CHANNEL_LABEL = (
+    "clean 'SAVE\0' -- the codec SAVE channel label. 2026-08-20 resource-level "
+    "bisection on hardware: restoring this one resource to clean ASCII, and "
+    "nothing else, is what makes the SAVE label render again. Padding, the "
+    "appended glyph page and the line-break structure were all cleared first."
+)
+# r_sna01 and r_sna02 hold the SAME defect. They are byte-identical in the clean
+# tree -- the only duplicate pair among all 169 stage/*/scenerio.gcx, and the only
+# clean content-equivalence class (of 20, covering 217 files) that staging split.
+# The 2026-08-20 bisection named r_sna01 because the test save spawned in
+# `room r_sna01`, so the fix went to that one file and r_sna02 kept the translated
+# string; measured 2026-08-21 the two staged files differed by exactly 4 bytes at
+# file offset 0x12F38. When a bisection concludes "not a per-file defect", the
+# prescription belongs to the whole equivalence class, not to the single file the
+# search happened to name.
 PERMANENT_EXCLUSIONS = {
-    ("r_sna01", 0, 479): (
-        "clean 'SAVE\0' -- the codec SAVE channel label. 2026-08-20 resource-level "
-        "bisection on hardware: restoring this one resource to clean ASCII, and "
-        "nothing else, is what makes the SAVE label render again. Padding, the "
-        "appended glyph page and the line-break structure were all cleared first."
-    ),
+    ("r_sna01", 0, 479): _SAVE_CHANNEL_LABEL,
+    ("r_sna02", 0, 479): _SAVE_CHANNEL_LABEL,
 }
 
 NUL = bytes([0])          # string terminator
@@ -38,6 +49,23 @@ from mgs3d_stage_text_scan import stage_records  # noqa: E402
 def read_csv(path: Path) -> list[dict[str, str]]:
     with path.open(encoding="utf-8-sig", newline="") as fh:
         return list(csv.DictReader(fh))
+
+
+# The scanner labels a resource `unknown` when it has no vocabulary evidence of
+# its own AND block detection never reached it -- which is exactly what happens to
+# short UI labels like RESULTS / KINDS / PERSON that carry no English function
+# word. Gating on `language == "english"` alone therefore holds back real English
+# text: measured 2026-08-21, 6,554 locations across 68 resources that already had
+# approved Korean, silently and with no error. Structural adjudication (nearest
+# language evidence on each side, plus accent-escape density) resolved 67 of them
+# to the English branch and kept one blocked -- 'WIG : Interior', which sits inside
+# the Spanish block with Romance text one resource away. The evidence lives per
+# resource beside the data, never inlined here, so re-adjudicating is a data edit.
+def load_resolved_english(path: Path) -> set[str]:
+    """raw_hex of `unknown` locations adjudicated to the English branch."""
+    if not path.is_file():
+        return set()
+    return {row["raw_hex"] for row in read_csv(path) if row["verdict"] == "ENGLISH"}
 
 
 def controls(data: bytes) -> list[str]:
@@ -71,6 +99,9 @@ def main() -> int:
     ap.add_argument("--romfs", type=Path, default=ROOT / "experiments/2026-08-13-clean-glyph-baseline/clean-tree/romfs")
     ap.add_argument("--worklist", type=Path, default=ROOT / "docs/evidence/2026-08-19-stage-pretranslation-analysis/stage-worklist-expanded.csv")
     ap.add_argument("--locations", type=Path, default=ROOT / "docs/evidence/2026-08-19-stage-text-scan/stage-text-locations.csv")
+    ap.add_argument("--resolved-english", type=Path,
+                    default=ROOT / "docs/evidence/2026-08-21-stage-unknown-language-adjudication/resolved-english.csv",
+                    help="adjudicated unknown-language resources; ENGLISH rows become eligible")
     ap.add_argument("--character-map", type=Path, default=ROOT / "translation/40_build_input/global_page_v2/character-map.json")
     ap.add_argument("--report", type=Path, default=ROOT / "docs/evidence/2026-08-19-stage-pretranslation-analysis/stage-apply-dryrun.json")
     ap.add_argument("--apply", action="store_true", help="write changed files under --output-root")
@@ -89,12 +120,30 @@ def main() -> int:
         if text:
             translations[row["raw_hex"]] = text
 
+    resolved_english = load_resolved_english(args.resolved_english)
+
     targets = defaultdict(list)
+    held = defaultdict(int)
+    held_hex = defaultdict(set)
     for row in locs:
-        # Only structurally/vocabulary-resolved English locations are eligible.
-        # Shared/unknown rows are intentionally held for explicit review.
-        if row["language"] == "english" and row["raw_hex"] in translations:
+        if row["raw_hex"] not in translations:
+            continue
+        # English locations, plus `unknown` ones adjudication resolved to English.
+        # Donor rows stay held: writing Korean into the Spanish or French branch is
+        # the exact regression the language-block analysis exists to prevent, and
+        # the final gate's fr_es_unchanged check cannot catch it, because that check
+        # only looks at locations the scanner already labelled donor.
+        eligible = row["language"] == "english" or (
+            row["language"] == "unknown" and row["raw_hex"] in resolved_english)
+        if eligible:
             targets[(row["stage"], int(row["record"]), int(row["resource"]))].append(row)
+        else:
+            # Counted, never silent. A held location is a decision, and a decision
+            # that leaves no trace in the report reads as "nothing to do" -- which
+            # is how 10,389 locations stayed English across four builds while the
+            # dry-run kept reporting `errors: []`.
+            held[f"{row['language']}/{row['basis']}"] += 1
+            held_hex[f"{row['language']}/{row['basis']}"].add(row["raw_hex"])
 
     errors = []
     changes = []
@@ -171,6 +220,10 @@ def main() -> int:
         "dry_run": not args.apply,
         "source_root": str(args.romfs),
         "changed_resources": len(changes),
+        "resolved_english_admitted": len(resolved_english),
+        "held_total": sum(held.values()),
+        "held_locations": dict(sorted(held.items())),
+        "held_resources": {k: len(v) for k, v in sorted(held_hex.items())},
         "errors": errors,
         "fr_es_write_policy": "never target non-English locations",
         "control_code_gate": "exact token stream",
@@ -181,7 +234,7 @@ def main() -> int:
     if errors or not args.apply:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(json.dumps({k: report[k] for k in ("dry_run", "changed_resources", "errors", "output_root")}, ensure_ascii=False, indent=2))
+        print(json.dumps({k: report[k] for k in ("dry_run", "changed_resources", "held_total", "held_locations", "errors", "output_root")}, ensure_ascii=False, indent=2))
         return 1 if errors else 0
 
     # Only after every file/resource passed all gates, write to a separate root.
@@ -213,7 +266,7 @@ def main() -> int:
         dst.write_bytes(bytes(output))
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({k: report[k] for k in ("dry_run", "changed_resources", "errors", "output_root")}, ensure_ascii=False, indent=2))
+    print(json.dumps({k: report[k] for k in ("dry_run", "changed_resources", "held_total", "held_locations", "errors", "output_root")}, ensure_ascii=False, indent=2))
     return 0
 
 
