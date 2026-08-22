@@ -11,6 +11,38 @@ record.
 
 ## Confirmed
 
+### v0.93c — 네 컨테이너 스테이징 + 교차 검증 도구 (2026-08-22, newest)
+
+전체 기록: [`docs/HANDOFF-2026-08-22.md`](../docs/HANDOFF-2026-08-22.md).
+자료 색인: [`docs/SOURCES.md`](../docs/SOURCES.md).
+
+- **텍스트 컨테이너는 다섯이다** — `codec.dat` · `movie.dat` · `demo.dat` ·
+  `stage/*/scenerio.gcx` · **`vox.dat`**. `vox.dat`은 2026-08-21에 발견됐고
+  6개월 가까이 "clean과 바이트 동일"이라는 기록만으로 지나쳐졌다.
+  **무변경 확인은 안전성의 근거이지 범위의 근거가 아니다.**
+- **번역 오매핑은 문자열 유사도로 안 잡힌다.** 한국어 자체는 멀쩡하고 영어와는
+  언어가 달라 비교가 성립하지 않는다. 우리 번역과 한국어 대사집이 둘 다 서사
+  순서를 갖는다는 점을 이용해 정렬해야 드러난다
+  ([`docs/crossvalidate.md`](../docs/crossvalidate.md), 검출기 D1~D9).
+- **정렬 기반 검출만으로는 부족하다.** 실플레이 발견 5건 중 D1~D4가 잡은 것은
+  1건. 정렬에 의존하지 않는 D5~D8을 넣고 4/5가 됐다.
+- **`vox.dat`은 자기 안에 대조 기준을 갖고 있다.** 큐마다 EN + FR/DE/IT/ES가 같은
+  타이밍에 들어 있어 모든 줄에 전문 번역 4개가 정렬돼 있다
+  ([`docs/vox-donor-check.md`](../docs/vox-donor-check.md)). 외부 자료가 필요 없다.
+- **바이트 예산 통과와 화면에 들어가는 것은 다른 문제다.** vox 자막 31곳이
+  `max_bytes`는 통과하면서 줄바꿈이 사라져 가로로 넘쳤다.
+- **byte-fit PASS 기록은 바이너리가 바뀌면 못 믿는다.** 2026-08-17에 PASS로
+  기록된 3건이 현재 바이너리에서 FAIL(2~5바이트 초과). 1바이트 여유로 통과한
+  기록이 여럿이었고 그 사이 레코드 구역이 바뀌었다.
+- **`errors: []`는 "할 일 없음"이 아니다.** 적용 기록만 있고 바이너리에 안 실린
+  5건이 있었다 — `accept` 공란 + 낡은 `blocker`, 그리고 병합 전 마스터로 만든
+  빌드 입력.
+- **PERSONAL DATA 영문 유지는 결정 사항이고 마스터에는 한국어가 남아 있다.**
+  단순 재빌드는 그 결정을 되돌린다. 빌드 입력에서 26,919곳을 제외해야 한다
+  (`translation/40_build_input/2026-08-22/hold-locations.json`). 같은 방식으로
+  도너 FR/ES 9곳의 회귀도 걸러진다.
+
+
 ### v0.81 hardware defects — root-caused 2026-08-16 (newest)
 
 Full evidence: [`docs/v0.81-hardware-defects-rootcause-2026-08-16.md`](../docs/v0.81-hardware-defects-rootcause-2026-08-16.md).
@@ -236,89 +268,106 @@ retired.
 
 ## Current Build
 
-**Current clean global-page build:** `mgs3d-globalpage-clean01.cci`
-(generated initially as `MGS SNAKE EATER 3D_Repack_____.cci`), 3,303,145,472
-bytes, SHA-256
-`D5261ED99FED1FEECA7D4061B75BB9D890FF65EFDF5DD25AC987536755F3C058`.
-It contains all 169 full pages and the trampoline, but not the controlled movie
-probe. See `experiments/2026-08-13-clean-glyph-baseline/clean-build-manifest.json`.
+**v0.93c — 2026-08-22.** 매니페스트: `builds/release-v0.93c/manifest.json` (R6).
+CCI는 아직 만들지 않았고 실기 검증도 없다.
 
-**Golden CCI — the binary no longer exists, but the build is reproducible.**
+| 파일 | SHA-256 (16) | 출처 |
+|---|---|---|
+| `romfs/codec.dat` | `cb83adca9364a1a1` | `diag-2026-08-22-codec-final` |
+| `romfs/movie.dat` | `72dfb3a80770e448` | `diag-2026-08-22-codec-qa377` |
+| `romfs/demo.dat` | `25c8f258d95d9c7c` | `diag-2026-08-22-enscript` |
+| `romfs/vox.dat` | `6788330fe623512f` | `diag-2026-08-22-vox-linebreak` |
 
-- Recorded golden: `MGS SNAKE EATER 3D_Repack_______.cci` (7 underscores),
-  3,248,410,624 bytes, SHA-256 `3BD843…E6504`.
-- Confirmed absent: all 11 `.cci` images on `C:\Users\hhlee` and `D:` were
-  enumerated and hashed 2026-08-13; none matches. Two archived images match the
-  golden **size** exactly but not its hash — a size collision, not the golden.
-- **Reproducible from `archive/old-data/script_ref_archive_2026-08-07/staging_tom_codec_original_media/`**,
-  which `analysis/REPACK_VERSION_INDEX.md (kept at its original path -- not part of the move, still describes CCI-to-input mapping)` names as the golden's input directory.
-  All five recorded input hashes verify there 5/5 byte-exact (`codec.dat`
-  `C32E8C6B…`, `movie.dat` `2B774C99…`, `demo.dat` `E216F28F…`,
-  `r_sna01/resident.hpk` `6D751F2A…`, `r_sna02/resident.hpk` `BB72B8FA…`).
-  Repacking that folder reconstructs the boot-verified build.
-- ⚠️ **Name-collision hazard:** `Romforge\output\` tops out at 6 underscores, so
-  the next repack writes the golden's documented filename. Rename builds
-  (see [Conventions](Conventions.md#r6-build-naming)) before repacking.
+스테이징 트리 둘 — romfs는 양쪽이 동일하고 차이는 `partition0`의
+`code.bin`/`exheader.bin`/`plain.bin` 셋뿐이다.
 
-- Build named by `HANDOFF.md` as the one to test next:
-  `Romforge\output\MGS SNAKE EATER 3D_Repack______.cci` (6 underscores),
-  4,083,195,904 bytes, 2026-08-12 23:54. Statically verified as the 169-stage
-  patch build (Korean page signature appears exactly 169 times).
+```
+Romforge/output/unpacked/                  1.1 standalone  924 files 3,257,137,963 B
+Romforge/output/unpacked-v0.93a-staging/   v0.93a          924 files 3,257,034,663 B
+```
 
-- Korean reference ISO (`메탈 기어 솔리드 3_한글.iso`): deleted, **confirmed intentional**
-  by the user 2026-08-13. All five extracted containers survive in
-  `originals/ps2/` (`CODEC.DAT`, `DEMO.DAT`, `MOVIE.DAT`, `SLOT.DAT`,
-  `STAGE.DAT`); PS2 movie/demo hold no extractable text anyway (hardsubbed). Git
-  cannot restore it — the tracked blob at that path is a different, smaller ISO.
+**RomForge는 `unpacked/`만 본다.** 되돌리려면 폴더 이름을 맞바꾼다 — 복사가 아니라
+rename.
+
+### 골든 CCI — 바이너리는 없지만 재현 가능
+
+- 기록된 골든: `MGS SNAKE EATER 3D_Repack_______.cci` (밑줄 7개),
+  3,248,410,624 B, SHA-256 `3BD843…E6504`.
+- 2026-08-13에 `C:/Users/hhlee`와 `D:` 전체의 `.cci` 11개를 해시했고 일치 없음.
+  두 개가 **크기만** 같다 — 크기 충돌이지 골든이 아니다 (R4).
+- 재현 입력: `archive/old-data/script_ref_archive_2026-08-07/staging_tom_codec_original_media/`.
+  기록된 입력 해시 5/5가 바이트 일치한다.
+- ⚠️ **이름 충돌 위험:** `Romforge/output/`이 밑줄 6개까지 차 있어 다음 repack이
+  골든의 파일명을 쓴다. 리팩 전에 이름을 바꿀 것 ([R6](Conventions.md#r6-build-naming)).
 
 ## Current Data
 
-- codec master review CSV: `translation/10_master/codec-3ds-INTEGRATED-review.csv`
-  (11,076,065 B, sha `a836d562…`) — the live master.
-- Manual backlog for 대사집 미매칭 codec lines:
-  `translation/10_master/manual_backlog/`
-  (`1999final.csv`, `trans1999.csv`). Note the folder name contains the typo
-  `INTERGRATED`.
-- The `codec-3ds-INTEGRATED-review.csv` copy inside that `_trans/` folder is
-  **byte-identical to `…before-1999-merge-2026-08-05.bak`** (sha `75d291c1…`),
-  i.e. a superseded pre-merge snapshot, not a second master.
-- The `analysis/1 korean_localization_bundle_2026-08-12/` bundle was the
-  **consolidated final translation material** (user-confirmed 2026-08-13); its
-  own README (now at `translation/BUNDLE-README-2026-08-12.md`) states the
-  MASTER-vs-SHORTENED role split. Full detail: [Translation](Translation.md).
+번역 정본은 `translation/10_master/current/`에 있다. 경로는 주기적으로 바뀌므로
+인용 전에 [Translation](Translation.md)과 `translation/10_master/README.md`를
+다시 읽을 것.
+
+| | 행 | 비고 |
+|---|---:|---|
+| `current/codec.csv` | 22,820 | 번역행 9,057 |
+| `current/demo.csv` | 2,228 | |
+| `current/movie.csv` | 689 | |
+| `translation/vox/vox-translation.csv` | 2,691 | **정본이 `10_master` 밖에 있다** |
+| `pending/runtime-corrections.csv` | 33 | 실기 교정 대기열, `status`로 관리 |
+
+stage 정본도 아직 `10_master` 밖이다
+(`translation/50_local_evidence/2026-08-19-stage-pretranslation-analysis/stage-translation-working.csv`).
+**목표 형태는 `current/`에 codec·movie·demo·stage·vox 다섯 + `pending/` 하나.**
+
+**백업은 `translation/10_master/archive/backups/`에 모았다** (2026-08-22, 41개 이동).
+`translation/`은 gitignore라 git 히스토리가 없고 이 .bak이 유일한 롤백 수단이다.
+46개 전부 SHA-256이 다르므로 중복 제거로 줄일 것이 없다 (R4). `INDEX.json`에 원위치와
+해시가 있고, 정본별 최근 1개는 즉시 롤백용으로 원위치에 남겼다.
+
+검수 산출물: `translation/10_master/review/crossvalidate/worklist.csv`
+(통합·등급순, A 2 / B 55 / C 1,068), `translation/vox/donor-check-findings.csv`.
 
 ## Known Issues
 
-- `HANDOFF.md` (31 KB) carries stacked, mutually contradicting session layers;
-  its 2026-08-12 "do not retry" instruction is explicitly void.
-- `docs/WIKI.md` contradicts itself on grow-mode safety (see Invalidated).
-- `docs/INDEX.md` stops at 2026-08-12 and omits the newer global-Korean-glyph and
-  load-size documents. Both are superseded by this page; kept for history.
-- ⚠️ Backup files are sitting **inside** the live RomForge romfs tree
-  (`demo.dat.bak-before-autofit106-2026-08-07`, 772,935,680 B, and a movie.dat
-  backup). Repack bundles the whole folder.
-- ⚠️ **No gate measures translation coverage.** `coverage-report.json` is a
-  *glyph-page* report (character/token set integrity, page round-trip,
-  "does the authored Korean encode"); its `encoding_preflight` denominator is
-  accepted master rows (`units: 8478`). It passed all 13 checks on a build that
-  reached 3.79% of in-game locations. The encoding preflight, staging tree diff,
-  file-size and HPK chain checks share the blind spot. A gate whose denominator
-  is *locations inside the shipped binary* has to be written.
-- ⚠️ The duplicate-propagation tools
-  (`tools/mgs3d_codec_duplicate_propagate.py`, `mgs3d_codec_sync_duplicates.py`,
-  `expand_codec_exact_duplicates.py`) exist but appear in **no** v0.69/v0.80/v0.81
-  build procedure.
+### 해소됨 (기록 유지 — R8)
+
+- ~~`HANDOFF.md`가 모순되는 세션 층을 쌓고 있다~~ — 2026-08-22에 R12 형식(여섯 항목)으로
+  다시 씀. 과거 층은 `docs/HANDOFF-*.md`에 날짜별로 남아 있다.
+- ~~RomForge romfs 트리 안에 `.bak`이 들어 있다~~ — 해소. 2026-08-22 점검에서
+  두 트리 모두 이물질 0 (R7).
+- ~~번역 커버리지를 재는 게이트가 없다~~ — 해소. `mgs3d_codec_final_gate.py`가
+  **in-game location 기준**으로 잰다(현재 100.0000%, 233,700 locations). 그 밖에
+  capacity overflow / missing glyph / layout preserved / DAT read-back /
+  English residue를 함께 본다.
+- ~~중복 전파 도구가 어느 빌드 절차에도 없다~~ — 해소.
+  `mgs3d_codec_expand_locations.py`가 정규 파이프라인 2단계다
+  (9,017 rows → 227,506 units).
+
+### 열려 있음
+
+- ⚠️ **`Current-State.md`의 Confirmed 절 상당수가 2026-08-16 이전 기준이다.**
+  v0.93 계열, 1.1 이식, stage 언어 판정, `vox.dat` 발견이 반영돼 있지 않다.
+  2026-08-22에 최신 절과 Current Build/Data만 갱신했다. 나머지는 미갱신.
+- ⚠️ **정본이 세 곳에 흩어져 있다.** codec/demo/movie는 `10_master/current/`,
+  vox는 `translation/vox/`, stage는 `50_local_evidence/...`. 다섯을 한자리로
+  모으는 작업이 남아 있다.
+- ⚠️ **`docs/WIKI.md`가 grow-mode 안전성에서 자기모순** (Invalidated 참조).
+  `docs/INDEX.md`는 2026-08-12에서 멈춰 있다. 둘 다 이 페이지로 대체됐다.
+- ⚠️ **골든 CCI 이름 충돌** — 다음 repack이 골든의 파일명(밑줄 7개)을 쓴다.
+- ⚠️ **`builds/`가 9.9 GB이고 매니페스트가 대부분 없다.** 2026-08-22에
+  `release-v0.93c/`만 R6 매니페스트를 갖췄다. `diag-*` 30여 개는 미정리.
+- ⚠️ **검출기 D3/D5/D6는 근거가 하나뿐이라 오탐이 많다** (C등급 1,068건).
+  영문 대사집이 2,164행뿐이라 codec 9,057행 중 428행만 붙는 것이 원인이다.
 
 ## Next
 
-1. Runtime-test `mgs3d-globalpage-media-maxsafe01.cci` (SHA-256
-   `78DAC94315A5BB4BB6109B10C3EE5CDDF54E542DC1178744686DDC70F814F17D`)
-   as a partial media candidate; codec is intentionally unchanged.
-2. Decide how to handle the remaining movie/demo strings that exceed fixed
-   record capacity; do not mistake the verified max-safe subsets for full builds.
-3. Perform targeted visual review using representative text across the full
-   token range; do not resume exhaustive GDB stage traversal.
-4. Preserve every important CCI under a meaningful name with its manifest.
+1. **CCI 리팩 + 실기 검증** — v0.93c 스테이징은 끝났고 CCI가 없다.
+   리팩 전에 골든 이름 충돌을 피할 것 (R6).
+2. **워크리스트 A 2건 / B 55건 검토** —
+   `translation/10_master/review/crossvalidate/worklist.csv`.
+3. **화자별 어투 정책 결정** — Zero/Tom의 존댓말이 프로젝트 전반에 섞여 있어
+   한 줄짜리 결함으로 못 고친다. D2가 잡은 3건이 그것이다.
+4. **정본 다섯을 `10_master/current/`로 통합** (R1/R3).
+5. **`builds/` 정리** — 중복·구형 진단 빌드 정리와 매니페스트 부여 (R6).
 
 ## Do Not Reinvestigate
 
