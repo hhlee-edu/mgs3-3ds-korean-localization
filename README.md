@@ -2,11 +2,11 @@
 
 # METAL GEAR SOLID 3D
 
-### 한국어 패치 · v0.94a
+### 한국어 패치 · v0.94a1
 
 **Snake Eater를 닌텐도 3DS의 입체 화면으로**
 
-![version](https://img.shields.io/badge/version-0.94a-496DDB?style=for-the-badge)
+![version](https://img.shields.io/badge/version-0.94a1-496DDB?style=for-the-badge)
 ![platform](https://img.shields.io/badge/platform-Nintendo_3DS-E60012?style=for-the-badge)
 ![region](https://img.shields.io/badge/source-clean_USA_1.0-222222?style=for-the-badge)
 
@@ -16,7 +16,7 @@
 
 ## 시작하기
 
-Windows 패처를 실행하고, 복호화된 **clean USA 1.0 CCI** 하나를 창 안으로 끌어다 놓으세요.
+ Windows 패처를 실행하고, 복호화된 **clean USA 1.0 CCI/3DS** 하나를 창 안으로 끌어다 놓으세요.
 
 | 만들 버전 | 추천 기기 | 포함 내용 |
 |:---:|---|---|
